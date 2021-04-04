@@ -29,9 +29,8 @@ public final class ChatControllerEndPoint {
 			if (ChatSessionManager.register(session)) {
 				System.out.printf("Session opened for %s\n", email);
 
-				ChatSessionManager
-						.publish(new Message((String) session.getUserProperties().get(Constants.EMAIL_KEY),
-								"***joined the chat***"), session);
+				ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.EMAIL_KEY),
+						"***joined the chat***", "open"), session);
 			} else {
 				throw new RegistrationFailedException("Unable to register, email already exists, try another");
 			}
@@ -56,7 +55,7 @@ public final class ChatControllerEndPoint {
 			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.EMAIL_KEY));
 
 			ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.EMAIL_KEY),
-					"***left the chat***"), session);
+					"***left the chat***", "close"), session);
 		}
 	}
 

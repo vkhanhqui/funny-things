@@ -28,13 +28,15 @@ public final class ChatSessionManager {
 	public static void publish(final Message message, final Session origin) {
 		assert !Objects.isNull(message) && !Objects.isNull(origin);
 
-		SESSIONS.stream().filter(session -> !session.equals(origin)).forEach(session -> {
-			try {
-				session.getBasicRemote().sendObject(message);
-			} catch (IOException | EncodeException e) {
-				e.printStackTrace();
-			}
-		});
+		SESSIONS.stream().filter(
+				session -> !session.equals(origin) && session.getUserProperties().containsValue(message.getReceiver()))
+				.forEach(session -> {
+					try {
+						session.getBasicRemote().sendObject(message);
+					} catch (IOException | EncodeException e) {
+						e.printStackTrace();
+					}
+				});
 	}
 
 	public static boolean register(final Session session) {

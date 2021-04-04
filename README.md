@@ -1,2 +1,2 @@
 # CT240
-chat-app :four_leaf_clover:
+chat-web-app :four_leaf_clover:

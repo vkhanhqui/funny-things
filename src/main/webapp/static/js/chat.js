@@ -8,7 +8,7 @@ function init() {
 			email = prompt("Enter email");
 		}
 		document.getElementsByClassName("login-form")[0].style.display = "none";
-		websocket = new WebSocket('ws://localhost:8080/chat-controller/' + email);
+		websocket = new WebSocket('ws://' + window.location.host + '/chat-controller/' + email);
 		websocket.onopen = function(data) {
 			document.getElementById("main").style.display = "block";
 		};
@@ -48,13 +48,15 @@ function sendMessage() {
 	document.getElementById("message").value = '';
 
 	setMessage(message);
+	console.log(message);
 	websocket.send(JSON.stringify(message));
 }
 
 function buildMessage(email, message) {
 	return {
 		email: email,
-		message: message
+		message: message,
+		receiver: "a"
 	};
 }
 

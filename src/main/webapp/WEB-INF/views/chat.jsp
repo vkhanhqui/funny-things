@@ -8,7 +8,6 @@
 <meta charset="UTF-8">
 <title>Chat - Websockets</title>
 <link rel="stylesheet" href="<c:url value="/static/css/style.css" />">
-<script type="text/javascript" src="<c:url value="/static/js/app.js" />"></script>
 </head>
 
 <body>
@@ -36,5 +35,8 @@
 			</div>
 		</div>
 	</div>
+
+	<script type="text/javascript"
+		src="<c:url value="/static/js/chat.js" />"></script>
 </body>
 </html>
