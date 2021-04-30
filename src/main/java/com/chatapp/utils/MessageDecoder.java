@@ -30,6 +30,6 @@ public final class MessageDecoder implements Decoder.Text<Message> {
 
 	@Override
 	public boolean willDecode(final String arg0) {
-		return arg0.contains(Constants.EMAIL_KEY) && arg0.contains(Constants.MESSAGE_KEY);
+		return arg0.contains(Constants.USERID_KEY) && arg0.contains(Constants.MESSAGE_KEY);
 	}
 }

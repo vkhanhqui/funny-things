@@ -17,22 +17,23 @@ import com.chatapp.services.ChatSessionManager;
 import com.chatapp.utils.MessageDecoder;
 import com.chatapp.utils.MessageEncoder;
 
-@ServerEndpoint(value = "/chat-controller/{email}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
-public final class ChatControllerEndPoint {
+@ServerEndpoint(value = "/chat-controller/{userId}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
+public class ChatControllerEndPoint {
 
 	@OnOpen
-	public void onOpen(@PathParam(Constants.EMAIL_KEY) final String email, final Session session) {
-		if (Objects.isNull(email) || email.isEmpty()) {
-			throw new RegistrationFailedException("Email is required");
+	public void onOpen(@PathParam(Constants.USERID_KEY) final String userId, final Session session) {
+		if (Objects.isNull(userId) || userId.isEmpty()) {
+			throw new RegistrationFailedException("userId is required");
 		} else {
-			session.getUserProperties().put(Constants.EMAIL_KEY, email);
 			if (ChatSessionManager.register(session)) {
-				System.out.printf("Session opened for %s\n", email);
-
-				ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.EMAIL_KEY),
-						"***joined the chat***", "open"), session);
+				session.getUserProperties().put(Constants.USERID_KEY, userId);
+				ChatSessionManager.onlineList.add(userId);
+				System.out.printf("Session opened for %s\n", userId);
+				String receiver = "all";
+				ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
+						"[P]open", receiver, ChatSessionManager.onlineList), session);
 			} else {
-				throw new RegistrationFailedException("Unable to register, email already exists, try another");
+				throw new RegistrationFailedException("Unable to register, userId already exists, try another");
 			}
 		}
 	}
@@ -52,10 +53,11 @@ public final class ChatControllerEndPoint {
 	@OnClose
 	public void onClose(final Session session) {
 		if (ChatSessionManager.remove(session)) {
-			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.EMAIL_KEY));
+			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.USERID_KEY));
 
-			ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.EMAIL_KEY),
-					"***left the chat***", "close"), session);
+			String receiver = "all";
+			ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
+					"[P]close", receiver, ChatSessionManager.onlineList), session);
 		}
 	}
 
