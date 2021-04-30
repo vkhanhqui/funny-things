@@ -17,7 +17,7 @@ import com.chatapp.services.ChatSessionManager;
 import com.chatapp.utils.MessageDecoder;
 import com.chatapp.utils.MessageEncoder;
 
-@ServerEndpoint(value = "/chat-controller/{userId}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
+@ServerEndpoint(value = "/chat/{userId}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ChatControllerEndPoint {
 
 	@OnOpen

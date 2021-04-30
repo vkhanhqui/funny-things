@@ -9,7 +9,7 @@ function init() {
 			userId = prompt("Enter userId");
 		}
 		document.getElementsByClassName("login-form")[0].style.display = "none";
-		websocket = new WebSocket('ws://' + window.location.host + '/chat-controller/' + userId);
+		websocket = new WebSocket('ws://' + window.location.host + '/chat/' + userId);
 
 		websocket.onopen = function(data) {
 			document.getElementById("container").style.display = "block";
@@ -44,8 +44,14 @@ function cleanUp() {
 
 function setReceiver(element) {
 	receiver = element.id;
-	document.getElementById("receiver").innerHTML = receiver;
 	console.log("receiver:" + receiver);
+	document.getElementById("receiver").innerHTML = '<img src="http://' + window.location.host + '/static/images/chat_avatar_01.jpg"'
+		+ 'alt="">'
+		+ '<div>'
+		+ '<br>'
+		+ '<h2 id="receiver">' + receiver + '</h2>'
+		+ '</div>';
+	document.getElementById("chat").innerHTML = '';
 }
 
 function sendMessage() {

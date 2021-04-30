@@ -4,10 +4,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Index</title>
+<title>Chat</title>
+<link rel="icon" type="image/png"
+	href="<c:url value="/static/images/icon.jpg" />">
 
 <link rel="stylesheet"
-	href="<c:url value="/static/css/style-chatbox-ui.css" />">
+	href="<c:url value="/static/css/style-chatbox.css" />">
 </head>
 <body>
 	<div class="login-form">
@@ -31,22 +33,14 @@
 						<div>
 							<h2>${userId}</h2>
 							<h3 id="status-${userId}">
-								<span class="status orange"></span>
-								offline
+								<span class="status orange"></span> offline
 							</h3>
 						</div></li>
 				</c:forEach>
 			</ul>
 		</aside>
 		<main>
-			<header>
-				<img src="<c:url value="/static/images/chat_avatar_01.jpg" />"
-					alt="">
-				<div>
-					<br>
-					<h2 id="receiver">Vincent Porter</h2>
-				</div>
-			</header>
+			<header id="receiver"> </header>
 			<ul id="chat">
 
 			</ul>
@@ -62,6 +56,6 @@
 	</div>
 
 	<script type="text/javascript"
-		src="<c:url value="/static/js/chatbox-ui.js" />"></script>
+		src="<c:url value="/static/js/chatbox.js" />"></script>
 </body>
 </html>
