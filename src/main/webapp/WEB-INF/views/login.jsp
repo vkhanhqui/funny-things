@@ -20,14 +20,15 @@
 				<div class="input_wrap">
 					<label for="input_text">Username</label>
 					<div class="input_field">
-						<input type="text" class="input" onchange="validateUsername(this)">
+						<input type="text" name="username" class="input"
+							onchange="validateUsername(this)">
 					</div>
 				</div>
 
 				<div class="input_wrap">
 					<label for="input_password">Password</label>
 					<div class="input_field">
-						<input type="password" class="input"
+						<input type="password" name="password" class="input"
 							onchange="validatePassword(this)">
 					</div>
 				</div>
@@ -46,20 +47,25 @@
 
 		<div class="form" style="display: none">
 			<div class="title">Register</div>
-			<form method="post" action="<c:url value="/register" />">
+			<form method="post" action="<c:url value="/register" />"
+				enctype="multipart/form-data">
+
 				<div class="input_wrap">
 					<label for="input_text">Username</label>
 					<div class="input_field">
-						<input type="text" class="input" onchange="validateUsername(this)">
+						<input type="text" name="username" class="input"
+							onchange="validateUsername(this)">
 					</div>
 				</div>
+
 				<div class="input_wrap">
 					<label for="input_password">Password</label>
 					<div class="input_field">
-						<input type="password" class="input"
+						<input type="password" name="password" class="input"
 							onchange="validatePassword(this)">
 					</div>
 				</div>
+
 				<div class="input_wrap">
 					<label for="input_password">Confirm Password</label>
 					<div class="input_field">
@@ -69,21 +75,22 @@
 				</div>
 
 				<div class="input_wrap">
-					<label for="genders">Gender </label>
+					<label for="gender">Gender </label>
 					<div class="input_field">
-						<select class="input" onclick="loadDefaultImage(this)">
-							<option value="male" class="input">Male</option>
-							<option value="female" class="input">Female</option>
+						<select class="input" name="gender"
+							onclick="loadDefaultImage(this)">
+							<option value="true" class="input">Male</option>
+							<option value="false" class="input">Female</option>
 						</select>
 					</div>
 				</div>
 
 				<div class="input_wrap">
 					<label for="file">Upload Your Avatar</label> <input type="file"
-						accept="image/*" name="image" onchange="loadImage(event)">
+						accept="image/*" name="avatar" onchange="loadImage(event)">
 					<div class="input_field">
 						<img id="display-image"
-							src="<c:url value="/static/images/default-user-male.png" />" />
+							src="<c:url value="/static/images/user-male.jpg" />" />
 					</div>
 				</div>
 

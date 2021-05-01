@@ -13,7 +13,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import com.chatapp.models.Constants;
 import com.chatapp.models.Message;
-import com.chatapp.services.ChatSessionManager;
+import com.chatapp.services.ChatService;
 import com.chatapp.utils.MessageDecoder;
 import com.chatapp.utils.MessageEncoder;
 
@@ -25,13 +25,13 @@ public class ChatControllerEndPoint {
 		if (Objects.isNull(userId) || userId.isEmpty()) {
 			throw new RegistrationFailedException("userId is required");
 		} else {
-			if (ChatSessionManager.register(session)) {
+			if (ChatService.register(session)) {
 				session.getUserProperties().put(Constants.USERID_KEY, userId);
-				ChatSessionManager.onlineList.add(userId);
+				ChatService.onlineList.add(userId);
 				System.out.printf("Session opened for %s\n", userId);
 				String receiver = "all";
-				ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
-						"[P]open", receiver, ChatSessionManager.onlineList), session);
+				ChatService.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
+						"[P]open", receiver, ChatService.onlineList), session);
 			} else {
 				throw new RegistrationFailedException("Unable to register, userId already exists, try another");
 			}
@@ -41,23 +41,23 @@ public class ChatControllerEndPoint {
 	@OnError
 	public void onError(final Session session, final Throwable throwable) {
 		if (throwable instanceof RegistrationFailedException) {
-			ChatSessionManager.close(session, CloseCodes.VIOLATED_POLICY, throwable.getMessage());
+			ChatService.close(session, CloseCodes.VIOLATED_POLICY, throwable.getMessage());
 		}
 	}
 
 	@OnMessage
 	public void onMessage(final Message message, final Session session) {
-		ChatSessionManager.publish(message, session);
+		ChatService.publish(message, session);
 	}
 
 	@OnClose
 	public void onClose(final Session session) {
-		if (ChatSessionManager.remove(session)) {
+		if (ChatService.remove(session)) {
 			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.USERID_KEY));
 
 			String receiver = "all";
-			ChatSessionManager.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
-					"[P]close", receiver, ChatSessionManager.onlineList), session);
+			ChatService.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
+					"[P]close", receiver, ChatService.onlineList), session);
 		}
 	}
 

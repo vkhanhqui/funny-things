@@ -16,11 +16,12 @@
 		<jsp.version>2.3.1</jsp.version>
 		<javax.websocket.api>1.1</javax.websocket.api>
 		<jackson.version>2.9.1</jackson.version>
+		<sqlserver.version>7.4.1.jre8</sqlserver.version>
 
 		<maven.war.plugin>3.2.0</maven.war.plugin>
 		<cargo.maven.plugin>1.6.4</cargo.maven.plugin>
 		<tomcat.version>8.5.57</tomcat.version>
-		
+
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
@@ -59,6 +60,12 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>${sqlserver.version}</version>
+		</dependency>
+
 
 	</dependencies>
 

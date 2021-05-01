@@ -7,10 +7,10 @@ function loadDefaultImage(selection) {
 	var gender = selection.value;
 	var defaultImage = document.getElementById('display-image');
 	var location = window.location.origin + "/static/images/";
-	if (gender === 'male') {
-		defaultImage.src = location + "default-user-male.png";
+	if (gender === "true") {
+		defaultImage.src = location + "user-male.jpg";
 	} else {
-		defaultImage.src = location + "default-user-female.jpg";
+		defaultImage.src = location + "user-female.jpg";
 	}
 }
 
