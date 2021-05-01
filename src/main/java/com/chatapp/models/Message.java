@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Message {
 
-	@JsonProperty("userId")
-	private String userId;
+	@JsonProperty("username")
+	private String username;
 	@JsonProperty("message")
 	private String message;
 	@JsonProperty("receiver")
@@ -19,13 +19,13 @@ public class Message {
 	private Set<String> onlineList = new HashSet<String>();
 
 	@JsonCreator
-	public Message(@JsonProperty("userId") String userId, @JsonProperty("message") String message,
+	public Message(@JsonProperty("username") String username, @JsonProperty("message") String message,
 			@JsonProperty("receiver") String receiver, @JsonProperty("onlineList") Set<String> onlineList) {
-		Objects.requireNonNull(userId);
+		Objects.requireNonNull(username);
 		Objects.requireNonNull(message);
 		Objects.requireNonNull(receiver);
 
-		this.userId = userId;
+		this.username = username;
 		this.message = message;
 		this.receiver = receiver;
 		this.onlineList = onlineList;
@@ -39,12 +39,12 @@ public class Message {
 		return receiver;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getusername() {
+		return username;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setusername(String username) {
+		this.username = username;
 	}
 
 	public void setMessage(String message) {

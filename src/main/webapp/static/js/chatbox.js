@@ -1,18 +1,14 @@
-var userId = null;
+var username = null;
 var websocket = null;
 var receiver = null;
 
 function init() {
 	if ("WebSocket" in window) {
-		userId = document.getElementsByName("userId")[0].value;
-		while (userId === null) {
-			userId = prompt("Enter userId");
-		}
-		document.getElementsByClassName("login-form")[0].style.display = "none";
-		websocket = new WebSocket('ws://' + window.location.host + '/chat-controller/' + userId);
+		username = document.getElementById("username").textContent;
+		websocket = new WebSocket('ws://' + window.location.host + '/chat/' + username);
 
 		websocket.onopen = function(data) {
-			document.getElementById("container").style.display = "block";
+
 		};
 
 		websocket.onmessage = function(data) {
@@ -38,19 +34,25 @@ function init() {
 
 function cleanUp() {
 	document.getElementById("container").style.display = "none";
-	userId = null;
+	username = null;
 	websocket = null;
 }
 
 function setReceiver(element) {
 	receiver = element.id;
-	document.getElementById("receiver").innerHTML = receiver;
 	console.log("receiver:" + receiver);
+	document.getElementById("receiver").innerHTML = '<img src="http://' + window.location.host + '/static/images/chat_avatar_01.jpg"'
+		+ 'alt="">'
+		+ '<div>'
+		+ '<br>'
+		+ '<h2 id="receiver">' + receiver + '</h2>'
+		+ '</div>';
+	document.getElementById("chat").innerHTML = '';
 }
 
 function sendMessage() {
 	var messageContent = document.getElementById("message").value;
-	var message = buildMessage(userId, messageContent);
+	var message = buildMessage(username, messageContent);
 
 	document.getElementById("message").value = '';
 
@@ -59,9 +61,9 @@ function sendMessage() {
 	websocket.send(JSON.stringify(message));
 }
 
-function buildMessage(userId, message) {
+function buildMessage(username, message) {
 	return {
-		userId: userId,
+		username: username,
 		message: message,
 		receiver: receiver
 	};
@@ -73,11 +75,11 @@ function setMessage(msg) {
 		var currentHTML = document.getElementById('chat').innerHTML;
 		var newElem;
 
-		if (msg.userId === userId) {
+		if (msg.username === username) {
 			newElem = '<li class="me">'
 				+ '<div class="entete">'
 				+ '<h3>10:12AM, Today</h3>'
-				+ '<h2>' + msg.userId + '</h2>'
+				+ '<h2>' + msg.username + '</h2>'
 				+ '<span class="status blue"></span>'
 				+ '</div>'
 				+ '<div class="triangle"></div>'
@@ -89,7 +91,7 @@ function setMessage(msg) {
 			newElem = '<li class="you">'
 				+ '<div class="entete">'
 				+ '<span class="status green"></span>'
-				+ '<h2>' + msg.userId + '</h2>'
+				+ '<h2>' + msg.username + '</h2>'
 				+ '<h3>10:12AM, Today</h3>'
 				+ '</div>'
 				+ '<div class="triangle"></div>'
@@ -102,20 +104,20 @@ function setMessage(msg) {
 			+ newElem;
 	} else {
 		if (msg.message === '[P]open') {
-			msg.onlineList.forEach(userId => setOnline(userId, true));
+			msg.onlineList.forEach(username => setOnline(username, true));
 		} else {
-			setOnline(msg.userId, false);
+			setOnline(msg.username, false);
 		}
 
 	}
 }
 
-function setOnline(userId, is) {
+function setOnline(username, is) {
 	if (is === true) {
-		document.getElementById('status-' + userId).innerHTML = '<span class="status green"></span>'
+		document.getElementById('status-' + username).innerHTML = '<span class="status green"></span>'
 			+ 'online';
 	} else {
-		document.getElementById('status-' + userId).innerHTML = '<span class="status orange"></span>'
+		document.getElementById('status-' + username).innerHTML = '<span class="status orange"></span>'
 			+ 'offline';
 	}
 }

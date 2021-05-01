@@ -17,13 +17,13 @@ import com.chatapp.models.Message;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
-public class ChatSessionManager {
+public class ChatService {
 
 	private static final Lock LOCK = new ReentrantLock();
 	private static final Set<Session> SESSIONS = new CopyOnWriteArraySet<>();
 	public static Set<String> onlineList = new HashSet<String>();
 
-	private ChatSessionManager() {
+	private ChatService() {
 		throw new IllegalStateException(Constants.INSTANTIATION_NOT_ALLOWED);
 	}
 
@@ -57,8 +57,8 @@ public class ChatSessionManager {
 			LOCK.lock();
 
 			result = !SESSIONS.contains(session) && !SESSIONS.stream()
-					.filter(elem -> ((String) elem.getUserProperties().get(Constants.USERID_KEY))
-							.equals((String) session.getUserProperties().get(Constants.USERID_KEY)))
+					.filter(elem -> ((String) elem.getUserProperties().get(Constants.USERNAME_KEY))
+							.equals((String) session.getUserProperties().get(Constants.USERNAME_KEY)))
 					.findFirst().isPresent() && SESSIONS.add(session);
 		} finally {
 			LOCK.unlock();
@@ -79,7 +79,7 @@ public class ChatSessionManager {
 
 	public static boolean remove(final Session session) {
 		assert !Objects.isNull(session);
-		onlineList.remove(session.getUserProperties().get(Constants.USERID_KEY).toString());
+		onlineList.remove(session.getUserProperties().get(Constants.USERNAME_KEY).toString());
 		return SESSIONS.remove(session);
 	}
 }
