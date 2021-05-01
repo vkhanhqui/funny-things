@@ -53,7 +53,7 @@ body {
 }
 
 .form .input_wrap input {
-	padding: 15px;
+	padding: 10px;
 	width: 100%;
 	border: 0.2em solid transparent;
 	font-size: 16px;
@@ -71,6 +71,13 @@ body {
 
 .form .input_wrap .input_field {
 	position: relative;
+}
+
+#display-image {
+	width: 150px;
+	border-radius: 50%;
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 
 .form .input_wrap .btn {

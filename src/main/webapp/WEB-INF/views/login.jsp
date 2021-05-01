@@ -14,28 +14,88 @@
 <body>
 	<div class="wrapper">
 		<div class="form">
-			<div class="title">Register/Login</div>
-			<form method="post" action="#" onsubmit="return validation();">
+			<div class="title">Login</div>
+			<form method="post" action="<c:url value="/login" />">
+
 				<div class="input_wrap">
 					<label for="input_text">Username</label>
 					<div class="input_field">
-						<input type="text" class="input" id="input_text">
+						<input type="text" class="input" onchange="validateUsername(this)">
+					</div>
+				</div>
+
+				<div class="input_wrap">
+					<label for="input_password">Password</label>
+					<div class="input_field">
+						<input type="password" class="input"
+							onchange="validatePassword(this)">
+					</div>
+				</div>
+
+				<div class="input_wrap">
+					<input type="submit" class="btn disabled" value="Login">
+				</div>
+
+				<div class="input_wrap">
+					<input type="button" class="btn enabled" value="Or Register"
+						onclick="changeLoginForm(true)">
+				</div>
+
+			</form>
+		</div>
+
+		<div class="form" style="display: none">
+			<div class="title">Register</div>
+			<form method="post" action="<c:url value="/register" />">
+				<div class="input_wrap">
+					<label for="input_text">Username</label>
+					<div class="input_field">
+						<input type="text" class="input" onchange="validateUsername(this)">
 					</div>
 				</div>
 				<div class="input_wrap">
 					<label for="input_password">Password</label>
 					<div class="input_field">
-						<input type="password" class="input" id="input_password">
+						<input type="password" class="input"
+							onchange="validatePassword(this)">
 					</div>
 				</div>
 				<div class="input_wrap">
-					<input type="button" id="register_btn" class="btn enabled" value="Register">
+					<label for="input_password">Confirm Password</label>
+					<div class="input_field">
+						<input type="password" class="input"
+							onchange="validateConfirmPassword(this)">
+					</div>
 				</div>
+
 				<div class="input_wrap">
-					<span class="error_msg">Incorrect username or password.
-						Please try again</span> <input type="submit" id="login_btn"
-						class="btn disabled" value="Login" disabled="true">
+					<label for="genders">Gender </label>
+					<div class="input_field">
+						<select class="input" onclick="loadDefaultImage(this)">
+							<option value="male" class="input">Male</option>
+							<option value="female" class="input">Female</option>
+						</select>
+					</div>
 				</div>
+
+				<div class="input_wrap">
+					<label for="file">Upload Your Avatar</label> <input type="file"
+						accept="image/*" name="image" onchange="loadImage(event)">
+					<div class="input_field">
+						<img id="display-image"
+							src="<c:url value="/static/images/default-user-male.png" />" />
+					</div>
+				</div>
+
+				<div class="input_wrap">
+					<input type="submit" class="btn disabled" value="Register">
+				</div>
+
+				<div class="input_wrap">
+					<input type="button" class="btn enabled" value="Or Login"
+						onclick="changeLoginForm(false)">
+				</div>
+
 			</form>
 		</div>
 	</div>
