@@ -17,20 +17,20 @@ import com.chatapp.services.ChatService;
 import com.chatapp.utils.MessageDecoder;
 import com.chatapp.utils.MessageEncoder;
 
-@ServerEndpoint(value = "/chat/{userId}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
+@ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ChatControllerEndPoint {
 
 	@OnOpen
-	public void onOpen(@PathParam(Constants.USERID_KEY) final String userId, final Session session) {
-		if (Objects.isNull(userId) || userId.isEmpty()) {
+	public void onOpen(@PathParam(Constants.USERNAME_KEY) final String username, final Session session) {
+		if (Objects.isNull(username) || username.isEmpty()) {
 			throw new RegistrationFailedException("userId is required");
 		} else {
 			if (ChatService.register(session)) {
-				session.getUserProperties().put(Constants.USERID_KEY, userId);
-				ChatService.onlineList.add(userId);
-				System.out.printf("Session opened for %s\n", userId);
+				session.getUserProperties().put(Constants.USERNAME_KEY, username);
+				ChatService.onlineList.add(username);
+				System.out.printf("Session opened for %s\n", username);
 				String receiver = "all";
-				ChatService.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
+				ChatService.publish(new Message((String) session.getUserProperties().get(Constants.USERNAME_KEY),
 						"[P]open", receiver, ChatService.onlineList), session);
 			} else {
 				throw new RegistrationFailedException("Unable to register, userId already exists, try another");
@@ -53,10 +53,10 @@ public class ChatControllerEndPoint {
 	@OnClose
 	public void onClose(final Session session) {
 		if (ChatService.remove(session)) {
-			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.USERID_KEY));
+			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.USERNAME_KEY));
 
 			String receiver = "all";
-			ChatService.publish(new Message((String) session.getUserProperties().get(Constants.USERID_KEY),
+			ChatService.publish(new Message((String) session.getUserProperties().get(Constants.USERNAME_KEY),
 					"[P]close", receiver, ChatService.onlineList), session);
 		}
 	}

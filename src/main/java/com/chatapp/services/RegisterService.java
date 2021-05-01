@@ -31,7 +31,7 @@ public class RegisterService {
 		System.out.println("Root path: " + uploadDir.getAbsolutePath());
 	}
 
-	public void register(String username, String password, boolean gender, Part avatar) {
+	public void handleRegister(String username, String password, boolean gender, Part avatar) {
 		if (DBConnection.Open()) {
 			try {
 				File privateDir = new File(rootLocation.toString() + "/" + username);

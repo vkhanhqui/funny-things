@@ -57,8 +57,8 @@ public class ChatService {
 			LOCK.lock();
 
 			result = !SESSIONS.contains(session) && !SESSIONS.stream()
-					.filter(elem -> ((String) elem.getUserProperties().get(Constants.USERID_KEY))
-							.equals((String) session.getUserProperties().get(Constants.USERID_KEY)))
+					.filter(elem -> ((String) elem.getUserProperties().get(Constants.USERNAME_KEY))
+							.equals((String) session.getUserProperties().get(Constants.USERNAME_KEY)))
 					.findFirst().isPresent() && SESSIONS.add(session);
 		} finally {
 			LOCK.unlock();
@@ -79,7 +79,7 @@ public class ChatService {
 
 	public static boolean remove(final Session session) {
 		assert !Objects.isNull(session);
-		onlineList.remove(session.getUserProperties().get(Constants.USERID_KEY).toString());
+		onlineList.remove(session.getUserProperties().get(Constants.USERNAME_KEY).toString());
 		return SESSIONS.remove(session);
 	}
 }

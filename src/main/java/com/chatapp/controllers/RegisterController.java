@@ -28,8 +28,8 @@ public class RegisterController extends HttpServlet {
 		String password = request.getParameter("password");
 		String gender = request.getParameter("gender");
 		Part avatar = request.getPart("avatar");
-		registerService.register(username, password, Boolean.valueOf(gender), avatar);
+		registerService.handleRegister(username, password, Boolean.valueOf(gender), avatar);
 
-		response.sendRedirect(request.getContextPath() + "/login");
+		response.sendRedirect("/login");
 	}
 }
