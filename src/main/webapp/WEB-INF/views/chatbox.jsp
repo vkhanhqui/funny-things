@@ -13,7 +13,6 @@
 </head>
 <body onload="init()">
 	<p id="username" style="display: none">${user.username}</p>
-
 	<div id="container">
 		<aside>
 			<header>

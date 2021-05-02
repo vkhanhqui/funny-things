@@ -1,4 +1,4 @@
-package com.chatapp.controllers;
+package com.chatapp.filters;
 
 import java.io.IOException;
 
@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.chatapp.models.User;
 
 @WebFilter(urlPatterns = { "/chat" })
-public class LoginFilter implements Filter {
+public class ChatFilter implements Filter {
 
-	public LoginFilter() {
+	public ChatFilter() {
 	}
 
 	public void destroy() {

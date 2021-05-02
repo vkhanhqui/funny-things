@@ -1,4 +1,4 @@
-package com.chatapp.controllers;
+package com.chatapp.websockets;
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ import com.chatapp.utils.MessageDecoder;
 import com.chatapp.utils.MessageEncoder;
 
 @ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
-public class ChatControllerEndPoint {
+public class ChatWebsocket {
 
 	@OnOpen
 	public void onOpen(@PathParam(Constants.USERNAME_KEY) final String username, final Session session) {
