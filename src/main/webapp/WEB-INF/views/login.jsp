@@ -11,7 +11,7 @@
 <link rel="stylesheet"
 	href="<c:url value="/static/css/style-login.css" />">
 </head>
-<body>
+<body>	
 	<div class="wrapper">
 		<div class="form">
 			<div class="title">Login</div>

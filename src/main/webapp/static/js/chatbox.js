@@ -40,14 +40,13 @@ function cleanUp() {
 
 function setReceiver(element) {
 	receiver = element.id;
-	console.log("receiver:" + receiver);
 	document.getElementById("receiver").innerHTML = '<img src="http://' + window.location.host + '/static/images/chat_avatar_01.jpg"'
 		+ 'alt="">'
 		+ '<div>'
 		+ '<br>'
 		+ '<h2 id="receiver">' + receiver + '</h2>'
 		+ '</div>';
-	document.getElementById("chat").innerHTML = '';
+	loadMessages(receiver);
 }
 
 function sendMessage() {
@@ -72,36 +71,10 @@ function buildMessage(username, message) {
 function setMessage(msg) {
 	console.log("online users: " + msg.onlineList);
 	if (msg.message != '[P]open' && msg.message != '[P]close') {
-		var currentHTML = document.getElementById('chat').innerHTML;
-		var newElem;
-
-		if (msg.username === username) {
-			newElem = '<li class="me">'
-				+ '<div class="entete">'
-				+ '<h3>10:12AM, Today</h3>'
-				+ '<h2>' + msg.username + '</h2>'
-				+ '<span class="status blue"></span>'
-				+ '</div>'
-				+ '<div class="triangle"></div>'
-				+ '<div class="message">' + msg.message + '</div>'
-				+ '</li>';
-
-
-		} else {
-			newElem = '<li class="you">'
-				+ '<div class="entete">'
-				+ '<span class="status green"></span>'
-				+ '<h2>' + msg.username + '</h2>'
-				+ '<h3>10:12AM, Today</h3>'
-				+ '</div>'
-				+ '<div class="triangle"></div>'
-				+ '<div class="message">' + msg.message + '</div>'
-				+ '</li>';
-
-		}
-
-		document.getElementById('chat').innerHTML = currentHTML
-			+ newElem;
+		var currentChat = document.getElementById('chat').innerHTML;
+		var newChatMsg = customLoadMessage(msg.username, msg.message);
+		document.getElementById('chat').innerHTML = currentChat
+			+ newChatMsg;
 	} else {
 		if (msg.message === '[P]open') {
 			msg.onlineList.forEach(username => setOnline(username, true));
@@ -119,5 +92,54 @@ function setOnline(username, is) {
 	} else {
 		document.getElementById('status-' + username).innerHTML = '<span class="status orange"></span>'
 			+ 'offline';
+	}
+}
+
+function loadMessages(userId) {
+	var currentChatbox = document.getElementById("chat");
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var messages = JSON.parse(this.responseText);
+			var chatbox = "";
+			messages.forEach(msg => {
+				chatbox += customLoadMessage(msg.username, msg.message);
+			});
+			currentChatbox.innerHTML = chatbox;
+
+			var senderLiTags = document.querySelectorAll(".me");
+			var receiverLiTags = document.querySelectorAll(".you");
+			var last = receiverLiTags[receiverLiTags.length - 1];
+			if (senderLiTags.length == Math.max(senderLiTags.length, receiverLiTags)) {
+				last = senderLiTags[senderLiTags.length - 1];
+			}
+			last.scrollIntoView();
+		}
+	};
+	xhttp.open("GET", "http://" + window.location.host + "/chat-rest-controller?userId=" + userId, true);
+	xhttp.send();
+}
+
+function customLoadMessage(sender, message) {
+	if (username != sender) {
+		return '<li class="you">'
+			+ '<div class="entete">'
+			+ '<span class="status green"></span>'
+			+ '<h2>' + sender + '</h2>'
+			+ '<h3>10:12AM, Today</h3>'
+			+ '</div>'
+			+ '<div class="triangle"></div>'
+			+ '<div class="message">' + message + '</div>'
+			+ '</li>';
+	} else {
+		return '<li class="me">'
+			+ '<div class="entete">'
+			+ '<h3>10:12AM, Today</h3>'
+			+ '<h2>' + username + '</h2>'
+			+ '<span class="status blue"></span>'
+			+ '</div>'
+			+ '<div class="triangle"></div>'
+			+ '<div class="message">' + message + '</div>'
+			+ '</li>';
 	}
 }
