@@ -6,6 +6,7 @@ window.onload = function() {
     var rightSide = document.querySelector(".right-side");
     var leftSide = document.querySelector(".left-side");
     var conversation = document.querySelectorAll(".user-contain");
+    var imageFile = document.querySelector(".image-profile");
 
     if(back){
         back.addEventListener("click", function(){
@@ -36,5 +37,17 @@ window.onload = function() {
             });
             this.classList.add("active");
         });
+    });
+
+    document.querySelector(".image-file").addEventListener("change", function(e){
+        imageFile.src = URL.createObjectURL(e.target.files[0]);
+    });
+
+    document.querySelector(".gender-select").addEventListener("change", function(e){
+        if(e.value == "true"){
+            imageFile.src = window.location.origin + "/user-male.jpg";
+        }else{
+            imageFile.src = window.location.origin + "/user-female.jpg";
+        }
     });
 }

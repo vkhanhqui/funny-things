@@ -113,6 +113,10 @@ img {
     display: block;
 }
 
+.image-profile {
+    width: 15rem;
+}
+
 .conversation-container {
     box-shadow: 0rem .2rem .4rem rgba(1, 1, 1, 0.05);
     display: flex;
@@ -331,6 +335,17 @@ img {
     color: var(--txtBlack);
 }
 
+.list-file {
+    width: 100%;
+    position: absolute;
+    background: var(--txtColorSecond);
+}
+
+.list-file img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
 .form-send-message {
     background: var(--txtColorSecond);
     height: 5.5rem;
@@ -351,7 +366,7 @@ img {
     margin: 0rem;
 }
 
-.form-send-message input[type="file"] {
+.form-send-message input[type="file"], .register-form input[type="file"] {
     display: none;
 }
 
