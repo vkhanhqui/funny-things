@@ -44,10 +44,10 @@ window.onload = function() {
     });
 
     document.querySelector(".gender-select").addEventListener("change", function(e){
-        if(e.value == "true"){
-            imageFile.src = window.location.origin + "/user-male.jpg";
+        if(e.target.value == "true"){
+            document.querySelector(".image-profile").src = window.location.origin + "/user-male.jpg";
         }else{
-            imageFile.src = window.location.origin + "/user-female.jpg";
+            document.querySelector(".image-profile").src = window.location.origin + "/user-female.jpg";
         }
     });
 }

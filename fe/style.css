@@ -115,6 +115,15 @@ img {
 
 .image-profile {
     width: 15rem;
+    height: 15rem;
+    border-radius: 50%;
+    margin-top: 1rem;
+}
+
+.image-profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .conversation-container {
