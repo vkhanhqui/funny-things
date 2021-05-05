@@ -1,37 +1,35 @@
-function loadImage(event) {
-	var image = document.getElementById('display-image');
-	image.src = URL.createObjectURL(event.target.files[0]);
-}
+window.onload = function() {
+	var tabControlBtn = document.querySelectorAll(".tab-control-btn");
+	var tabFormLogin = document.querySelector(".login-form");
+	var tabFormRegister = document.querySelector(".register-form");
+	var imageFile = document.querySelector(".image-profile");
 
-function loadDefaultImage(selection) {
-	var gender = selection.value;
-	var defaultImage = document.getElementById('display-image');
-	var location = window.location.origin + "/static/images/";
-	if (gender === "true") {
-		defaultImage.src = location + "user-male.jpg";
-	} else {
-		defaultImage.src = location + "user-female.jpg";
-	}
-}
 
-function changeLoginForm(boolean) {
-	var loginForm = document.getElementsByClassName('form')[0];
-	var registerForm = document.getElementsByClassName('form')[1];
-	if (boolean === true) {
-		loginForm.style.display = "none";
-		registerForm.style.display = "inline-block";
-	}
-	else {
-		loginForm.style.display = "inline-block";
-		registerForm.style.display = "none";
-	}
-}
+	tabControlBtn.forEach(function(element, index) {
+		element.addEventListener("click", function() {
+			if (element.classList.contains("login")) {
+				tabFormLogin.classList.add("active");
+				tabFormRegister.classList.remove("active");
+			} else {
+				tabFormRegister.classList.add("active");
+				tabFormLogin.classList.remove("active");
+			}
+			tabControlBtn.forEach(function(element) {
+				element.classList.remove("active");
+			});
+			this.classList.add("active");
+		});
+	});
 
-function validateUsername(usernameTag) {
-}
+	document.querySelector(".image-file").addEventListener("change", function(e) {
+		imageFile.src = URL.createObjectURL(e.target.files[0]);
+	});
 
-function validatePassword(passwordTag) {
-}
-
-function validateConfirmPassword(confirmPasswordTag) {
+	document.querySelector(".gender-select").addEventListener("change", function(e) {
+		if (e.target.value == "true") {
+			document.querySelector(".image-profile").src = window.location.origin + "/static/images/user-male.jpg";
+		} else {
+			document.querySelector(".image-profile").src = window.location.origin + "/static/images/user-female.jpg";
+		}
+	});
 }
