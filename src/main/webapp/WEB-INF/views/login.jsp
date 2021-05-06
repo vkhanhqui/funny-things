@@ -7,10 +7,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
 <link rel="stylesheet" href="<c:url value="/static/css/style.css" />">
-
 <link rel="icon" type="image/png"
 	href="<c:url value="/static/images/icon.jpg" />">
 
@@ -26,21 +23,19 @@
 			</div>
 			<div class="login-form form active">
 				<form action="<c:url value="/login" />" method="POST">
-					<input type="text" id="username" class="txt-input border"
-						placeholder="Username" name="username"> <input
-						type="password" id="password" class="txt-input border"
-						placeholder="Password" name="password">
+					<input type="text" class="txt-input border" placeholder="Username"
+						name="username"> <input type="password"
+						class="txt-input border" placeholder="Password" name="password">
 					<button type="submit" class="btn btn-login border">Sign in</button>
 				</form>
 			</div>
 			<div class="register-form form">
 				<form action="<c:url value="/register" />"
 					enctype="multipart/form-data" method="POST">
-					<input type="text" id="username" class="txt-input border"
-						placeholder="Username" name="username"> <input
-						type="password" id="password" class="txt-input border"
-						placeholder="Password" name="password"> <input
-						type="password" id="password" class="txt-input border"
+					<input type="text" class="txt-input border" placeholder="Username"
+						name="username"> <input type="password"
+						class="txt-input border" placeholder="Password" name="password">
+					<input type="password" class="txt-input border"
 						placeholder="Re Password"> <select name="gender"
 						class="txt-input border gender-select" id="">
 						<option value="true">Male</option>

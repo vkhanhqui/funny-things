@@ -30,7 +30,7 @@ public class ChatRestController extends HttpServlet {
 		messages.add(new Message("a1", "hello", "a2", ChatService.onlineList));
 		//clicked user
 		String userId = request.getParameter("userId");
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 50; i++) {
 			messages.add(new Message(userId, "hello", "a1", ChatService.onlineList));
 		}
 		//response to json

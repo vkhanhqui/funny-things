@@ -1,20 +1,8 @@
-/target/
-!.mvn/wrapper/maven-wrapper.jar
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-
-# Created by https://www.gitignore.io/api/git,java,maven,eclipse,windows
+# Created by https://www.toptal.com/developers/gitignore/api/git,java,maven,eclipse,windows
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,java,maven,eclipse,windows
 
 ### Eclipse ###
-
 .metadata
 bin/
 tmp/
@@ -65,22 +53,19 @@ local.properties
 
 # Annotation Processing
 .apt_generated/
+.apt_generated_test/
 
 # Scala IDE specific (Scala & Java development for Eclipse)
 .cache-main
 .scala_dependencies
 .worksheet
 
+# Uncomment this line if you wish to ignore the project description file.
+# Typically, this file would be tracked if it contains build/dependency configurations:
+#.project
+
 ### Eclipse Patch ###
-# Eclipse Core
-.project
-
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
-
-# Annotation Processing
-.apt_generated
-
+# Spring Boot Tooling
 .sts4-cache/
 
 ### Git ###
@@ -133,11 +118,14 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+.flattened-pom.xml
 
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
+Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 
@@ -160,5 +148,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-
-# End of https://www.gitignore.io/api/git,java,maven,eclipse,windows
+# End of https://www.toptal.com/developers/gitignore/api/git,java,maven,eclipse,windows

@@ -1,29 +1,27 @@
+
 var username = null;
 var websocket = null;
 var receiver = null;
 
-function init() {
+window.onload = function() {
 	if ("WebSocket" in window) {
 		username = document.getElementById("username").textContent;
 		websocket = new WebSocket('ws://' + window.location.host + '/chat/' + username);
 
-		websocket.onopen = function(data) {
-
+		websocket.onopen = function() {
 		};
 
 		websocket.onmessage = function(data) {
 			setMessage(JSON.parse(data.data));
 		};
 
-		websocket.onerror = function(e) {
+		websocket.onerror = function() {
 			console.log('An error occured, closing application');
-
 			cleanUp();
 		};
 
 		websocket.onclose = function(data) {
 			cleanUp();
-
 			var reason = (data.reason && data.reason !== null) ? data.reason : 'Goodbye';
 			console.log(reason);
 		};
@@ -33,20 +31,70 @@ function init() {
 }
 
 function cleanUp() {
-	document.getElementById("container").style.display = "none";
+	document.getElementsByClassName("container")[0].style.display = "none";
 	username = null;
 	websocket = null;
+	receiver = null;
 }
 
 function setReceiver(element) {
 	receiver = element.id;
-	document.getElementById("receiver").innerHTML = '<img src="http://' + window.location.host + '/static/images/chat_avatar_01.jpg"'
-		+ 'alt="">'
-		+ '<div>'
-		+ '<br>'
-		+ '<h2 id="receiver">' + receiver + '</h2>'
-		+ '</div>';
+	console.log(receiver);
+
+	document.getElementById("receiver").innerHTML = '<div class="user-contact">' + '<div class="back">'
+		+ '<i class="fa fa-arrow-left"></i>'
+		+ '</div>'
+		+ '<div class="user-contain">'
+		+ '<div class="user-img">'
+		+ '<img src="http://' + window.location.host + '/static/images/user-male.jpg"'
+		+ 'alt="Image of user">'
+		+ '<div class="user-img-dot"></div>'
+		+ '</div>'
+		+ '<div class="user-info">'
+		+ '<span class="user-name">' + receiver + '</span>'
+		+ '</div>'
+		+ '</div>'
+		+ '<div class="setting">'
+		+ '<i class="fa fa-cog"></i>'
+		+ '</div>' + '</div>'
+		+ '<div class="list-messages-contain">'
+		+ '<ul id="chat" class="list-messages">'
+		+ '</ul>'
+		+ '</div>'
+		+ '<form class="form-send-message">'
+		+ '<input id="message" type="text" class="txt-input" placeholder="Type message...">'
+		+ '<label class="btn btn-image" for="attach"><i class="fa fa-file"></i></label>'
+		+ ' <input type="file" id="attach"> <label class="btn btn-image" for="image"><i'
+		+ ' class="fa fa-file-image-o"></i></label> <input type="file" id="image">'
+		+ '<button type="button" class="btn btn-send" onclick="sendMessage();">'
+		+ '<i class="fa fa-paper-plane"></i>'
+		+ '</button>'
+		+ '</form>';
+
 	loadMessages(receiver);
+
+	handleResponsive();
+}
+
+function handleResponsive() {
+	var back = document.querySelector(".back");
+	var rightSide = document.querySelector(".right-side");
+	var leftSide = document.querySelector(".left-side");
+	var conversation = document.querySelectorAll(".user-contain");
+
+	if (back) {
+		back.addEventListener("click", function() {
+			rightSide.classList.remove("active");
+			leftSide.classList.add("active");
+		});
+	}
+
+	conversation.forEach(function(element, index) {
+		element.addEventListener("click", function() {
+			rightSide.classList.add("active");
+			leftSide.classList.remove("active");
+		});
+	});
 }
 
 function sendMessage() {
@@ -75,6 +123,7 @@ function setMessage(msg) {
 		var newChatMsg = customLoadMessage(msg.username, msg.message);
 		document.getElementById('chat').innerHTML = currentChat
 			+ newChatMsg;
+		goLastestMsg();
 	} else {
 		if (msg.message === '[P]open') {
 			msg.onlineList.forEach(username => setOnline(username, true));
@@ -85,13 +134,12 @@ function setMessage(msg) {
 	}
 }
 
-function setOnline(username, is) {
-	if (is === true) {
-		document.getElementById('status-' + username).innerHTML = '<span class="status green"></span>'
-			+ 'online';
+function setOnline(username, isOnline) {
+	var ele = document.getElementById('status-' + username);
+	if (isOnline === true) {
+		ele.classList.add('online');
 	} else {
-		document.getElementById('status-' + username).innerHTML = '<span class="status orange"></span>'
-			+ 'offline';
+		ele.classList.remove('online');
 	}
 }
 
@@ -106,14 +154,7 @@ function loadMessages(userId) {
 				chatbox += customLoadMessage(msg.username, msg.message);
 			});
 			currentChatbox.innerHTML = chatbox;
-
-			var senderLiTags = document.querySelectorAll(".me");
-			var receiverLiTags = document.querySelectorAll(".you");
-			var last = receiverLiTags[receiverLiTags.length - 1];
-			if (senderLiTags.length == Math.max(senderLiTags.length, receiverLiTags)) {
-				last = senderLiTags[senderLiTags.length - 1];
-			}
-			last.scrollIntoView();
+			goLastestMsg();
 		}
 	};
 	xhttp.open("GET", "http://" + window.location.host + "/chat-rest-controller?userId=" + userId, true);
@@ -121,25 +162,23 @@ function loadMessages(userId) {
 }
 
 function customLoadMessage(sender, message) {
+	var msgDisplay = '<li>'
+		+ '<div class="message';
 	if (username != sender) {
-		return '<li class="you">'
-			+ '<div class="entete">'
-			+ '<span class="status green"></span>'
-			+ '<h2>' + sender + '</h2>'
-			+ '<h3>10:12AM, Today</h3>'
-			+ '</div>'
-			+ '<div class="triangle"></div>'
-			+ '<div class="message">' + message + '</div>'
-			+ '</li>';
+		msgDisplay += '">';
 	} else {
-		return '<li class="me">'
-			+ '<div class="entete">'
-			+ '<h3>10:12AM, Today</h3>'
-			+ '<h2>' + username + '</h2>'
-			+ '<span class="status blue"></span>'
-			+ '</div>'
-			+ '<div class="triangle"></div>'
-			+ '<div class="message">' + message + '</div>'
-			+ '</li>';
+		msgDisplay += ' right">';
 	}
+	return msgDisplay + '<div class="message-img">'
+		+ '<img src="http://' + window.location.host + '/static/images/user-male.jpg" alt="">'
+		+ ' </div>'
+		+ '<div class="message-text">' + message + '</div>'
+		+ '</div>'
+		+ '</li>';
+}
+
+function goLastestMsg() {
+	var msgLiTags = document.querySelectorAll(".message");
+	var last = msgLiTags[msgLiTags.length - 1];
+	last.scrollIntoView();
 }
