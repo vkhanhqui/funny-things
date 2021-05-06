@@ -2,111 +2,57 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Login</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="<c:url value="/static/css/style.css" />">
 <link rel="icon" type="image/png"
 	href="<c:url value="/static/images/icon.jpg" />">
 
-<link rel="stylesheet"
-	href="<c:url value="/static/css/style-login.css" />">
+<title>Login</title>
 </head>
-<body>	
-	<div class="wrapper">
-		<div class="form">
-			<div class="title">Login</div>
-			<form method="post" action="<c:url value="/login" />">
+<body>
+	<div class="container">
+		<div class="form-container">
+			<h2 class="form-title">Star Messenger</h2>
+			<div class="tab-control">
+				<h3 class="active tab-control-btn login">Sign in</h3>
+				<h3 class="tab-control-btn register">Sign up</h3>
+			</div>
+			<div class="login-form form active">
+				<form action="<c:url value="/login" />" method="POST">
+					<input type="text" class="txt-input border" placeholder="Username"
+						name="username"> <input type="password"
+						class="txt-input border" placeholder="Password" name="password">
+					<button type="submit" class="btn btn-login border">Sign in</button>
+				</form>
+			</div>
+			<div class="register-form form">
+				<form action="<c:url value="/register" />"
+					enctype="multipart/form-data" method="POST">
+					<input type="text" class="txt-input border" placeholder="Username"
+						name="username"> <input type="password"
+						class="txt-input border" placeholder="Password" name="password">
+					<input type="password" class="txt-input border"
+						placeholder="Re Password"> <select name="gender"
+						class="txt-input border gender-select" id="">
+						<option value="true">Male</option>
+						<option value="false">Female</option>
+					</select> <label for="image"> <img
+						src="<c:url value="/static/images/user-male.jpg" />"
+						class="image-profile" alt="">
+					</label> <input type="file" accept="image/*" name="avatar" id="image"
+						class="image-file">
 
-				<div class="input_wrap">
-					<label for="input_text">Username</label>
-					<div class="input_field">
-						<input type="text" name="username" class="input"
-							onchange="validateUsername(this)">
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<label for="input_password">Password</label>
-					<div class="input_field">
-						<input type="password" name="password" class="input"
-							onchange="validatePassword(this)">
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<input type="submit" class="btn disabled" value="Login">
-				</div>
-
-				<div class="input_wrap">
-					<input type="button" class="btn enabled" value="Or Register"
-						onclick="changeLoginForm(true)">
-				</div>
-
-			</form>
-		</div>
-
-		<div class="form" style="display: none">
-			<div class="title">Register</div>
-			<form method="post" action="<c:url value="/register" />"
-				enctype="multipart/form-data">
-
-				<div class="input_wrap">
-					<label for="input_text">Username</label>
-					<div class="input_field">
-						<input type="text" name="username" class="input"
-							onchange="validateUsername(this)">
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<label for="input_password">Password</label>
-					<div class="input_field">
-						<input type="password" name="password" class="input"
-							onchange="validatePassword(this)">
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<label for="input_password">Confirm Password</label>
-					<div class="input_field">
-						<input type="password" class="input"
-							onchange="validateConfirmPassword(this)">
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<label for="gender">Gender </label>
-					<div class="input_field">
-						<select class="input" name="gender"
-							onclick="loadDefaultImage(this)">
-							<option value="true" class="input">Male</option>
-							<option value="false" class="input">Female</option>
-						</select>
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<label for="file">Upload Your Avatar</label> <input type="file"
-						accept="image/*" name="avatar" onchange="loadImage(event)">
-					<div class="input_field">
-						<img id="display-image"
-							src="<c:url value="/static/images/user-male.jpg" />" />
-					</div>
-				</div>
-
-				<div class="input_wrap">
-					<input type="submit" class="btn disabled" value="Register">
-				</div>
-
-				<div class="input_wrap">
-					<input type="button" class="btn enabled" value="Or Login"
-						onclick="changeLoginForm(false)">
-				</div>
-
-			</form>
+					<button type="submit" class="btn btn-login border">Sign up</button>
+				</form>
+			</div>
 		</div>
 	</div>
+
 	<script type="text/javascript"
-		src="<c:url value="/static/js/login.js" />"></script>
+		src="<c:url value="/static/js/login.js" />" charset="utf-8"></script>
 </body>
 </html>
