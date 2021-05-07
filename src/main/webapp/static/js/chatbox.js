@@ -39,7 +39,7 @@ function cleanUp() {
 
 function setReceiver(element) {
 	receiver = element.id;
-	console.log(receiver);
+	console.log("receiver: " +receiver);
 
 	document.getElementById("receiver").innerHTML = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'

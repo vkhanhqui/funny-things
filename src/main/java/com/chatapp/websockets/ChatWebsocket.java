@@ -1,8 +1,5 @@
 package com.chatapp.websockets;
 
-import java.util.Objects;
-
-import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -11,7 +8,6 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import com.chatapp.models.Constants;
 import com.chatapp.models.Message;
 import com.chatapp.services.ChatService;
 import com.chatapp.utils.MessageDecoder;
@@ -19,58 +15,56 @@ import com.chatapp.utils.MessageEncoder;
 
 @ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ChatWebsocket {
+
+	private Session session;
+
+	private String username;
+
 	private ChatService chatService = ChatService.getInstance();
 
 	@OnOpen
-	public void onOpen(@PathParam(Constants.USERNAME_KEY) final String username, final Session session) {
-		if (Objects.isNull(username) || username.isEmpty()) {
-			throw new RegistrationFailedException("userId is required");
-		} else {
-			if (chatService.register(session)) {
-				session.getUserProperties().put(Constants.USERNAME_KEY, username);
-				ChatService.onlineList.add(username);
-				System.out.printf("Session opened for %s\n", username);
-				String receiverResponse = "all";
-				String usernameResponse = (String) session.getUserProperties().get(Constants.USERNAME_KEY);
-				Message msgResponse = new Message(usernameResponse, "[P]open", receiverResponse,
-						ChatService.onlineList);
-				chatService.publish(msgResponse, session);
-			} else {
-				throw new RegistrationFailedException("Unable to register, userId already exists, try another");
-			}
+	public void onOpen(@PathParam("username") String username, Session session) {
+		if (chatService.register(this)) {
+			this.session = session;
+			this.username = username;
+			String receiver = "all";
+			Message msgResponse = new Message(this.username, "[P]open", receiver);
+			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}
 
 	@OnError
-	public void onError(final Session session, final Throwable throwable) {
-		if (throwable instanceof RegistrationFailedException) {
-			chatService.close(session, CloseCodes.VIOLATED_POLICY, throwable.getMessage());
-		}
+	public void onError(Session session, Throwable throwable) {
+
 	}
 
 	@OnMessage
-	public void onMessage(final Message message, final Session session) {
-		chatService.publish(message, session);
+	public void onMessage(Message message, Session session) {
+		chatService.sendMessageToOneUser(message);
 	}
 
 	@OnClose
-	public void onClose(final Session session) {
-		if (chatService.remove(session)) {
-			System.out.printf("Session closed for %s\n", session.getUserProperties().get(Constants.USERNAME_KEY));
-
-			String receiverResponse = "all";
-			String usernameResponse = (String) session.getUserProperties().get(Constants.USERNAME_KEY);
-			Message msgResponse = new Message(usernameResponse, "[P]close", receiverResponse, ChatService.onlineList);
-			chatService.publish(msgResponse, session);
+	public void onClose(Session session) {
+		if (chatService.close(this)) {
+			String receiver = "all";
+			Message msgResponse = new Message(this.username, "[P]close", receiver);
+			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}
 
-	private static final class RegistrationFailedException extends RuntimeException {
+	public Session getSession() {
+		return session;
+	}
 
-		private static final long serialVersionUID = 1L;
+	public void setSession(Session session) {
+		this.session = session;
+	}
 
-		public RegistrationFailedException(final String message) {
-			super(message);
-		}
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }

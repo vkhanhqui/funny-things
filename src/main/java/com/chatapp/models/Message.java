@@ -1,7 +1,6 @@
 package com.chatapp.models;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -20,15 +19,10 @@ public class Message {
 
 	@JsonCreator
 	public Message(@JsonProperty("username") String username, @JsonProperty("message") String message,
-			@JsonProperty("receiver") String receiver, @JsonProperty("onlineList") Set<String> onlineList) {
-		Objects.requireNonNull(username);
-		Objects.requireNonNull(message);
-		Objects.requireNonNull(receiver);
-
+			@JsonProperty("receiver") String receiver) {
 		this.username = username;
 		this.message = message;
 		this.receiver = receiver;
-		this.onlineList = onlineList;
 	}
 
 	public String getMessage() {

@@ -1,27 +1,19 @@
 package com.chatapp.services;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-import javax.websocket.CloseReason;
-import javax.websocket.CloseReason.CloseCodes;
 import javax.websocket.EncodeException;
-import javax.websocket.Session;
 
-import com.chatapp.models.Constants;
 import com.chatapp.models.Message;
+import com.chatapp.websockets.ChatWebsocket;
 
 public class ChatService {
 
 	private static ChatService chatService = null;
-	private static Lock lock = new ReentrantLock();
-	private static Set<Session> sessions = new CopyOnWriteArraySet<Session>();
-
-	public static Set<String> onlineList = new CopyOnWriteArraySet<String>();
+	private static final Set<ChatWebsocket> chatWebsockets = new CopyOnWriteArraySet<>();
 
 	private ChatService() {
 	}
@@ -33,59 +25,41 @@ public class ChatService {
 		return chatService;
 	}
 
-	public void publish(Message message, final Session origin) {
-		assert !Objects.isNull(message) && !Objects.isNull(origin);
-		if (!message.getReceiver().equals("all")) {
-			sessions.stream().filter(session -> session.getUserProperties().containsValue(message.getReceiver()))
-					.forEach(session -> {
-						try {
-							session.getBasicRemote().sendObject(message);
-						} catch (IOException | EncodeException e) {
-							e.printStackTrace();
-						}
-					});
-		} else {
-			sessions.stream().forEach(session -> {
-				try {
-					session.getBasicRemote().sendObject(message);
-				} catch (IOException | EncodeException e) {
-					e.printStackTrace();
-				}
-			});
-		}
+	public boolean register(ChatWebsocket chatWebsocket) {
+		return chatWebsockets.add(chatWebsocket);
 	}
 
-	public boolean register(final Session session) {
-		assert !Objects.isNull(session);
-
-		boolean result = false;
-		try {
-			lock.lock();
-
-			result = !sessions.contains(session) && !sessions.stream()
-					.filter(elem -> ((String) elem.getUserProperties().get(Constants.USERNAME_KEY))
-							.equals((String) session.getUserProperties().get(Constants.USERNAME_KEY)))
-					.findFirst().isPresent() && sessions.add(session);
-		} finally {
-			lock.unlock();
-		}
-
-		return result;
+	public boolean close(ChatWebsocket chatWebsocket) {
+		return chatWebsockets.remove(chatWebsocket);
 	}
 
-	public void close(final Session session, final CloseCodes closeCode, final String message) {
-		assert !Objects.isNull(session) && !Objects.isNull(closeCode);
-
-		try {
-			session.close(new CloseReason(closeCode, message));
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to close session", e);
-		}
+	public void sendMessageToAllUsers(Message message) {
+		message.setOnlineList(getUsernames());
+		chatWebsockets.stream().forEach(chatWebsocket -> {
+			try {
+				chatWebsocket.getSession().getBasicRemote().sendObject(message);
+			} catch (IOException | EncodeException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
-	public boolean remove(final Session session) {
-		assert !Objects.isNull(session);
-		onlineList.remove(session.getUserProperties().get(Constants.USERNAME_KEY).toString());
-		return sessions.remove(session);
+	public void sendMessageToOneUser(Message message) {
+		chatWebsockets.stream().filter(chatWebsocket -> chatWebsocket.getUsername().equals(message.getReceiver()))
+				.forEach(chatWebsocket -> {
+					try {
+						chatWebsocket.getSession().getBasicRemote().sendObject(message);
+					} catch (IOException | EncodeException e) {
+						e.printStackTrace();
+					}
+				});
+	}
+
+	private Set<String> getUsernames() {
+		Set<String> usernames = new HashSet<String>();
+		chatWebsockets.forEach(chatWebsocket -> {
+			usernames.add(chatWebsocket.getUsername());
+		});
+		return usernames;
 	}
 }

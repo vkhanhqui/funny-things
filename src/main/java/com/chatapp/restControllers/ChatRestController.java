@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.chatapp.models.Message;
-import com.chatapp.services.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebServlet("/chat-rest-controller")
@@ -27,11 +26,11 @@ public class ChatRestController extends HttpServlet {
 			throws ServletException, IOException {		
 		List<Message> messages = new ArrayList<>();
 		//current user is a1
-		messages.add(new Message("a1", "hello", "a2", ChatService.onlineList));
+		messages.add(new Message("a1", "hello", "a2"));
 		//clicked user
 		String userId = request.getParameter("userId");
 		for (int i = 0; i < 50; i++) {
-			messages.add(new Message(userId, "hello", "a1", ChatService.onlineList));
+			messages.add(new Message(userId, "hello", "a1"));
 		}
 		//response to json
 		ObjectMapper objectMapper = new ObjectMapper();
