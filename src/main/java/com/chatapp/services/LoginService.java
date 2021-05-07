@@ -10,7 +10,7 @@ import com.chatapp.repositories.DBConnection;
 public class LoginService {
 	private static LoginService instance = null;
 
-	public static LoginService getInstance() {
+	public synchronized static LoginService getInstance() {
 		if (instance == null) {
 			instance = new LoginService();
 		}

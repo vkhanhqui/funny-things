@@ -1,7 +1,6 @@
 package com.chatapp.services;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -10,27 +9,34 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.websocket.CloseReason;
 import javax.websocket.CloseReason.CloseCodes;
+import javax.websocket.EncodeException;
+import javax.websocket.Session;
 
 import com.chatapp.models.Constants;
 import com.chatapp.models.Message;
 
-import javax.websocket.EncodeException;
-import javax.websocket.Session;
-
 public class ChatService {
 
-	private static final Lock LOCK = new ReentrantLock();
-	private static final Set<Session> SESSIONS = new CopyOnWriteArraySet<>();
-	public static Set<String> onlineList = new HashSet<String>();
+	private static ChatService chatService = null;
+	private static Lock lock = new ReentrantLock();
+	private static Set<Session> sessions = new CopyOnWriteArraySet<Session>();
+
+	public static Set<String> onlineList = new CopyOnWriteArraySet<String>();
 
 	private ChatService() {
-		throw new IllegalStateException(Constants.INSTANTIATION_NOT_ALLOWED);
 	}
 
-	public static void publish(Message message, final Session origin) {
+	public synchronized static ChatService getInstance() {
+		if (chatService == null) {
+			chatService = new ChatService();
+		}
+		return chatService;
+	}
+
+	public void publish(Message message, final Session origin) {
 		assert !Objects.isNull(message) && !Objects.isNull(origin);
 		if (!message.getReceiver().equals("all")) {
-			SESSIONS.stream().filter(session -> session.getUserProperties().containsValue(message.getReceiver()))
+			sessions.stream().filter(session -> session.getUserProperties().containsValue(message.getReceiver()))
 					.forEach(session -> {
 						try {
 							session.getBasicRemote().sendObject(message);
@@ -39,7 +45,7 @@ public class ChatService {
 						}
 					});
 		} else {
-			SESSIONS.stream().forEach(session -> {
+			sessions.stream().forEach(session -> {
 				try {
 					session.getBasicRemote().sendObject(message);
 				} catch (IOException | EncodeException e) {
@@ -49,25 +55,25 @@ public class ChatService {
 		}
 	}
 
-	public static boolean register(final Session session) {
+	public boolean register(final Session session) {
 		assert !Objects.isNull(session);
 
 		boolean result = false;
 		try {
-			LOCK.lock();
+			lock.lock();
 
-			result = !SESSIONS.contains(session) && !SESSIONS.stream()
+			result = !sessions.contains(session) && !sessions.stream()
 					.filter(elem -> ((String) elem.getUserProperties().get(Constants.USERNAME_KEY))
 							.equals((String) session.getUserProperties().get(Constants.USERNAME_KEY)))
-					.findFirst().isPresent() && SESSIONS.add(session);
+					.findFirst().isPresent() && sessions.add(session);
 		} finally {
-			LOCK.unlock();
+			lock.unlock();
 		}
 
 		return result;
 	}
 
-	public static void close(final Session session, final CloseCodes closeCode, final String message) {
+	public void close(final Session session, final CloseCodes closeCode, final String message) {
 		assert !Objects.isNull(session) && !Objects.isNull(closeCode);
 
 		try {
@@ -77,9 +83,9 @@ public class ChatService {
 		}
 	}
 
-	public static boolean remove(final Session session) {
+	public boolean remove(final Session session) {
 		assert !Objects.isNull(session);
 		onlineList.remove(session.getUserProperties().get(Constants.USERNAME_KEY).toString());
-		return SESSIONS.remove(session);
+		return sessions.remove(session);
 	}
 }
