@@ -2,6 +2,7 @@ package com.chatapp.models;
 
 public class User {
 	private String username;
+	private String password;
 	private boolean gender;
 	private String avatar;
 
@@ -38,5 +39,13 @@ public class User {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }
