@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 import javax.servlet.http.Part;
 
-import com.chatapp.repositories.DBConnection;
+import com.chatapp.daos.DBConnection;
 
 public class RegisterService {
 	private static RegisterService instance = null;

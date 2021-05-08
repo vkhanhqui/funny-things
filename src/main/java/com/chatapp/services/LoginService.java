@@ -4,8 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.chatapp.daos.DBConnection;
 import com.chatapp.models.User;
-import com.chatapp.repositories.DBConnection;
 
 public class LoginService {
 	private static LoginService instance = null;

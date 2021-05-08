@@ -20,7 +20,7 @@
 	<p id="username" style="display: none">${user.username}</p>
 	<div class="container">
 		<div class="conversation-container">
-			<div class="left-side">
+			<div class="left-side active">
 				<h2>Chats</h2>
 				<div class="tab-control">
 					<i class="fa fa-comment active"></i> <i class="fa fa-comments"></i>
@@ -48,7 +48,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="right-side active" id="receiver"></div>
+			<div class="right-side" id="receiver"></div>
 		</div>
 	</div>
 

@@ -9,9 +9,9 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.chatapp.models.Message;
+import com.chatapp.models.MessageDecoder;
+import com.chatapp.models.MessageEncoder;
 import com.chatapp.services.ChatService;
-import com.chatapp.utils.MessageDecoder;
-import com.chatapp.utils.MessageEncoder;
 
 @ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ChatWebsocket {

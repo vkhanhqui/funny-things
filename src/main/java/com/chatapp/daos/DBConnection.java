@@ -1,4 +1,4 @@
-package com.chatapp.repositories;
+package com.chatapp.daos;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

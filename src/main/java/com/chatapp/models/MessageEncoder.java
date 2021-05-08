@@ -1,12 +1,11 @@
-package com.chatapp.utils;
+package com.chatapp.models;
 
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
-import com.chatapp.models.Constants;
-import com.chatapp.models.Message;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class MessageEncoder implements Encoder.Text<Message> {
 
@@ -21,7 +20,7 @@ public final class MessageEncoder implements Encoder.Text<Message> {
 	@Override
 	public String encode(final Message message) throws EncodeException {
 		try {
-			return Constants.MAPPER.writeValueAsString(message);
+			return new ObjectMapper().writeValueAsString(message);
 		} catch (JsonProcessingException e) {
 			throw new EncodeException(message, "Unable to encode message", e);
 		}
