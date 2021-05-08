@@ -16,7 +16,7 @@ public class RegisterService {
 	private static RegisterService instance = null;
 	public static Path rootLocation = Paths.get("archive");
 
-	public static RegisterService getInstance() {
+	public synchronized static RegisterService getInstance() {
 		if (instance == null) {
 			instance = new RegisterService();
 		}
