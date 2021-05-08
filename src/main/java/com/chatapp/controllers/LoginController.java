@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.chatapp.daos.UserDaoInterface;
-import com.chatapp.daos.impl.UserDao;
 import com.chatapp.models.User;
 import com.chatapp.services.LoginService;
 
@@ -19,8 +17,6 @@ import com.chatapp.services.LoginService;
 public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static LoginService loginService = LoginService.getInstance();
-	
-	private UserDaoInterface userDaoInterface = UserDao.getInstace();
 
 	public LoginController() {
 		super();
@@ -41,11 +37,6 @@ public class LoginController extends HttpServlet {
 			throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		
-		if(userDaoInterface.findByUserNameAndPassword(username, password) != null) {
-			System.out.println("okakakakakkakakalla");
-		}
-		
 		User user = loginService.handleLogin(username, password);
 		String destPage = "/login";
 		if (user != null) {
