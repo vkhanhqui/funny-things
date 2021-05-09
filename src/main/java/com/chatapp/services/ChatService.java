@@ -1,6 +1,10 @@
 package com.chatapp.services;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -15,7 +19,16 @@ public class ChatService {
 	private static ChatService chatService = null;
 	private static final Set<ChatWebsocket> chatWebsockets = new CopyOnWriteArraySet<>();
 
+	String fileName = "25645.jpg";
+	File uploadedFile = new File(RegisterService.rootLocation.toString() + "/" + fileName);
+	FileOutputStream fos;
+
 	private ChatService() {
+		try {
+			fos = new FileOutputStream(uploadedFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public synchronized static ChatService getInstance() {
@@ -53,6 +66,24 @@ public class ChatService {
 						e.printStackTrace();
 					}
 				});
+	}
+
+	public void handleFileUpload(ByteBuffer byteBuffer, boolean last) {
+		try {
+			if (!last) {
+				while (byteBuffer.hasRemaining()) {
+					fos.write(byteBuffer.get());
+				}
+			} else {
+				fos.flush();
+				fos.close();
+				System.out.println("done");
+			}
+
+		} catch (IOException ex) {
+			System.out.println(ex.getMessage());
+			ex.printStackTrace();
+		}
 	}
 
 	private Set<String> getUsernames() {

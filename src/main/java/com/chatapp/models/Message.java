@@ -12,6 +12,8 @@ public class Message {
 	private String username;
 	@JsonProperty("message")
 	private String message;
+	@JsonProperty("type")
+	private String type;
 	@JsonProperty("receiver")
 	private String receiver;
 	@JsonProperty("onlineList")
@@ -19,30 +21,39 @@ public class Message {
 
 	@JsonCreator
 	public Message(@JsonProperty("username") String username, @JsonProperty("message") String message,
-			@JsonProperty("receiver") String receiver) {
+			@JsonProperty("type") String type, @JsonProperty("receiver") String receiver) {
 		this.username = username;
 		this.message = message;
+		this.type = type;
 		this.receiver = receiver;
 	}
 
-	public String getMessage() {
-		return this.message;
-	}
-
-	public String getReceiver() {
-		return receiver;
-	}
-
-	public String getusername() {
+	public String getUsername() {
 		return username;
 	}
 
-	public void setusername(String username) {
+	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getMessage() {
+		return message;
 	}
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getReceiver() {
+		return receiver;
 	}
 
 	public void setReceiver(String receiver) {
@@ -56,4 +67,6 @@ public class Message {
 	public void setOnlineList(Set<String> onlineList) {
 		this.onlineList = onlineList;
 	}
+
+	
 }

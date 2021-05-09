@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class MessageDecoder implements Decoder.Text<Message> {
 
+	private static ObjectMapper objectMapper = new ObjectMapper();
+
 	@Override
 	public void destroy() {
 	}
@@ -21,7 +23,7 @@ public final class MessageDecoder implements Decoder.Text<Message> {
 	@Override
 	public Message decode(final String arg0) throws DecodeException {
 		try {
-			return new ObjectMapper().readValue(arg0, Message.class);
+			return objectMapper.readValue(arg0, Message.class);
 		} catch (IOException e) {
 			throw new DecodeException(arg0, "Unable to decode text to Message", e);
 		}

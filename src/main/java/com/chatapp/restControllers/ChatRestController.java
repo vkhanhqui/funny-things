@@ -26,11 +26,11 @@ public class ChatRestController extends HttpServlet {
 			throws ServletException, IOException {		
 		List<Message> messages = new ArrayList<>();
 		//current user is a1
-		messages.add(new Message("a1", "hello", "a2"));
+		messages.add(new Message("a1", "hello","text", "a2"));
 		//clicked user
 		String userId = request.getParameter("userId");
 		for (int i = 0; i < 50; i++) {
-			messages.add(new Message(userId, "hello", "a1"));
+			messages.add(new Message(userId, "hello","text", "a1"));
 		}
 		//response to json
 		ObjectMapper objectMapper = new ObjectMapper();

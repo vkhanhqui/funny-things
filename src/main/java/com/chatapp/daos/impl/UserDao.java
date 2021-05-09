@@ -6,7 +6,7 @@ import com.chatapp.daos.UserDaoInterface;
 import com.chatapp.mapper.UserMapper;
 import com.chatapp.models.User;
 
-public class UserDao extends AbstractDao<User> implements UserDaoInterface {
+public class UserDao extends GenericDao<User> implements UserDaoInterface {
 
 	private static UserDao instance = null;
 

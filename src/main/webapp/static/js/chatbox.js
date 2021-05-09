@@ -39,7 +39,7 @@ function cleanUp() {
 
 function setReceiver(element) {
 	receiver = element.id;
-	console.log("receiver: " +receiver);
+	console.log("receiver: " + receiver);
 
 	document.getElementById("receiver").innerHTML = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
@@ -98,20 +98,26 @@ function handleResponsive() {
 }
 
 function sendMessage() {
-	var messageContent = document.getElementById("message").value;
+	/*var messageContent = document.getElementById("message").value;
 	var message = buildMessage(username, messageContent);
 
 	document.getElementById("message").value = '';
 
 	setMessage(message);
 	console.log(message);
-	websocket.send(JSON.stringify(message));
+	websocket.send(JSON.stringify(message));*/
+
+	var rawData = document.getElementById("attach").files[0];
+	console.log(rawData);
+	//websocket.binaryType = "arraybuffer";
+	websocket.send(rawData);
 }
 
 function buildMessage(username, message) {
 	return {
 		username: username,
 		message: message,
+		type: 'image',
 		receiver: receiver
 	};
 }
