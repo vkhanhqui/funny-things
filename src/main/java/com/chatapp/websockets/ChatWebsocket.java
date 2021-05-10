@@ -47,7 +47,7 @@ public class ChatWebsocket {
 
 	@OnMessage
 	public void processUploading(ByteBuffer byteBuffer, boolean last, Session session) {
-		chatService.handleFileUpload(byteBuffer, last);
+		chatService.handleFileUpload(username, byteBuffer, last);
 	}
 
 	@OnClose
