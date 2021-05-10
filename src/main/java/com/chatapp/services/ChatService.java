@@ -6,13 +6,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.websocket.EncodeException;
 
+import com.chatapp.models.FileDTO;
 import com.chatapp.models.Message;
 import com.chatapp.websockets.ChatWebsocket;
 
@@ -20,8 +20,6 @@ public class ChatService {
 
 	private static ChatService chatService = null;
 	private static final Set<ChatWebsocket> chatWebsockets = new CopyOnWriteArraySet<>();
-	private Queue<FileOutputStream> fileOutputStreams = new LinkedList<>();
-	private Queue<String> receivers = new LinkedList<>();
 
 	private ChatService() {
 	}
@@ -52,7 +50,7 @@ public class ChatService {
 		});
 	}
 
-	public void sendMessageToOneUser(Message message) {
+	public void sendMessageToOneUser(Message message, Queue<FileDTO> fileDTOs) {
 		if (!message.getType().equals("text")) {
 			String fileName = message.getMessage();
 			String destFile = RegisterService.rootLocation.toString() + "/" + message.getUsername() + "/" + fileName;
@@ -60,8 +58,11 @@ public class ChatService {
 			if (!uploadedFile.exists()) {
 				try {
 					FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile);
-					fileOutputStreams.add(fileOutputStream);
-					receivers.add(message.getReceiver());
+					String sender = message.getUsername();
+					String receiver = message.getReceiver();
+					String url = "url";
+					FileDTO newFileDTO = new FileDTO(fileName, fileOutputStream, sender, receiver, url);
+					fileDTOs.add(newFileDTO);
 				} catch (FileNotFoundException ex) {
 					ex.printStackTrace();
 				}
@@ -78,22 +79,24 @@ public class ChatService {
 		}
 	}
 
-	public void handleFileUpload(String username, ByteBuffer byteBuffer, boolean last) {
+	public void handleFileUpload(ByteBuffer byteBuffer, boolean last, Queue<FileDTO> fileDTOs) {
 		try {
 			if (!last) {
 				while (byteBuffer.hasRemaining()) {
-					fileOutputStreams.peek().write(byteBuffer.get());
+					fileDTOs.peek().getFileOutputStream().write(byteBuffer.get());
 				}
 			} else {
-				fileOutputStreams.peek().flush();
-				fileOutputStreams.peek().close();
-				fileOutputStreams.remove();
-				String message = "alo alo";
+				fileDTOs.peek().getFileOutputStream().flush();
+				fileDTOs.peek().getFileOutputStream().close();
+				System.out
+						.println("Done: " + fileDTOs.peek().getFilename() + " of user: " + fileDTOs.peek().getSender());
+				String message = fileDTOs.peek().getUrl();
 				String type = "text";
-				String receiver = receivers.peek();
+				String username = fileDTOs.peek().getSender();
+				String receiver = fileDTOs.peek().getReceiver();
 				Message messageResponse = new Message(username, message, type, receiver);
-				sendMessageToOneUser(messageResponse);
-				receivers.remove();
+				fileDTOs.remove();
+				sendMessageToOneUser(messageResponse, fileDTOs);
 			}
 
 		} catch (IOException ex) {
