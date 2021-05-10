@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class MessageEncoder implements Encoder.Text<Message> {
 
+	private static ObjectMapper objectMapper = new ObjectMapper();
+
 	@Override
 	public void destroy() {
 	}
@@ -20,7 +22,7 @@ public final class MessageEncoder implements Encoder.Text<Message> {
 	@Override
 	public String encode(final Message message) throws EncodeException {
 		try {
-			return new ObjectMapper().writeValueAsString(message);
+			return objectMapper.writeValueAsString(message);
 		} catch (JsonProcessingException e) {
 			throw new EncodeException(message, "Unable to encode message", e);
 		}

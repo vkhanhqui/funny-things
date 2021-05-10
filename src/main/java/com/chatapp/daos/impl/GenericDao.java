@@ -12,7 +12,7 @@ import java.util.List;
 import com.chatapp.daos.GenericDaoInterface;
 import com.chatapp.mapper.RowMapper;
 
-public class AbstractDao<T> implements GenericDaoInterface<T> {
+public class GenericDao<T> implements GenericDaoInterface<T> {
 
 	public Connection getConnection() {
 		try {

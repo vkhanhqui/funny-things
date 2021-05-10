@@ -6,6 +6,7 @@ var receiver = null;
 window.onload = function() {
 	if ("WebSocket" in window) {
 		username = document.getElementById("username").textContent;
+		username = username.trim();
 		websocket = new WebSocket('ws://' + window.location.host + '/chat/' + username);
 
 		websocket.onopen = function() {
@@ -39,7 +40,7 @@ function cleanUp() {
 
 function setReceiver(element) {
 	receiver = element.id;
-	console.log("receiver: " +receiver);
+	console.log("receiver: " + receiver);
 
 	document.getElementById("receiver").innerHTML = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
@@ -98,20 +99,31 @@ function handleResponsive() {
 }
 
 function sendMessage() {
+	var rawData = document.getElementById("attach").files[0];
 	var messageContent = document.getElementById("message").value;
-	var message = buildMessage(username, messageContent);
-
-	document.getElementById("message").value = '';
-
+	var messageType = "text";
+	if (rawData == null) {
+		document.getElementById("message").value = '';
+	} else {
+		document.getElementById("attach").value = null;
+		console.log(rawData);
+		messageContent = rawData.name;
+		messageType = rawData.type;
+	}
+	var message = buildMessageToJson(username, messageContent, messageType);
 	setMessage(message);
 	console.log(message);
 	websocket.send(JSON.stringify(message));
+	if (rawData != null) {
+		websocket.send(rawData);
+	}
 }
 
-function buildMessage(username, message) {
+function buildMessageToJson(username, message, type) {
 	return {
 		username: username,
 		message: message,
+		type: type,
 		receiver: receiver
 	};
 }

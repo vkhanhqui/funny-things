@@ -1,5 +1,7 @@
 package com.chatapp.websockets;
 
+import java.nio.ByteBuffer;
+
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
@@ -28,7 +30,7 @@ public class ChatWebsocket {
 			this.session = session;
 			this.username = username;
 			String receiver = "all";
-			Message msgResponse = new Message(this.username, "[P]open", receiver);
+			Message msgResponse = new Message(this.username, "[P]open", "text", receiver);
 			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}
@@ -43,11 +45,16 @@ public class ChatWebsocket {
 		chatService.sendMessageToOneUser(message);
 	}
 
+	@OnMessage
+	public void processUploading(ByteBuffer byteBuffer, boolean last, Session session) {
+		chatService.handleFileUpload(username, byteBuffer, last);
+	}
+
 	@OnClose
 	public void onClose(Session session) {
 		if (chatService.close(this)) {
 			String receiver = "all";
-			Message msgResponse = new Message(this.username, "[P]close", receiver);
+			Message msgResponse = new Message(this.username, "[P]close", "text", receiver);
 			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}
