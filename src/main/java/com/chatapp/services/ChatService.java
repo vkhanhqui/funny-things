@@ -53,14 +53,15 @@ public class ChatService {
 	public void sendMessageToOneUser(Message message, Queue<FileDTO> fileDTOs) {
 		if (!message.getType().equals("text")) {
 			String fileName = message.getMessage();
-			String destFile = RegisterService.rootLocation.toString() + "/" + message.getUsername() + "/" + fileName;
+			fileName = fileName.replaceAll("\\s+", "");
+			String destFile = FileService.rootLocation.toString() + "/" + message.getUsername() + "/" + fileName;
 			File uploadedFile = new File(destFile);
 			if (!uploadedFile.exists()) {
 				try {
 					FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile);
 					String sender = message.getUsername();
 					String receiver = message.getReceiver();
-					String url = "url";
+					String url = FileService.rootURL + sender + "/" + fileName;
 					FileDTO newFileDTO = new FileDTO(fileName, fileOutputStream, sender, receiver, url);
 					fileDTOs.add(newFileDTO);
 				} catch (FileNotFoundException ex) {
