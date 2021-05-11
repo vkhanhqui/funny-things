@@ -10,13 +10,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.chatapp.services.FileService;
+import com.chatapp.services.FileServiceAbstract;
+import com.chatapp.services.impl.FileService;
 
 @WebServlet("/files/*")
 public class FileController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private FileService fileService = FileService.getInstace();
+	private FileServiceAbstract fileService = FileService.getInstace();
 
 	public FileController() {
 		super();
@@ -28,7 +29,7 @@ public class FileController extends HttpServlet {
 		if (requestedFile == null) {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		} else {
-			String filePath = FileService.rootLocation.toString();
+			String filePath = FileServiceAbstract.rootLocation.toString();
 			File file = new File(filePath, URLDecoder.decode(requestedFile, "UTF-8"));
 			if (!file.exists()) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);

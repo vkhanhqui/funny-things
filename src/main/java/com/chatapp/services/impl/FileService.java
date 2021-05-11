@@ -1,23 +1,17 @@
-package com.chatapp.services;
+package com.chatapp.services.impl;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletResponse;
 
-public class FileService {
+import com.chatapp.services.FileServiceAbstract;
+
+public class FileService extends FileServiceAbstract{
 	private static FileService instance = null;
-
-	public static Path rootLocation = Paths.get("archive");
-	
-	public static String rootURL = "http://localhost:8080/files/";
-
-	private static final int DEFAULT_BUFFER_SIZE = 10240;
 
 	private FileService() {
 
@@ -30,6 +24,7 @@ public class FileService {
 		return instance;
 	}
 
+	@Override
 	public void handleStreamFileToClient(File file, String contentType, HttpServletResponse response) {
 		if (contentType == null) {
 			contentType = "application/octet-stream";

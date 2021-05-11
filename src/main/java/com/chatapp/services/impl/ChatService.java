@@ -1,4 +1,4 @@
-package com.chatapp.services;
+package com.chatapp.services.impl;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,18 +8,18 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.websocket.EncodeException;
 
 import com.chatapp.models.FileDTO;
 import com.chatapp.models.Message;
+import com.chatapp.services.ChatServiceAbstract;
+import com.chatapp.services.FileServiceAbstract;
 import com.chatapp.websockets.ChatWebsocket;
 
-public class ChatService {
+public class ChatService extends ChatServiceAbstract{
 
 	private static ChatService chatService = null;
-	private static final Set<ChatWebsocket> chatWebsockets = new CopyOnWriteArraySet<>();
 
 	private ChatService() {
 	}
@@ -31,14 +31,17 @@ public class ChatService {
 		return chatService;
 	}
 
+	@Override
 	public boolean register(ChatWebsocket chatWebsocket) {
 		return chatWebsockets.add(chatWebsocket);
 	}
 
+	@Override
 	public boolean close(ChatWebsocket chatWebsocket) {
 		return chatWebsockets.remove(chatWebsocket);
 	}
 
+	@Override
 	public void sendMessageToAllUsers(Message message) {
 		message.setOnlineList(getUsernames());
 		chatWebsockets.stream().forEach(chatWebsocket -> {
@@ -50,18 +53,19 @@ public class ChatService {
 		});
 	}
 
+	@Override
 	public void sendMessageToOneUser(Message message, Queue<FileDTO> fileDTOs) {
 		if (!message.getType().equals("text")) {
 			String fileName = message.getMessage();
 			fileName = fileName.replaceAll("\\s+", "");
-			String destFile = FileService.rootLocation.toString() + "/" + message.getUsername() + "/" + fileName;
+			String destFile = FileServiceAbstract.rootLocation.toString() + "/" + message.getUsername() + "/" + fileName;
 			File uploadedFile = new File(destFile);
 			if (!uploadedFile.exists()) {
 				try {
 					FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile);
 					String sender = message.getUsername();
 					String receiver = message.getReceiver();
-					String url = FileService.rootURL + sender + "/" + fileName;
+					String url = FileServiceAbstract.rootURL + sender + "/" + fileName;
 					FileDTO newFileDTO = new FileDTO(fileName, fileOutputStream, sender, receiver, url);
 					fileDTOs.add(newFileDTO);
 				} catch (FileNotFoundException ex) {
@@ -80,6 +84,7 @@ public class ChatService {
 		}
 	}
 
+	@Override
 	public void handleFileUpload(ByteBuffer byteBuffer, boolean last, Queue<FileDTO> fileDTOs) {
 		try {
 			if (!last) {
@@ -106,7 +111,8 @@ public class ChatService {
 		}
 	}
 
-	private Set<String> getUsernames() {
+	@Override
+	protected Set<String> getUsernames() {
 		Set<String> usernames = new HashSet<String>();
 		chatWebsockets.forEach(chatWebsocket -> {
 			usernames.add(chatWebsocket.getUsername());

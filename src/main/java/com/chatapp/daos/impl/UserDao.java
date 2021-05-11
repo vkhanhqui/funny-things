@@ -3,7 +3,7 @@ package com.chatapp.daos.impl;
 import java.util.List;
 
 import com.chatapp.daos.UserDaoInterface;
-import com.chatapp.mapper.UserMapper;
+import com.chatapp.mappers.impl.UserMapper;
 import com.chatapp.models.User;
 
 public class UserDao extends GenericDao<User> implements UserDaoInterface {

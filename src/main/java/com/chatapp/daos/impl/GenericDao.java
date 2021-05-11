@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.chatapp.daos.GenericDaoInterface;
-import com.chatapp.mapper.RowMapper;
+import com.chatapp.mappers.RowMapperInterface;
 
 public class GenericDao<T> implements GenericDaoInterface<T> {
 
@@ -25,7 +25,7 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 	}
 
 	@Override
-	public List<T> query(String sql, RowMapper<T> rowMapper, Object... parameters) {
+	public List<T> query(String sql, RowMapperInterface<T> rowMapper, Object... parameters) {
 		List<T> results = new ArrayList<>();
 		Connection connection = null;
 		PreparedStatement statement = null;

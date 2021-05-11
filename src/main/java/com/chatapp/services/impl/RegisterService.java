@@ -1,4 +1,4 @@
-package com.chatapp.services;
+package com.chatapp.services.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +8,10 @@ import javax.servlet.http.Part;
 
 import com.chatapp.daos.UserDaoInterface;
 import com.chatapp.daos.impl.UserDao;
+import com.chatapp.services.FileServiceAbstract;
+import com.chatapp.services.RegisterServiceInterface;
 
-public class RegisterService {
+public class RegisterService implements RegisterServiceInterface{
 	private static RegisterService instance = null;
 
 	private UserDaoInterface userDaoInterface = UserDao.getInstace();
@@ -22,16 +24,17 @@ public class RegisterService {
 	}
 
 	private RegisterService() {
-		File uploadDir = new File(FileService.rootLocation.toString());
+		File uploadDir = new File(FileServiceAbstract.rootLocation.toString());
 		if (!uploadDir.exists()) {
 			uploadDir.mkdir();
 		}
 		System.out.println("Root path: " + uploadDir.getAbsolutePath());
 	}
 
+	@Override
 	public void handleRegister(String username, String password, boolean gender, Part avatar) {
 		try {
-			File privateDir = new File(FileService.rootLocation.toString() + "/" + username);
+			File privateDir = new File(FileServiceAbstract.rootLocation.toString() + "/" + username);
 			privateDir.mkdir();
 			String origin = avatar.getSubmittedFileName();
 			String fileName = "";
@@ -40,9 +43,9 @@ public class RegisterService {
 				fileName = username + tail;
 				avatar.write(privateDir.getAbsolutePath() + File.separator + fileName);
 			} else {
-				File defaultAvatar = new File(FileService.rootLocation.toString() + "/default/user-male.jpg");
+				File defaultAvatar = new File(FileServiceAbstract.rootLocation.toString() + "/default/user-male.jpg");
 				if (gender == false) {
-					defaultAvatar = new File(FileService.rootLocation.toString() + "/default/user-female.jpg");
+					defaultAvatar = new File(FileServiceAbstract.rootLocation.toString() + "/default/user-female.jpg");
 				}
 				fileName = username + ".jpg";
 				File newFile = new File(privateDir.toString() + "/" + fileName);
