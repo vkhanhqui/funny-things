@@ -31,15 +31,15 @@
 				<div class="list-user">
 					<ul>
 						<c:forEach var="friend" items="${friends}">
-							<li id=${friend } onclick="setReceiver(this);">
+							<li id=${friend.username } onclick="setReceiver(this);">
 								<div class="user-contain">
 									<div class="user-img">
-										<img src="<c:url value="/static/images/user-male.jpg" />"
+										<img src="<c:url value="/files/${friend.username}/${friend.avatar}" />"
 											alt="Image of user">
-										<div id="status-${friend}" class="user-img-dot"></div>
+										<div id="status-${friend.username}" class="user-img-dot"></div>
 									</div>
 									<div class="user-info">
-										<span class="user-name">${friend}</span> <span
+										<span class="user-name">${friend.username}</span> <span
 											class="user-last-message">Hello!</span>
 									</div>
 								</div>

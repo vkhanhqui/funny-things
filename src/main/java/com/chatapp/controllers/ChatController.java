@@ -23,9 +23,12 @@ public class ChatController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<String> friends = new ArrayList<>();
-		for (int i = 1; i <= 20; i++) {
-			friends.add("a" + i);
+		List<User> friends = new ArrayList<>();
+		for (int i = 1; i <= 11; i++) {
+			User newUser = new User();
+			newUser.setUsername("a" + i);
+			newUser.setAvatar("a" + i+".jpg");
+			friends.add(newUser);
 		}
 		request.setAttribute("friends", friends);
 		User user = (User) request.getSession().getAttribute("user");

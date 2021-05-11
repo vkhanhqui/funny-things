@@ -3,8 +3,6 @@ package com.chatapp.services;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.servlet.http.Part;
 
@@ -13,7 +11,6 @@ import com.chatapp.daos.impl.UserDao;
 
 public class RegisterService {
 	private static RegisterService instance = null;
-	public static Path rootLocation = Paths.get("archive");
 
 	private UserDaoInterface userDaoInterface = UserDao.getInstace();
 
@@ -25,7 +22,7 @@ public class RegisterService {
 	}
 
 	private RegisterService() {
-		File uploadDir = new File(rootLocation.toString());
+		File uploadDir = new File(FileService.rootLocation.toString());
 		if (!uploadDir.exists()) {
 			uploadDir.mkdir();
 		}
@@ -34,7 +31,7 @@ public class RegisterService {
 
 	public void handleRegister(String username, String password, boolean gender, Part avatar) {
 		try {
-			File privateDir = new File(rootLocation.toString() + "/" + username);
+			File privateDir = new File(FileService.rootLocation.toString() + "/" + username);
 			privateDir.mkdir();
 			String origin = avatar.getSubmittedFileName();
 			String fileName = "";
@@ -43,9 +40,9 @@ public class RegisterService {
 				fileName = username + tail;
 				avatar.write(privateDir.getAbsolutePath() + File.separator + fileName);
 			} else {
-				File defaultAvatar = new File(rootLocation.toString() + "/default/user-male.jpg");
+				File defaultAvatar = new File(FileService.rootLocation.toString() + "/default/user-male.jpg");
 				if (gender == false) {
-					defaultAvatar = new File(rootLocation.toString() + "/default/user-female.jpg");
+					defaultAvatar = new File(FileService.rootLocation.toString() + "/default/user-female.jpg");
 				}
 				fileName = username + ".jpg";
 				File newFile = new File(privateDir.toString() + "/" + fileName);

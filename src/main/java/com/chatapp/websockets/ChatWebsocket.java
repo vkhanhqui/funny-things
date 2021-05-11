@@ -1,6 +1,8 @@
 package com.chatapp.websockets;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -10,6 +12,7 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
+import com.chatapp.models.FileDTO;
 import com.chatapp.models.Message;
 import com.chatapp.models.MessageDecoder;
 import com.chatapp.models.MessageEncoder;
@@ -19,8 +22,8 @@ import com.chatapp.services.ChatService;
 public class ChatWebsocket {
 
 	private Session session;
-
 	private String username;
+	private Queue<FileDTO> fileDTOs = new LinkedList<>();
 
 	private ChatService chatService = ChatService.getInstance();
 
@@ -42,12 +45,12 @@ public class ChatWebsocket {
 
 	@OnMessage
 	public void onMessage(Message message, Session session) {
-		chatService.sendMessageToOneUser(message);
+		chatService.sendMessageToOneUser(message, fileDTOs);
 	}
 
 	@OnMessage
 	public void processUploading(ByteBuffer byteBuffer, boolean last, Session session) {
-		chatService.handleFileUpload(username, byteBuffer, last);
+		chatService.handleFileUpload(byteBuffer, last, fileDTOs);
 	}
 
 	@OnClose
