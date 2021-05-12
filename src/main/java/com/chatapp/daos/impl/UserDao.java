@@ -30,9 +30,18 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 	}
 
 	@Override
-	public void saveUser(String username, String password, Boolean gender, String avatar) {
+	public void saveUser(Boolean isRegister, User user) {
+		String username = user.getUsername();
+		String password = user.getPassword();
+		Boolean gender = user.isGender();
+		String avatar = user.getAvatar();
 		StringBuilder sql = new StringBuilder("insert into testing values(?,?,?,?)");
-		insert(sql.toString(), username, password, gender, avatar);
+		if (isRegister) {
+			save(sql.toString(), username, password, gender, avatar);
+		} else {
+			sql = new StringBuilder("update testing set password=?, gender=?, avatar=? where username=?");
+			save(sql.toString(), password, gender, avatar, username);
+		}
 	}
 
 }

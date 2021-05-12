@@ -11,33 +11,24 @@
 <link rel="icon" type="image/png"
 	href="<c:url value="/static/images/icon.jpg" />">
 
-<title>Login</title>
+<title>Update User</title>
 </head>
 <body>
 	<div class="container">
 		<div class="form-container">
-			<h2 class="form-title">Star Messenger</h2>
 			<div class="tab-control">
-				<h3 class="active tab-control-btn login">Sign in</h3>
-				<h3 class="tab-control-btn register">Sign up</h3>
+				<h3 class="tab-control-btn register">Update your information</h3>
 			</div>
-			<div class="login-form form active">
-				<form action="<c:url value="/login" />" method="POST">
-					<input type="text" class="txt-input border" placeholder="Username"
-						name="username"> <input type="password"
-						class="txt-input border" placeholder="Password" name="password">
-					<button type="submit" class="btn btn-login border">Sign in</button>
-				</form>
-			</div>
-			<div class="register-form form">
-				<form action="<c:url value="/users/register" />"
+			<div class="register-form form active">
+				<form action="<c:url value="/users/update" />"
 					enctype="multipart/form-data" method="POST">
-					<input type="text" class="txt-input border" placeholder="Username"
-						name="username"> <input type="password"
-						class="txt-input border" placeholder="Password" name="password">
-					<input type="password" class="txt-input border"
-						placeholder="Re Password"> <select name="gender"
-						class="txt-input border gender-select" id="">
+					<input type="text" class="txt-input border"
+						placeholder=${user.username } name="username"
+						value=${user.username } readonly="readonly"> <input
+						type="password" class="txt-input border" placeholder="Password"
+						name="password"> <input type="password"
+						class="txt-input border" placeholder="Re Password"> <select
+						name="gender" class="txt-input border gender-select" id="">
 						<option value="true">Male</option>
 						<option value="false">Female</option>
 					</select> <label for="image"> <img
@@ -46,7 +37,9 @@
 					</label> <input type="file" accept="image/*" name="avatar" id="image"
 						class="image-file">
 
-					<button type="submit" class="btn btn-login border">Sign up</button>
+					<button type="submit" class="btn btn-login border">Update</button>
+					<a href="<c:url value="/chat" />" class="btn btn-login border"
+						style="background-color: grey; text-align: center;">Go back</a>
 				</form>
 			</div>
 		</div>

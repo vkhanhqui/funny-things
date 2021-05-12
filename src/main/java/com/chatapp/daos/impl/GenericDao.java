@@ -81,7 +81,7 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 	}
 
 	@Override
-	public void update(String sql, Object... parameters) {
+	public void save(String sql, Object... parameters) {
 		Connection connection = null;
 		PreparedStatement statement = null;
 		try {
@@ -99,40 +99,6 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 					ex1.printStackTrace();
 				}
 			}
-		} finally {
-			try {
-				if (connection != null) {
-					connection.close();
-				}
-				if (statement != null) {
-					statement.close();
-				}
-			} catch (SQLException ex2) {
-				ex2.printStackTrace();
-			}
-		}
-	}
-
-	@Override
-	public void insert(String sql, Object... parameters) {
-		Connection connection = null;
-		PreparedStatement statement = null;
-		try {
-			connection = getConnection();
-			connection.setAutoCommit(false);
-			statement = connection.prepareStatement(sql);
-			setParameter(statement, parameters);
-			statement.executeUpdate();
-			connection.commit();
-		} catch (SQLException ex) {
-			if (connection != null) {
-				try {
-					connection.rollback();
-				} catch (SQLException ex1) {
-					ex1.printStackTrace();
-				}
-			}
-			ex.printStackTrace();
 		} finally {
 			try {
 				if (connection != null) {

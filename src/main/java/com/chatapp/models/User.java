@@ -10,9 +10,9 @@ public class User {
 
 	}
 
-	public User(String username, boolean gender, String avatar) {
-		super();
+	public User(String username, String password, boolean gender, String avatar) {
 		this.username = username;
+		this.password = password;
 		this.gender = gender;
 		this.avatar = avatar;
 	}

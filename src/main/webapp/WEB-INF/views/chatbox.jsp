@@ -21,7 +21,11 @@
 	<div class="container">
 		<div class="conversation-container">
 			<div class="left-side active">
-				<h2>Chats</h2>
+				<h2>
+					<a href="<c:url value="/users/update"/>"
+						style="text-decoration: none; color: white;">Welcome
+						${user.username}</a>
+				</h2>
 				<div class="tab-control">
 					<i class="fa fa-comment active"></i> <i class="fa fa-comments"></i>
 				</div>
@@ -34,7 +38,8 @@
 							<li id=${friend.username } onclick="setReceiver(this);">
 								<div class="user-contain">
 									<div class="user-img">
-										<img src="<c:url value="/files/${friend.username}/${friend.avatar}" />"
+										<img
+											src="<c:url value="/files/${friend.username}/${friend.avatar}" />"
 											alt="Image of user">
 										<div id="status-${friend.username}" class="user-img-dot"></div>
 									</div>
