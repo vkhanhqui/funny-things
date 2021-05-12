@@ -11,12 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.chatapp.models.User;
-import com.chatapp.services.LoginService;
+import com.chatapp.services.LoginServiceInterface;
+import com.chatapp.services.impl.LoginService;
 
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static LoginService loginService = LoginService.getInstance();
+	private static LoginServiceInterface loginService = LoginService.getInstance();
 
 	public LoginController() {
 		super();

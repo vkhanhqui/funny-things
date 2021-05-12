@@ -16,7 +16,7 @@ import com.chatapp.models.FileDTO;
 import com.chatapp.models.Message;
 import com.chatapp.models.MessageDecoder;
 import com.chatapp.models.MessageEncoder;
-import com.chatapp.services.ChatService;
+import com.chatapp.services.impl.ChatService;
 
 @ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ChatWebsocket {

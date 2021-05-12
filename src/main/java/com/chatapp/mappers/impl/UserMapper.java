@@ -1,11 +1,12 @@
-package com.chatapp.mapper;
+package com.chatapp.mappers.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.chatapp.mappers.RowMapperInterface;
 import com.chatapp.models.User;
 
-public class UserMapper implements RowMapper<User> {
+public class UserMapper implements RowMapperInterface<User> {
 
 	@Override
 	public User mapRow(ResultSet resultSet) {

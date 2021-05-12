@@ -10,13 +10,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.chatapp.services.RegisterService;
+import com.chatapp.services.RegisterServiceInterface;
+import com.chatapp.services.impl.RegisterService;
 
 @WebServlet("/register")
 @MultipartConfig
 public class RegisterController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private RegisterService registerService = RegisterService.getInstance();
+	private RegisterServiceInterface registerService = RegisterService.getInstance();
 
 	public RegisterController() {
 		super();
