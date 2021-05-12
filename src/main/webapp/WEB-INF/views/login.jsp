@@ -30,7 +30,7 @@
 				</form>
 			</div>
 			<div class="register-form form">
-				<form action="<c:url value="/register" />"
+				<form action="<c:url value="/users/register" />"
 					enctype="multipart/form-data" method="POST">
 					<input type="text" class="txt-input border" placeholder="Username"
 						name="username"> <input type="password"

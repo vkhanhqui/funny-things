@@ -20,10 +20,11 @@
 				<h3 class="tab-control-btn register">Update your information</h3>
 			</div>
 			<div class="register-form form active">
-				<form action="<c:url value="/update-user" />"
+				<form action="<c:url value="/users/update" />"
 					enctype="multipart/form-data" method="POST">
 					<input type="text" class="txt-input border"
-						placeholder="${user.username}" name="username" disabled> <input
+						placeholder=${user.username } name="username"
+						value=${user.username } readonly="readonly"> <input
 						type="password" class="txt-input border" placeholder="Password"
 						name="password"> <input type="password"
 						class="txt-input border" placeholder="Re Password"> <select

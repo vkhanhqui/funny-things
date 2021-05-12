@@ -11,19 +11,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-@WebServlet("/update-user")
-@MultipartConfig
-public class UserUpdatingController extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+import com.chatapp.services.UserServiceInterface;
+import com.chatapp.services.impl.UserService;
 
-	public UserUpdatingController() {
+@WebServlet("/users/*")
+@MultipartConfig
+public class UserController extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	private UserServiceInterface userService = UserService.getInstance();
+
+	public UserController() {
 		super();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/user-form.jsp");
-		rd.forward(request, response);
+		if (request.getPathInfo().endsWith("update")) {
+			RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/user-form.jsp");
+			rd.forward(request, response);
+		} else {
+			response.sendRedirect("/login");
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -33,6 +41,15 @@ public class UserUpdatingController extends HttpServlet {
 		String gender = request.getParameter("gender");
 		Part avatar = request.getPart("avatar");
 
-		response.sendRedirect("/login");
+		String path = request.getPathInfo();
+		if (path.endsWith("register")) {
+			userService.saveUser(true, username, password, Boolean.valueOf(gender), avatar);
+			response.sendRedirect("/login");
+		} else if (path.endsWith("update")) {
+			userService.saveUser(false, username, password, Boolean.valueOf(gender), avatar);
+			response.sendRedirect("/users/update");
+		} else {
+			response.sendRedirect("/chat");
+		}
 	}
 }

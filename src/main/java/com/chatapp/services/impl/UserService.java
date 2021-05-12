@@ -3,27 +3,29 @@ package com.chatapp.services.impl;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.servlet.http.Part;
 
 import com.chatapp.daos.UserDaoInterface;
 import com.chatapp.daos.impl.UserDao;
+import com.chatapp.models.User;
 import com.chatapp.services.FileServiceAbstract;
-import com.chatapp.services.RegisterServiceInterface;
+import com.chatapp.services.UserServiceInterface;
 
-public class RegisterService implements RegisterServiceInterface{
-	private static RegisterService instance = null;
+public class UserService implements UserServiceInterface {
+	private static UserService instance = null;
 
 	private UserDaoInterface userDaoInterface = UserDao.getInstace();
 
-	public synchronized static RegisterService getInstance() {
+	public synchronized static UserService getInstance() {
 		if (instance == null) {
-			instance = new RegisterService();
+			instance = new UserService();
 		}
 		return instance;
 	}
 
-	private RegisterService() {
+	private UserService() {
 		File uploadDir = new File(FileServiceAbstract.rootLocation.toString());
 		if (!uploadDir.exists()) {
 			uploadDir.mkdir();
@@ -32,7 +34,7 @@ public class RegisterService implements RegisterServiceInterface{
 	}
 
 	@Override
-	public void handleRegister(String username, String password, boolean gender, Part avatar) {
+	public void saveUser(Boolean isRegister, String username, String password, boolean gender, Part avatar) {
 		try {
 			File privateDir = new File(FileServiceAbstract.rootLocation.toString() + "/" + username);
 			privateDir.mkdir();
@@ -49,9 +51,10 @@ public class RegisterService implements RegisterServiceInterface{
 				}
 				fileName = username + ".jpg";
 				File newFile = new File(privateDir.toString() + "/" + fileName);
-				Files.copy(defaultAvatar.toPath(), newFile.toPath());
+				Files.copy(defaultAvatar.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
-			userDaoInterface.saveUser(username, password, gender, fileName);
+			User userEntity = new User(username, password, gender, fileName);
+			userDaoInterface.saveUser(isRegister, userEntity);
 		} catch (IOException ex) {
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();

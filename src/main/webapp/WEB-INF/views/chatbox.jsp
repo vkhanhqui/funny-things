@@ -22,7 +22,7 @@
 		<div class="conversation-container">
 			<div class="left-side active">
 				<h2>
-					<a href="<c:url value="/update-user"/>"
+					<a href="<c:url value="/users/update"/>"
 						style="text-decoration: none; color: white;">Welcome
 						${user.username}</a>
 				</h2>
