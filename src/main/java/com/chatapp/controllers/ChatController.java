@@ -32,6 +32,7 @@ public class ChatController extends HttpServlet {
 		}
 		request.setAttribute("friends", friends);
 		User user = (User) request.getSession().getAttribute("user");
+		user.setUsername(user.getUsername().trim());
 		request.setAttribute("user", user);
 
 		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/chatbox.jsp");

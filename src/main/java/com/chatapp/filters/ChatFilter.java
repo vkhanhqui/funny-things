@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.chatapp.models.User;
 
-@WebFilter(urlPatterns = { "/users/update", "/chat", "/files" })
+//@WebFilter(urlPatterns = { "/users/update", "/chat", "/files" })
 public class ChatFilter implements Filter {
 
 	public ChatFilter() {
