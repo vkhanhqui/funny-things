@@ -3,10 +3,21 @@ var username = null;
 var websocket = null;
 var receiver = null;
 
+var back = null;
+var rightSide = null;
+var leftSide = null;
+var conversation = null;
+
+var attachFile = null;
+var imageFile = null;
+var file = null;
+var listFile = [];
+var typeFile = "image";
+var deleteAttach = null;
+
 window.onload = function() {
 	if ("WebSocket" in window) {
 		username = document.getElementById("username").textContent;
-		username = username.trim();
 		websocket = new WebSocket('ws://' + window.location.host + '/chat/' + username);
 
 		websocket.onopen = function() {
@@ -32,17 +43,18 @@ window.onload = function() {
 }
 
 function cleanUp() {
-	document.getElementsByClassName("container")[0].style.display = "none";
 	username = null;
 	websocket = null;
 	receiver = null;
 }
 
+handleResponsive();
+
 function setReceiver(element) {
 	receiver = element.id;
 	console.log("receiver: " + receiver);
 
-	document.getElementById("receiver").innerHTML = '<div class="user-contact">' + '<div class="back">'
+	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
 		+ '</div>'
 		+ '<div class="user-contain">'
@@ -63,30 +75,40 @@ function setReceiver(element) {
 		+ '</ul>'
 		+ '</div>'
 		+ '<form class="form-send-message">'
-		+ '<input id="message" type="text" class="txt-input" placeholder="Type message...">'
+		+ '<ul class="list-file"></ul> '
+		+ '<input type="text" id="message" class="txt-input" placeholder="Type message...">'
 		+ '<label class="btn btn-image" for="attach"><i class="fa fa-file"></i></label>'
-		+ ' <input type="file" id="attach"> <label class="btn btn-image" for="image"><i'
-		+ ' class="fa fa-file-image-o"></i></label> <input type="file" id="image">'
+		+ '<input type="file" multiple id="attach">'
+		+ '<label class="btn btn-image" for="image"><i class="fa fa-file-image-o"></i></label>'
+		+ '<input type="file" accept="image/*" multiple id="image">'
 		+ '<button type="button" class="btn btn-send" onclick="sendMessage();">'
 		+ '<i class="fa fa-paper-plane"></i>'
 		+ '</button>'
 		+ '</form>';
 
-	loadMessages(receiver);
+	document.getElementById("receiver").innerHTML = rightSide;
+	
+	console.log(document.getElementById("receiver"));
 
+	loadMessages(receiver);
+	
 	handleResponsive();
+
+	displayFiles();
 }
 
 function handleResponsive() {
-	var back = document.querySelector(".back");
-	var rightSide = document.querySelector(".right-side");
-	var leftSide = document.querySelector(".left-side");
-	var conversation = document.querySelectorAll(".user-contain");
+	back = document.querySelector(".back");
+	rightSide = document.querySelector(".right-side");
+	leftSide = document.querySelector(".left-side");
+	conversation = document.querySelectorAll(".user-contain");
 
 	if (back) {
 		back.addEventListener("click", function() {
 			rightSide.classList.remove("active");
 			leftSide.classList.add("active");
+			listFile = [];
+			renderFile();
 		});
 	}
 
@@ -98,28 +120,123 @@ function handleResponsive() {
 	});
 }
 
-function sendMessage() {
-	var rawData = document.getElementById("attach").files[0];
-	var messageContent = document.getElementById("message").value;
-	var messageType = "text";
-	if (rawData == null) {
-		document.getElementById("message").value = '';
+function displayFiles() {
+	attachFile = document.getElementById("attach");
+	imageFile = document.getElementById("image");
+	file = document.querySelector(".list-file");
+	deleteAttach = document.querySelectorAll(".delete-attach");
+
+	attachFile.addEventListener("change", function(e) {
+		let filesInput = e.target.files;
+
+		for (const file of filesInput) {
+			listFile.push(file);
+			console.log(file);
+		}
+
+		typeFile = "file";
+		renderFile("attach");
+
+		this.value = null;
+	});
+
+	imageFile.addEventListener("change", function(e) {
+		let filesImage = e.target.files;
+
+		for (const file of filesImage) {
+			listFile.push(file);
+			console.log(file);
+		}
+
+		typeFile = "image";
+
+		renderFile("image");
+
+		this.value = null;
+	});
+
+
+
+}
+
+function deleteFile(idx) {
+	if (!isNaN(idx)) listFile.splice(idx, 1);
+
+	renderFile(typeFile);
+}
+
+function renderFile(typeFile) {
+	let listFileHTML = "";
+	let idx = 0;
+
+	if (typeFile == "image") {
+		for (const file of listFile) {
+			listFileHTML += '<li><img src="' + URL.createObjectURL(file)
+				+ '" alt="Image file"><span data-idx="'
+				+ (idx) + '" onclick="deleteFile('
+				+ idx + ')" class="delete-attach">X</span></li>';
+			idx++;
+		}
 	} else {
-		document.getElementById("attach").value = null;
-		console.log(rawData);
-		messageContent = rawData.name;
-		messageType = rawData.type;
+		for (const file of listFile) {
+			listFileHTML += '<li><div class="file-input">' + file.name
+				+ '</div><span data-idx="'
+				+ (idx) + '" onclick="deleteFile('
+				+ idx + ')" class="delete-attach">X</span></li>';
+			idx++;
+		}
 	}
-	var message = buildMessageToJson(username, messageContent, messageType);
-	setMessage(message);
-	console.log(message);
-	websocket.send(JSON.stringify(message));
-	if (rawData != null) {
-		websocket.send(rawData);
+
+
+	if (listFile.length == 0) {
+		file.innerHTML = "";
+		file.classList.remove("active");
+	} else {
+		file.innerHTML = listFileHTML;
+		file.classList.add("active");
+	}
+
+	deleteAttach = document.querySelectorAll(".delete-attach");
+}
+
+function sendMessage() {
+	var inputText = document.getElementById("message").value;
+	if (inputText != '') {
+		sendText();
+	} else {
+		sendAttachments();
 	}
 }
 
-function buildMessageToJson(username, message, type) {
+function sendText() {
+	var messageContent = document.getElementById("message").value;
+	var messageType = "text";
+	document.getElementById("message").value = '';
+	var message = buildMessageToJson(messageContent, messageType);
+	setMessage(message);
+	console.log(message);
+	websocket.send(JSON.stringify(message));
+}
+
+function sendAttachments() {
+	var messageType = "attachment";
+	for (file of listFile) {
+		messageContent = file.name;
+		messageType = file.type;
+		var message = buildMessageToJson(messageContent, messageType);
+		setMessage(message);
+		console.log(message);
+		websocket.send(JSON.stringify(message));
+		websocket.send(file);
+	}
+	file = document.querySelector(".list-file");
+	file.classList.remove("active");
+	file.innerHTML = "";
+	listFile = [];
+	console.log(file);
+}
+
+function buildMessageToJson(message, type) {
 	return {
 		username: username,
 		message: message,

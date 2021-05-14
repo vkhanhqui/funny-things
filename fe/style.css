@@ -348,11 +348,50 @@ img {
     width: 100%;
     position: absolute;
     background: var(--txtColorSecond);
+    left: 0;
+    bottom: 100%;
+    display: flex;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.list-file.active {
+    padding: 1rem;
 }
 
 .list-file img {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 7rem;
+    height: 7rem;
+    object-fit: cover;
+    margin: 0 .5rem;
+}
+
+.list-file li {
+    position: relative;
+}
+
+.file-input {
+    padding: 1.5rem;
+    color: var(--txtBlack);
+    box-shadow: 0rem .2rem .4rem rgba(1, 1, 1, 0.1);
+    margin-right: .5rem;
+    white-space: nowrap;
+}
+
+.delete-attach {
+    position: absolute;
+    right: -.2rem;
+    top: -.2rem;
+    color: var(--txtColorSecond);
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.4rem;
+    text-align: center;
+    line-height: 2rem;
+    background: var(--mainColor);
+    opacity: .5;
+    border-radius: 50%;
 }
 
 .form-send-message {
@@ -360,6 +399,7 @@ img {
     height: 5.5rem;
     align-items: center;
     display: flex;
+    position: relative;
 }
 
 .form-send-message .txt-input {
