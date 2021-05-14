@@ -48,6 +48,8 @@ function cleanUp() {
 	receiver = null;
 }
 
+handleResponsive();
+
 function setReceiver(element) {
 	receiver = element.id;
 	console.log("receiver: " + receiver);
@@ -85,9 +87,11 @@ function setReceiver(element) {
 		+ '</form>';
 
 	document.getElementById("receiver").innerHTML = rightSide;
+	
+	console.log(document.getElementById("receiver"));
 
 	loadMessages(receiver);
-
+	
 	handleResponsive();
 
 	displayFiles();
@@ -196,27 +200,43 @@ function renderFile(typeFile) {
 }
 
 function sendMessage() {
-	var rawData = document.getElementById("attach").files[0];
-	var messageContent = document.getElementById("message").value;
-	var messageType = "text";
-	if (rawData == null) {
-		document.getElementById("message").value = '';
+	var inputText = document.getElementById("message").value;
+	if (inputText != '') {
+		sendText();
 	} else {
-		document.getElementById("attach").value = null;
-		console.log(rawData);
-		messageContent = rawData.name;
-		messageType = rawData.type;
-	}
-	var message = buildMessageToJson(username, messageContent, messageType);
-	setMessage(message);
-	console.log(message);
-	websocket.send(JSON.stringify(message));
-	if (rawData != null) {
-		websocket.send(rawData);
+		sendAttachments();
 	}
 }
 
-function buildMessageToJson(username, message, type) {
+function sendText() {
+	var messageContent = document.getElementById("message").value;
+	var messageType = "text";
+	document.getElementById("message").value = '';
+	var message = buildMessageToJson(messageContent, messageType);
+	setMessage(message);
+	console.log(message);
+	websocket.send(JSON.stringify(message));
+}
+
+function sendAttachments() {
+	var messageType = "attachment";
+	for (file of listFile) {
+		messageContent = file.name;
+		messageType = file.type;
+		var message = buildMessageToJson(messageContent, messageType);
+		setMessage(message);
+		console.log(message);
+		websocket.send(JSON.stringify(message));
+		websocket.send(file);
+	}
+	file = document.querySelector(".list-file");
+	file.classList.remove("active");
+	file.innerHTML = "";
+	listFile = [];
+	console.log(file);
+}
+
+function buildMessageToJson(message, type) {
 	return {
 		username: username,
 		message: message,
