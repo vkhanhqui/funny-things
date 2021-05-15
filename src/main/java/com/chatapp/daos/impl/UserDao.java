@@ -24,9 +24,18 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 	@Override
 	public User findByUserNameAndPassword(String userName, String password) {
 		StringBuilder sql = new StringBuilder("select username, gender, avatar");
-		sql.append(" from testing where username=? and password=?");
+		sql.append(" from users where username=? and password=?");
 		List<User> users = query(sql.toString(), new UserMapper(), userName, password);
 		return users.isEmpty() ? null : users.get(0);
+	}
+	
+	@Override
+	public List<User> listUser(String userName) {
+		StringBuilder sql = new StringBuilder("select u2.username,u2.avatar,u2.gender from users u1 join friends f on u1.id = f.id_receiver join users u2 on u2.id = f.id_sender ");
+		sql.append(" where u1.username LIKE '"+userName+"'");
+		
+		List<User> users = query(sql.toString(), new UserMapper());
+		return users;
 	}
 
 	@Override
@@ -35,11 +44,11 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 		String password = user.getPassword();
 		Boolean gender = user.isGender();
 		String avatar = user.getAvatar();
-		StringBuilder sql = new StringBuilder("insert into testing values(?,?,?,?)");
+		StringBuilder sql = new StringBuilder("insert into users values(?,?,?,?)");
 		if (isRegister) {
 			save(sql.toString(), username, password, gender, avatar);
 		} else {
-			sql = new StringBuilder("update testing set password=?, gender=?, avatar=? where username=?");
+			sql = new StringBuilder("update users set password=?, gender=?, avatar=? where username=?");
 			save(sql.toString(), password, gender, avatar, username);
 		}
 	}

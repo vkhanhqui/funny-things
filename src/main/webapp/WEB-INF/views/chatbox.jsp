@@ -18,6 +18,9 @@
 </head>
 <body>
 	<p id="username" style="display: none">${user.username}</p>
+	<p id="userAvatar" style="display: none">
+		<c:url value="/files/${user.username}/${user.avatar}" />
+	</p>
 	<div class="container">
 		<div class="conversation-container">
 			<div class="left-side active">
@@ -38,7 +41,7 @@
 							<li id=${friend.username } onclick="setReceiver(this);">
 								<div class="user-contain">
 									<div class="user-img">
-										<img
+										<img id="img-${friend.username}"
 											src="<c:url value="/files/${friend.username}/${friend.avatar}" />"
 											alt="Image of user">
 										<div id="status-${friend.username}" class="user-img-dot"></div>

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ChatRestController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	
 	public ChatRestController() {
 		super();
 	}
@@ -27,11 +28,15 @@ public class ChatRestController extends HttpServlet {
 		List<Message> messages = new ArrayList<>();
 		//current user is a1
 		messages.add(new Message("a1", "hello","text", "a2"));
+		
 		//clicked user
 		String userId = request.getParameter("userId");
+		
 		for (int i = 0; i < 50; i++) {
+			
 			messages.add(new Message(userId, "hello","text", "a1"));
 		}
+		
 		//response to json
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(messages);
