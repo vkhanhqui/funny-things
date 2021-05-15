@@ -17,7 +17,7 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 	public Connection getConnection() {
 		try {
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			String url = "jdbc:sqlserver://DESKTOP-0NKDULM\\SQLEXPRESS:1433;databaseName=chatapp;integratedSecurity=true";
+			String url = "jdbc:sqlserver://KHANHQUI\\SQLEXPRESS:1433;databaseName=chatapp;user=mylogin;password=mylogin";
 			return DriverManager.getConnection(url);
 		} catch (ClassNotFoundException | SQLException ex) {
 			return null;

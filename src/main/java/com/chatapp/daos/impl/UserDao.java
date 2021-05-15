@@ -28,13 +28,15 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 		List<User> users = query(sql.toString(), new UserMapper(), userName, password);
 		return users.isEmpty() ? null : users.get(0);
 	}
-	
+
 	@Override
-	public List<User> listUser(String userName) {
-		StringBuilder sql = new StringBuilder("select u2.username,u2.avatar,u2.gender from users u1 join friends f on u1.id = f.id_receiver join users u2 on u2.id = f.id_sender ");
-		sql.append(" where u1.username LIKE '"+userName+"'");
-		
-		List<User> users = query(sql.toString(), new UserMapper());
+	public List<User> findFriends(String userName) {
+		StringBuilder sql = new StringBuilder("select u2.username, u2.avatar, u2.gender");
+		sql.append(" from users u1 join friends f on u1.id = f.id_receiver");
+		sql.append(" join users u2 on u2.id = f.id_sender");
+		sql.append(" where u1.username LIKE ?");
+		String param = "%" + userName + "%";
+		List<User> users = query(sql.toString(), new UserMapper(), param);
 		return users;
 	}
 

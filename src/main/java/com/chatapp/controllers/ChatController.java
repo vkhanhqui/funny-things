@@ -26,7 +26,7 @@ public class ChatController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		User currentUser = (User) request.getSession().getAttribute("user");
-		List<User> friends = userDao.listUser(currentUser.getUsername());	
+		List<User> friends = userDao.findFriends(currentUser.getUsername());	
 		
 		request.setAttribute("friends", friends);
 		request.setAttribute("user", currentUser);

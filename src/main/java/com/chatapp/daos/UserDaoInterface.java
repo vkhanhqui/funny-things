@@ -7,5 +7,5 @@ import com.chatapp.models.User;
 public interface UserDaoInterface extends GenericDaoInterface<User> {
 	User findByUserNameAndPassword(String userName, String password);
 	void saveUser(Boolean isRegister, User user);
-	List<User> listUser(String userName);
+	List<User> findFriends(String userName);
 }

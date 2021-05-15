@@ -2,8 +2,8 @@
 var username = null;
 var websocket = null;
 var receiver = null;
-var userAvatar =  null;
-var receiverAvatar =  null;
+var userAvatar = null;
+var receiverAvatar = null;
 
 var back = null;
 var rightSide = null;
@@ -57,19 +57,19 @@ function setReceiver(element) {
 	receiver = element.id;
 	console.log("receiver: " + receiver);
 	receiverAvatar = document.getElementById('img-' + receiver).src;
-	var status = '';	
+	var status = '';
 	if (document.getElementById('status-' + receiver).classList.contains('online')) {
-    	status = 'online';
+		status = 'online';
 	}
-	
+
 	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
 		+ '</div>'
 		+ '<div class="user-contain">'
 		+ '<div class="user-img">'
-		+ '<img src="'+receiverAvatar+'" '
+		+ '<img src="' + receiverAvatar + '" '
 		+ 'alt="Image of user">'
-		+ '<div class="user-img-dot '+status+'"></div>'
+		+ '<div class="user-img-dot ' + status + '"></div>'
 		+ '</div>'
 		+ '<div class="user-info">'
 		+ '<span class="user-name">' + receiver + '</span>'
@@ -95,8 +95,6 @@ function setReceiver(element) {
 		+ '</form>';
 
 	document.getElementById("receiver").innerHTML = rightSide;
-
-	console.log(document.getElementById("receiver"));
 
 	loadMessages(receiver);
 
@@ -139,7 +137,6 @@ function displayFiles() {
 
 		for (const file of filesInput) {
 			listFile.push(file);
-			console.log(file);
 		}
 
 		typeFile = "file";
@@ -153,7 +150,6 @@ function displayFiles() {
 
 		for (const file of filesImage) {
 			listFile.push(file);
-			console.log(file);
 		}
 
 		typeFile = "image";
@@ -241,7 +237,6 @@ function sendAttachments() {
 	file.classList.remove("active");
 	file.innerHTML = "";
 	listFile = [];
-	console.log(file);
 }
 
 function buildMessageToJson(message, type) {
@@ -263,7 +258,11 @@ function setMessage(msg) {
 		goLastestMsg();
 	} else {
 		if (msg.message === '[P]open') {
-			msg.onlineList.forEach(username => setOnline(username, true));
+			msg.onlineList.forEach(username => {
+				try {
+					setOnline(username, true);
+				} catch (ex) { }
+			});
 		} else {
 			setOnline(msg.username, false);
 		}
@@ -312,7 +311,7 @@ function customLoadMessage(sender, message) {
 		msgDisplay += ' right">';
 	}
 	return msgDisplay + '<div class="message-img">'
-		+ '<img src="'+imgSrc+'" alt="">'
+		+ '<img src="' + imgSrc + '" alt="">'
 		+ ' </div>'
 		+ '<div class="message-text">' + message + '</div>'
 		+ '</div>'
