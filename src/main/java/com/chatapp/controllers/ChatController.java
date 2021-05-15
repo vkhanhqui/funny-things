@@ -1,7 +1,6 @@
 package com.chatapp.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -11,29 +10,26 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.chatapp.daos.UserDaoInterface;
+import com.chatapp.daos.impl.UserDao;
 import com.chatapp.models.User;
 
 @WebServlet("/chat")
 public class ChatController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	
+	private UserDaoInterface userDao = UserDao.getInstace();
 	public ChatController() {
-		super();
+		super(); 
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<User> friends = new ArrayList<>();
-		for (int i = 1; i <= 11; i++) {
-			User newUser = new User();
-			newUser.setUsername("a" + i);
-			newUser.setAvatar("a" + i+".jpg");
-			friends.add(newUser);
-		}
+		User currentUser = (User) request.getSession().getAttribute("user");
+		List<User> friends = userDao.findFriends(currentUser.getUsername());	
+		
 		request.setAttribute("friends", friends);
-		User user = (User) request.getSession().getAttribute("user");
-		user.setUsername(user.getUsername().trim());
-		request.setAttribute("user", user);
+		request.setAttribute("user", currentUser);
 
 		RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/chatbox.jsp");
 		rd.forward(request, response);

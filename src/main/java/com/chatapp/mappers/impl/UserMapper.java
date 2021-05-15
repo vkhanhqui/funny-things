@@ -12,9 +12,9 @@ public class UserMapper implements RowMapperInterface<User> {
 	public User mapRow(ResultSet resultSet) {
 		try {
 			User user = new User();
-			user.setUsername(resultSet.getString("username"));
+			user.setUsername(resultSet.getString("username").trim());
 			user.setGender(resultSet.getBoolean("gender"));
-			user.setAvatar(resultSet.getString("avatar"));
+			user.setAvatar(resultSet.getString("avatar").trim());
 			return user;
 		} catch (SQLException e) {
 			return null;

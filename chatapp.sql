@@ -1,3 +1,5 @@
+drop database chatapp;
+
 create database chatapp;
 
 use chatapp;
@@ -6,67 +8,66 @@ create login mylogin with password ='mylogin';
 
 sp_changedbowner mylogin;
 
-create table testing
-(
-	username char(20) primary key,
-	password char(20) not null,
-	gender bit not null,
-	avatar char(25) not null
-);
+CREATE TABLE users (
+  id int identity(1,1) primary key,
+  username char(50) NOT NULL,
+  password char(50) NOT NULL,
+  first_name varchar(50) NOT NULL,
+  last_name varchar(50) NOT NULL,
+  gender bit NOT NULL,
+  avatar char(50) NOT NULL
+) ;
 
-select * from testing;
+CREATE TABLE friends (
+  id_sender int NOT NULL,
+  foreign key (id_sender) references users(id),
+  id_receiver int NOT NULL,
+  foreign key (id_receiver) references users(id),
+  primary key(id_sender, id_receiver),
+  status bit not null
+) ;
 
-truncate table testing;
-drop table testing;
+CREATE TABLE messages (
+  id int identity(1,1) primary key,
+  created_at datetime NOT NULL,
+  message text NOT NULL,
+  id_sender int NOT NULL,
+  foreign key (id_sender) references users(id),
+  id_receiver int NOT NULL,
+  foreign key (id_receiver) references users(id)
+) ;
 
-create table member
-(
-	code int primary key,
-	username char(20) not null unique,
-	name char(20) not null,
-	e_password char(100) not null,
-	k_password char(100) not null
-);
+truncate table friends;
+truncate table users;
 
-create table friend
-(
-	friend_code int not null ,
-	member_code int not null ,
-	primary key(friend_code,member_code),
-	foreign key(member_code) references member,
-	foreign key(friend_code) references member
-);
-create table friend_request 
-(
-	sent_by int,
-	sent_to int,
-	primary key(sent_by,sent_to),
-	foreign key(sent_by) references member,
-	foreign key (sent_to) references member
-);
+select * from users;
+select * from friends;
 
-create table message ( 
-	code BIGINT primary key,
-	message_date date not null,
-	message_time time not null,
-	from_code int not null, to_code int not null, 
-	message varchar(500) not null, status char(1) not null, 
-	foreign key(from_code) references member, 
-	foreign key(to_code) references member 
-); 
+insert into users(username, password, first_name, last_name, gender, avatar) 
+	values('a1','a1','a1','a1',1,'a1.jpg');
+insert into users(username, password, first_name, last_name, gender, avatar) 
+	values('a2','a2','a2','a2',1,'a2.jpg');
+insert into users(username, password, first_name, last_name, gender, avatar) 
+	values('a3','a3','a3','a3',1,'a3.jpg');
+insert into users(username, password, first_name, last_name, gender, avatar) 
+	values('a4','a4','a4','a4',1,'a4.jpg');
 
-create table notification ( 
-	code BIGINT primary key, 
-	notification_date date not null, 
-	notification_time time not null, 
-	member_code int not null, 
-	entity_code int not null, 
-	notification_type int not null, 
-	foreign key(member_code) references member 
-);
+insert into friends values(1,2,1);
+insert into friends values(2,1,1);
 
-create table closed_account
-(
-	code int not null unique,
-	foreign key(code) references member 
-);
+insert into friends values(1,3,1);
+insert into friends values(3,1,1);
+
+insert into friends values(4,2,1);
+insert into friends values(2,4,1);
+
+
+select u1.username u1,u1.avatar u2_avt, f.status, u2.username u2,u2.avatar u2_avt
+from users u1 join friends f on u1.id = f.id_receiver
+join users u2 on u2.id = f.id_sender
+where u1.username LIKE 'a2' or  u2.username LIKE 'a2';
+
+select u2.username,u2.avatar,u2.gender 
+from users u1 join friends f on u1.id = f.id_receiver 
+join users u2 on u2.id = f.id_sender
+where u1.username LIKE 'a1'

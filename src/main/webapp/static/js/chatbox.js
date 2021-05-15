@@ -2,6 +2,8 @@
 var username = null;
 var websocket = null;
 var receiver = null;
+var userAvatar = null;
+var receiverAvatar = null;
 
 var back = null;
 var rightSide = null;
@@ -18,6 +20,7 @@ var deleteAttach = null;
 window.onload = function() {
 	if ("WebSocket" in window) {
 		username = document.getElementById("username").textContent;
+		userAvatar = document.getElementById("userAvatar").textContent;
 		websocket = new WebSocket('ws://' + window.location.host + '/chat/' + username);
 
 		websocket.onopen = function() {
@@ -53,15 +56,20 @@ handleResponsive();
 function setReceiver(element) {
 	receiver = element.id;
 	console.log("receiver: " + receiver);
+	receiverAvatar = document.getElementById('img-' + receiver).src;
+	var status = '';
+	if (document.getElementById('status-' + receiver).classList.contains('online')) {
+		status = 'online';
+	}
 
 	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
 		+ '</div>'
 		+ '<div class="user-contain">'
 		+ '<div class="user-img">'
-		+ '<img src="http://' + window.location.host + '/static/images/user-male.jpg"'
+		+ '<img src="' + receiverAvatar + '" '
 		+ 'alt="Image of user">'
-		+ '<div class="user-img-dot"></div>'
+		+ '<div class="user-img-dot ' + status + '"></div>'
 		+ '</div>'
 		+ '<div class="user-info">'
 		+ '<span class="user-name">' + receiver + '</span>'
@@ -87,11 +95,9 @@ function setReceiver(element) {
 		+ '</form>';
 
 	document.getElementById("receiver").innerHTML = rightSide;
-	
-	console.log(document.getElementById("receiver"));
 
 	loadMessages(receiver);
-	
+
 	handleResponsive();
 
 	displayFiles();
@@ -131,7 +137,6 @@ function displayFiles() {
 
 		for (const file of filesInput) {
 			listFile.push(file);
-			console.log(file);
 		}
 
 		typeFile = "file";
@@ -145,7 +150,6 @@ function displayFiles() {
 
 		for (const file of filesImage) {
 			listFile.push(file);
-			console.log(file);
 		}
 
 		typeFile = "image";
@@ -233,7 +237,6 @@ function sendAttachments() {
 	file.classList.remove("active");
 	file.innerHTML = "";
 	listFile = [];
-	console.log(file);
 }
 
 function buildMessageToJson(message, type) {
@@ -255,7 +258,11 @@ function setMessage(msg) {
 		goLastestMsg();
 	} else {
 		if (msg.message === '[P]open') {
-			msg.onlineList.forEach(username => setOnline(username, true));
+			msg.onlineList.forEach(username => {
+				try {
+					setOnline(username, true);
+				} catch (ex) { }
+			});
 		} else {
 			setOnline(msg.username, false);
 		}
@@ -270,7 +277,10 @@ function setOnline(username, isOnline) {
 	} else {
 		ele.classList.remove('online');
 	}
+
 }
+
+
 
 function loadMessages(userId) {
 	var currentChatbox = document.getElementById("chat");
@@ -291,15 +301,17 @@ function loadMessages(userId) {
 }
 
 function customLoadMessage(sender, message) {
+	var imgSrc = receiverAvatar;
 	var msgDisplay = '<li>'
 		+ '<div class="message';
 	if (username != sender) {
 		msgDisplay += '">';
 	} else {
+		imgSrc = userAvatar;
 		msgDisplay += ' right">';
 	}
 	return msgDisplay + '<div class="message-img">'
-		+ '<img src="http://' + window.location.host + '/static/images/user-male.jpg" alt="">'
+		+ '<img src="' + imgSrc + '" alt="">'
 		+ ' </div>'
 		+ '<div class="message-text">' + message + '</div>'
 		+ '</div>'

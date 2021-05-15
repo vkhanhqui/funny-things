@@ -7,8 +7,9 @@ public class User {
 	private String avatar;
 
 	public User() {
-
+		
 	}
+	
 
 	public User(String username, String password, boolean gender, String avatar) {
 		this.username = username;
