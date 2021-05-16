@@ -1,12 +1,13 @@
 package com.chatapp.services;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import com.chatapp.models.FileDTO;
-import com.chatapp.models.Message;
+import com.chatapp.models.dtos.FileDTO;
+import com.chatapp.models.dtos.MessageDTO;
 import com.chatapp.websockets.ChatWebsocket;
 
 public abstract class ChatServiceAbstract {
@@ -17,11 +18,17 @@ public abstract class ChatServiceAbstract {
 
 	public abstract boolean close(ChatWebsocket chatWebsocket);
 
-	public abstract void sendMessageToAllUsers(Message message);
+	public abstract void sendMessageToAllUsers(MessageDTO message);
 
-	public abstract void sendMessageToOneUser(Message message, Queue<FileDTO> fileDTOs);
+	public abstract void sendMessageToOneUser(MessageDTO message, Queue<FileDTO> fileDTOs);
 
 	public abstract void handleFileUpload(ByteBuffer byteBuffer, boolean last, Queue<FileDTO> fileDTOs);
 
-	protected abstract Set<String> getUsernames();
+	protected Set<String> getUsernames() {
+		Set<String> usernames = new HashSet<String>();
+		chatWebsockets.forEach(chatWebsocket -> {
+			usernames.add(chatWebsocket.getUsername());
+		});
+		return usernames;
+	}
 }

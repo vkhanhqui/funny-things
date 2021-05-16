@@ -10,7 +10,7 @@ sp_changedbowner mylogin;
 
 CREATE TABLE users (
   id int identity(1,1) primary key,
-  username char(50) NOT NULL,
+  username char(50) NOT NULL unique,
   password char(50) NOT NULL,
   gender bit NOT NULL,
   avatar char(50) NOT NULL
@@ -27,7 +27,7 @@ CREATE TABLE friends (
 
 CREATE TABLE messages (
   id int identity(1,1) primary key,
-  created_at datetime NOT NULL,
+  created_at datetime default current_timestamp,
   message text NOT NULL,
   id_sender int NOT NULL,
   foreign key (id_sender) references users(id),
@@ -64,4 +64,7 @@ where u1.username LIKE 'a1'
 
 
 truncate table friends;
+truncate table messages;
 truncate table users;
+
+drop table messages;

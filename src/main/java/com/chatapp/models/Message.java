@@ -1,27 +1,17 @@
 package com.chatapp.models;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Message {
 
-	@JsonProperty("username")
 	private String username;
-	@JsonProperty("message")
 	private String message;
-	@JsonProperty("type")
 	private String type;
-	@JsonProperty("receiver")
 	private String receiver;
-	@JsonProperty("onlineList")
-	private Set<String> onlineList = new HashSet<String>();
+	
+	public Message() {
+		
+	}
 
-	@JsonCreator
-	public Message(@JsonProperty("username") String username, @JsonProperty("message") String message,
-			@JsonProperty("type") String type, @JsonProperty("receiver") String receiver) {
+	public Message(String username, String message, String type, String receiver) {
 		this.username = username;
 		this.message = message;
 		this.type = type;
@@ -59,14 +49,4 @@ public class Message {
 	public void setReceiver(String receiver) {
 		this.receiver = receiver;
 	}
-
-	public Set<String> getOnlineList() {
-		return onlineList;
-	}
-
-	public void setOnlineList(Set<String> onlineList) {
-		this.onlineList = onlineList;
-	}
-
-	
 }

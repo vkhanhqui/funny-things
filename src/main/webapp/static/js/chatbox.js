@@ -36,9 +36,8 @@ window.onload = function() {
 		};
 
 		websocket.onclose = function(data) {
+			console.log(data.reason);
 			cleanUp();
-			var reason = (data.reason && data.reason !== null) ? data.reason : 'Goodbye';
-			console.log(reason);
 		};
 	} else {
 		console.log("Websockets not supported");
@@ -228,10 +227,20 @@ function sendAttachments() {
 		messageContent = file.name;
 		messageType = file.type;
 		var message = buildMessageToJson(messageContent, messageType);
-		setMessage(message);
 		console.log(message);
 		websocket.send(JSON.stringify(message));
 		websocket.send(file);
+		message.message = '<img src="' + URL.createObjectURL(file) + '" alt="">';
+		if (messageType.startsWith("audio")) {
+			message.message = '<audio controls>'
+				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
+				+ '</audio>';
+		} else if (messageType.startsWith("video")) {
+			message.message = '<video controls>'
+				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
+				+ '</video>';
+		}
+		setMessage(message);
 	}
 	file = document.querySelector(".list-file");
 	file.classList.remove("active");
@@ -279,8 +288,6 @@ function setOnline(username, isOnline) {
 	}
 
 }
-
-
 
 function loadMessages(userId) {
 	var currentChatbox = document.getElementById("chat");

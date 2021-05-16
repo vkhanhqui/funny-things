@@ -4,10 +4,11 @@ import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 
+import com.chatapp.models.dtos.MessageDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public final class MessageEncoder implements Encoder.Text<Message> {
+public final class MessageEncoder implements Encoder.Text<MessageDTO> {
 
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -20,7 +21,7 @@ public final class MessageEncoder implements Encoder.Text<Message> {
 	}
 
 	@Override
-	public String encode(final Message message) throws EncodeException {
+	public String encode(final MessageDTO message) throws EncodeException {
 		try {
 			return objectMapper.writeValueAsString(message);
 		} catch (JsonProcessingException e) {

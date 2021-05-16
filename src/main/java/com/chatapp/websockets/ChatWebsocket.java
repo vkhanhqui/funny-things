@@ -12,10 +12,10 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
-import com.chatapp.models.FileDTO;
-import com.chatapp.models.Message;
 import com.chatapp.models.MessageDecoder;
 import com.chatapp.models.MessageEncoder;
+import com.chatapp.models.dtos.FileDTO;
+import com.chatapp.models.dtos.MessageDTO;
 import com.chatapp.services.impl.ChatService;
 
 @ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
@@ -33,7 +33,7 @@ public class ChatWebsocket {
 			this.session = session;
 			this.username = username;
 			String receiver = "all";
-			Message msgResponse = new Message(this.username, "[P]open", "text", receiver);
+			MessageDTO msgResponse = new MessageDTO(this.username, "[P]open", "text", receiver);
 			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}
@@ -44,7 +44,7 @@ public class ChatWebsocket {
 	}
 
 	@OnMessage
-	public void onMessage(Message message, Session session) {
+	public void onMessage(MessageDTO message, Session session) {
 		chatService.sendMessageToOneUser(message, fileDTOs);
 	}
 
@@ -57,7 +57,7 @@ public class ChatWebsocket {
 	public void onClose(Session session) {
 		if (chatService.close(this)) {
 			String receiver = "all";
-			Message msgResponse = new Message(this.username, "[P]close", "text", receiver);
+			MessageDTO msgResponse = new MessageDTO(this.username, "[P]close", "text", receiver);
 			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}

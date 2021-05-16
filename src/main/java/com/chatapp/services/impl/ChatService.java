@@ -5,19 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
 
 import javax.websocket.EncodeException;
 
-import com.chatapp.models.FileDTO;
-import com.chatapp.models.Message;
+import com.chatapp.models.dtos.FileDTO;
+import com.chatapp.models.dtos.MessageDTO;
 import com.chatapp.services.ChatServiceAbstract;
 import com.chatapp.services.FileServiceAbstract;
 import com.chatapp.websockets.ChatWebsocket;
 
-public class ChatService extends ChatServiceAbstract{
+public class ChatService extends ChatServiceAbstract {
 
 	private static ChatService chatService = null;
 
@@ -42,7 +40,7 @@ public class ChatService extends ChatServiceAbstract{
 	}
 
 	@Override
-	public void sendMessageToAllUsers(Message message) {
+	public void sendMessageToAllUsers(MessageDTO message) {
 		message.setOnlineList(getUsernames());
 		chatWebsockets.stream().forEach(chatWebsocket -> {
 			try {
@@ -54,23 +52,22 @@ public class ChatService extends ChatServiceAbstract{
 	}
 
 	@Override
-	public void sendMessageToOneUser(Message message, Queue<FileDTO> fileDTOs) {
+	public void sendMessageToOneUser(MessageDTO message, Queue<FileDTO> fileDTOs) {
 		if (!message.getType().equals("text")) {
 			String fileName = message.getMessage();
 			fileName = fileName.replaceAll("\\s+", "");
-			String destFile = FileServiceAbstract.rootLocation.toString() + "/" + message.getUsername() + "/" + fileName;
+			String destFile = FileServiceAbstract.rootLocation.toString() + "/" + message.getUsername() + "/"
+					+ fileName;
 			File uploadedFile = new File(destFile);
-			if (!uploadedFile.exists()) {
-				try {
-					FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile);
-					String sender = message.getUsername();
-					String receiver = message.getReceiver();
-					String url = FileServiceAbstract.rootURL + sender + "/" + fileName;
-					FileDTO newFileDTO = new FileDTO(fileName, fileOutputStream, sender, receiver, url);
-					fileDTOs.add(newFileDTO);
-				} catch (FileNotFoundException ex) {
-					ex.printStackTrace();
-				}
+			String sender = message.getUsername();
+			String receiver = message.getReceiver();
+			String url = FileServiceAbstract.rootURL + sender + "/" + fileName;
+			try {
+				FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile, false);
+				FileDTO newFileDTO = new FileDTO(fileName, message.getType(), fileOutputStream, sender, receiver, url);
+				fileDTOs.add(newFileDTO);
+			} catch (FileNotFoundException ex) {
+				ex.printStackTrace();
 			}
 		} else {
 			chatWebsockets.stream().filter(chatWebsocket -> chatWebsocket.getUsername().equals(message.getReceiver()))
@@ -96,11 +93,19 @@ public class ChatService extends ChatServiceAbstract{
 				fileDTOs.peek().getFileOutputStream().close();
 				System.out
 						.println("Done: " + fileDTOs.peek().getFilename() + " of user: " + fileDTOs.peek().getSender());
-				String message = fileDTOs.peek().getUrl();
+				String message = "<img src=\"" + fileDTOs.peek().getUrl() + "\" alt=\"\">";
+				String typeFile = fileDTOs.peek().getTypeFile();
+				if (typeFile.startsWith("audio")) {
+					message = "<audio controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl() + "\" type=\""
+							+ typeFile + "\">\r\n" + "</audio>";
+				} else if (typeFile.startsWith("video")) {
+					message = "<video controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl() + "\" type=\""
+							+ typeFile + "\">\r\n" + "</video>";
+				}
 				String type = "text";
 				String username = fileDTOs.peek().getSender();
 				String receiver = fileDTOs.peek().getReceiver();
-				Message messageResponse = new Message(username, message, type, receiver);
+				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver);
 				fileDTOs.remove();
 				sendMessageToOneUser(messageResponse, fileDTOs);
 			}
@@ -109,14 +114,5 @@ public class ChatService extends ChatServiceAbstract{
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();
 		}
-	}
-
-	@Override
-	protected Set<String> getUsernames() {
-		Set<String> usernames = new HashSet<String>();
-		chatWebsockets.forEach(chatWebsocket -> {
-			usernames.add(chatWebsocket.getUsername());
-		});
-		return usernames;
 	}
 }
