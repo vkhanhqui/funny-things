@@ -11,24 +11,32 @@
 <link rel="icon" type="image/png"
 	href="<c:url value="/static/images/icon.jpg" />">
 
-<title>Update User</title>
+<title>${title}</title>
 </head>
 <body>
 	<div class="container">
 		<div class="form-container">
 			<div class="tab-control">
-				<h3 class="tab-control-btn register">Update your information</h3>
+				<h3 class="tab-control-btn register">${description}</h3>
 			</div>
 			<div class="register-form form active">
-				<form action="<c:url value="/users/update" />"
+				<form action="<c:url value="/users${status}" />"
 					enctype="multipart/form-data" method="POST">
-					<input type="text" class="txt-input border"
-						placeholder=${user.username } name="username"
-						value=${user.username } readonly="readonly"> <input
-						type="password" class="txt-input border" placeholder="Password"
-						name="password"> <input type="password"
-						class="txt-input border" placeholder="Re Password"> <select
-						name="gender" class="txt-input border gender-select" id="">
+					<c:choose>
+						<c:when test="${user.username!=null}">
+							<input type="text" class="txt-input border"
+								placeholder=${user.username } name="username"
+								value=${user.username } readonly="readonly">
+						</c:when>
+						<c:otherwise>
+							<input type="text" class="txt-input border"
+								placeholder="Username" name="username">
+						</c:otherwise>
+					</c:choose>
+					<input type="password" class="txt-input border"
+						placeholder="Password" name="password"> <input
+						type="password" class="txt-input border" placeholder="Re Password">
+					<select name="gender" class="txt-input border gender-select" id="">
 						<option value="true">Male</option>
 						<option value="false">Female</option>
 					</select> <label for="image"> <img
@@ -37,15 +45,18 @@
 					</label> <input type="file" accept="image/*" name="avatar" id="image"
 						class="image-file">
 
-					<button type="submit" class="btn btn-login border">Update</button>
-					<a href="<c:url value="/chat" />" class="btn btn-login border"
+					<button type="submit" class="btn btn-login border">${btnSubmit}</button>
+
+					<a href="<c:url value="${btnGoBack}" />"
+						class="btn btn-login border"
 						style="background-color: grey; text-align: center;">Go back</a>
+
 				</form>
 			</div>
 		</div>
 	</div>
 
 	<script type="text/javascript"
-		src="<c:url value="/static/js/login.js" />" charset="utf-8"></script>
+		src="<c:url value="/static/js/user-form.js" />" charset="utf-8"></script>
 </body>
 </html>

@@ -19,7 +19,10 @@
 			<h2 class="form-title">Star Messenger</h2>
 			<div class="tab-control">
 				<h3 class="active tab-control-btn login">Sign in</h3>
-				<h3 class="tab-control-btn register">Sign up</h3>
+				<h3 class="tab-control-btn register">
+					<a href="<c:url value="/users/register" />" style="color: white;">Sign
+						up</a>
+				</h3>
 			</div>
 			<div class="login-form form active">
 				<form action="<c:url value="/login" />" method="POST">
@@ -29,30 +32,8 @@
 					<button type="submit" class="btn btn-login border">Sign in</button>
 				</form>
 			</div>
-			<div class="register-form form">
-				<form action="<c:url value="/users/register" />"
-					enctype="multipart/form-data" method="POST">
-					<input type="text" class="txt-input border" placeholder="Username"
-						name="username"> <input type="password"
-						class="txt-input border" placeholder="Password" name="password">
-					<input type="password" class="txt-input border"
-						placeholder="Re Password"> <select name="gender"
-						class="txt-input border gender-select" id="">
-						<option value="true">Male</option>
-						<option value="false">Female</option>
-					</select> <label for="image"> <img
-						src="<c:url value="/static/images/user-male.jpg" />"
-						class="image-profile" alt="">
-					</label> <input type="file" accept="image/*" name="avatar" id="image"
-						class="image-file">
-
-					<button type="submit" class="btn btn-login border">Sign up</button>
-				</form>
-			</div>
 		</div>
 	</div>
 
-	<script type="text/javascript"
-		src="<c:url value="/static/js/login.js" />" charset="utf-8"></script>
 </body>
 </html>

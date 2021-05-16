@@ -8,17 +8,29 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import com.chatapp.daos.GenericDaoInterface;
 import com.chatapp.mappers.RowMapperInterface;
 
 public class GenericDao<T> implements GenericDaoInterface<T> {
 
+	private ResourceBundle resourceBundle = ResourceBundle.getBundle("database");
+
 	public Connection getConnection() {
 		try {
-			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-			String url = "jdbc:sqlserver://KHANHQUI\\SQLEXPRESS:1433;databaseName=chatapp;user=mylogin;password=mylogin";
-			return DriverManager.getConnection(url);
+			String driverName = resourceBundle.getString("driverName");
+			String server = resourceBundle.getString("server");
+			String databaseName = resourceBundle.getString("databaseName");
+			String user = resourceBundle.getString("user");
+			String password = resourceBundle.getString("password");
+			StringBuilder url = new StringBuilder();
+			Class.forName(driverName);
+			url.append(server);
+			url.append(";databaseName=" + databaseName);
+			url.append(";user=" + user);
+			url.append(";password=" + password);
+			return DriverManager.getConnection(url.toString());
 		} catch (ClassNotFoundException | SQLException ex) {
 			return null;
 		}

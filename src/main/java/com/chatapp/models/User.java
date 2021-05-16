@@ -1,21 +1,29 @@
 package com.chatapp.models;
 
 public class User {
+	private Integer id;
 	private String username;
 	private String password;
 	private boolean gender;
 	private String avatar;
 
 	public User() {
-		
+
 	}
-	
 
 	public User(String username, String password, boolean gender, String avatar) {
 		this.username = username;
 		this.password = password;
 		this.gender = gender;
 		this.avatar = avatar;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getUsername() {

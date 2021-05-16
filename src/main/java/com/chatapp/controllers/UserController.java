@@ -18,6 +18,7 @@ import com.chatapp.services.impl.UserService;
 @MultipartConfig
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
 	private UserServiceInterface userService = UserService.getInstance();
 
 	public UserController() {
@@ -26,7 +27,26 @@ public class UserController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		if (request.getPathInfo().endsWith("update")) {
+		String status = request.getPathInfo();
+		if (status.equals("/register") || status.equals("/update")) {
+			String title = "Update User";
+			String description = "Update your information";
+			String btnSubmit = "Update";
+			String btnGoBack = "/chat";
+
+			if (status.equals("/register")) {
+				title = "Register User";
+				description = "Enter your information";
+				btnSubmit = "Register";
+				btnGoBack = "/login";
+			}
+
+			request.setAttribute("title", title);
+			request.setAttribute("description", description);
+			request.setAttribute("status", status);
+			request.setAttribute("btnSubmit", btnSubmit);
+			request.setAttribute("btnGoBack", btnGoBack);
+
 			RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/user-form.jsp");
 			rd.forward(request, response);
 		} else {

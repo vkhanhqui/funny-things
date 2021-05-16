@@ -6,9 +6,10 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
+import com.chatapp.models.dtos.MessageDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public final class MessageDecoder implements Decoder.Text<Message> {
+public final class MessageDecoder implements Decoder.Text<MessageDTO> {
 
 	private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -21,9 +22,9 @@ public final class MessageDecoder implements Decoder.Text<Message> {
 	}
 
 	@Override
-	public Message decode(final String arg0) throws DecodeException {
+	public MessageDTO decode(final String arg0) throws DecodeException {
 		try {
-			return objectMapper.readValue(arg0, Message.class);
+			return objectMapper.readValue(arg0, MessageDTO.class);
 		} catch (IOException e) {
 			throw new DecodeException(arg0, "Unable to decode text to Message", e);
 		}

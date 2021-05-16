@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.chatapp.models.Message;
+import com.chatapp.models.dtos.MessageDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebServlet("/chat-rest-controller")
@@ -25,16 +25,16 @@ public class ChatRestController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {		
-		List<Message> messages = new ArrayList<>();
+		List<MessageDTO> messages = new ArrayList<>();
 		//current user is a1
-		messages.add(new Message("a1", "hello","text", "a2"));
+		messages.add(new MessageDTO("a1", "hello","text", "a2"));
 		
 		//clicked user
 		String userId = request.getParameter("userId");
 		
 		for (int i = 0; i < 50; i++) {
 			
-			messages.add(new Message(userId, "hello","text", "a1"));
+			messages.add(new MessageDTO(userId, "hello","text", "a1"));
 		}
 		
 		//response to json

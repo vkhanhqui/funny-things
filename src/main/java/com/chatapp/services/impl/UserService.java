@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import javax.servlet.http.Part;
 
@@ -60,5 +61,17 @@ public class UserService implements UserServiceInterface {
 			ex.printStackTrace();
 		}
 
+	}
+
+	@Override
+	public User findUser(String username, String password) {
+		User user = userDaoInterface.findByUserNameAndPassword(username, password);
+		return user;
+	}
+	
+	@Override
+	public List<User> findFriends(String username) {
+		List<User> friends = userDaoInterface.findFriends(username);
+		return friends;
 	}
 }

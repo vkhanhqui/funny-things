@@ -10,24 +10,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.chatapp.daos.UserDaoInterface;
-import com.chatapp.daos.impl.UserDao;
 import com.chatapp.models.User;
+import com.chatapp.services.UserServiceInterface;
+import com.chatapp.services.impl.UserService;
 
 @WebServlet("/chat")
 public class ChatController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
-	private UserDaoInterface userDao = UserDao.getInstace();
+
+	private UserServiceInterface userService = UserService.getInstance();
+
 	public ChatController() {
-		super(); 
+		super();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		User currentUser = (User) request.getSession().getAttribute("user");
-		List<User> friends = userDao.findFriends(currentUser.getUsername());	
-		
+		List<User> friends = userService.findFriends(currentUser.getUsername());
+
 		request.setAttribute("friends", friends);
 		request.setAttribute("user", currentUser);
 
