@@ -95,7 +95,7 @@ function setReceiver(element) {
 
 	document.getElementById("receiver").innerHTML = rightSide;
 
-	loadMessages(receiver);
+	loadMessages();
 
 	handleResponsive();
 
@@ -286,10 +286,9 @@ function setOnline(username, isOnline) {
 	} else {
 		ele.classList.remove('online');
 	}
-
 }
 
-function loadMessages(userId) {
+function loadMessages() {
 	var currentChatbox = document.getElementById("chat");
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -303,7 +302,8 @@ function loadMessages(userId) {
 			goLastestMsg();
 		}
 	};
-	xhttp.open("GET", "http://" + window.location.host + "/chat-rest-controller?userId=" + userId, true);
+	xhttp.open("GET", "http://" + window.location.host + "/chat-rest-controller?sender=" + username
+		+ "&receiver=" + receiver, true);
 	xhttp.send();
 }
 

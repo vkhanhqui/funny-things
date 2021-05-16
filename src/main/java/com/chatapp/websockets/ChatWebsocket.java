@@ -16,7 +16,10 @@ import com.chatapp.models.MessageDecoder;
 import com.chatapp.models.MessageEncoder;
 import com.chatapp.models.dtos.FileDTO;
 import com.chatapp.models.dtos.MessageDTO;
+import com.chatapp.services.ChatServiceAbstract;
+import com.chatapp.services.MessageServiceInterface;
 import com.chatapp.services.impl.ChatService;
+import com.chatapp.services.impl.MessageService;
 
 @ServerEndpoint(value = "/chat/{username}", encoders = MessageEncoder.class, decoders = MessageDecoder.class)
 public class ChatWebsocket {
@@ -25,7 +28,8 @@ public class ChatWebsocket {
 	private String username;
 	private Queue<FileDTO> fileDTOs = new LinkedList<>();
 
-	private ChatService chatService = ChatService.getInstance();
+	private ChatServiceAbstract chatService = ChatService.getInstance();
+	private MessageServiceInterface messageService = MessageService.getInstance();
 
 	@OnOpen
 	public void onOpen(@PathParam("username") String username, Session session) {
@@ -46,6 +50,7 @@ public class ChatWebsocket {
 	@OnMessage
 	public void onMessage(MessageDTO message, Session session) {
 		chatService.sendMessageToOneUser(message, fileDTOs);
+		messageService.saveMessage(message);
 	}
 
 	@OnMessage

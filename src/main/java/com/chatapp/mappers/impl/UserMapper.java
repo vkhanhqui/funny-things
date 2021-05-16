@@ -12,7 +12,6 @@ public class UserMapper implements RowMapperInterface<User> {
 	public User mapRow(ResultSet resultSet) {
 		try {
 			User user = new User();
-			user.setId(resultSet.getInt("id"));
 			user.setUsername(resultSet.getString("username").trim());
 			user.setGender(resultSet.getBoolean("gender"));
 			user.setAvatar(resultSet.getString("avatar").trim());

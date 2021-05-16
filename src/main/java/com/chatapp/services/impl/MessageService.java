@@ -1,0 +1,59 @@
+package com.chatapp.services.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.chatapp.daos.MessageDaoInterface;
+import com.chatapp.daos.impl.MessageDao;
+import com.chatapp.models.Message;
+import com.chatapp.models.dtos.MessageDTO;
+import com.chatapp.services.MessageServiceInterface;
+
+public class MessageService implements MessageServiceInterface {
+	private static MessageService instance = null;
+
+	private MessageDaoInterface messageDaoInterface = MessageDao.getInstance();
+
+	public synchronized static MessageService getInstance() {
+		if (instance == null) {
+			instance = new MessageService();
+		}
+		return instance;
+	}
+
+	private Message convertToEntity(MessageDTO messageDTO) {
+		String username = messageDTO.getUsername();
+		String message = messageDTO.getMessage();
+		String type = messageDTO.getType();
+		String receiver = messageDTO.getReceiver();
+		Message messageEntity = new Message(username, message, type, receiver);
+		return messageEntity;
+	}
+
+	private MessageDTO convertToDTO(Message messageEntity) {
+		String username = messageEntity.getUsername();
+		String message = messageEntity.getMessage();
+		String type = messageEntity.getType();
+		String receiver = messageEntity.getReceiver();
+		MessageDTO messageDTO = new MessageDTO(username, message, type, receiver);
+		return messageDTO;
+	}
+
+	@Override
+	public List<MessageDTO> getAllMessagesBySenderAndReceiver(String sender, String receiver) {
+		List<Message> listMessages = messageDaoInterface.findAllMessagesBySenderAndReceiver(sender, receiver);
+		List<MessageDTO> listMessageDTOs = new ArrayList<MessageDTO>();
+		listMessages.stream().forEach(msg -> {
+			MessageDTO messageDTO = convertToDTO(msg);
+			listMessageDTOs.add(messageDTO);
+		});
+		return listMessageDTOs;
+	}
+
+	@Override
+	public void saveMessage(MessageDTO messageDTO) {
+		Message messageEntity = convertToEntity(messageDTO);
+		messageDaoInterface.saveMessage(messageEntity);
+	}
+
+}
