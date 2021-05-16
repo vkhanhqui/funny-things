@@ -18,6 +18,7 @@ import com.chatapp.services.impl.UserService;
 @MultipartConfig
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
 	private UserServiceInterface userService = UserService.getInstance();
 
 	public UserController() {

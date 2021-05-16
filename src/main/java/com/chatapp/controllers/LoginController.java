@@ -11,13 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.chatapp.models.User;
-import com.chatapp.services.LoginServiceInterface;
-import com.chatapp.services.impl.LoginService;
+import com.chatapp.services.UserServiceInterface;
+import com.chatapp.services.impl.UserService;
 
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static LoginServiceInterface loginService = LoginService.getInstance();
+	
+	private UserServiceInterface userService = UserService.getInstance();
 
 	public LoginController() {
 		super();
@@ -38,7 +39,7 @@ public class LoginController extends HttpServlet {
 			throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		User user = loginService.handleLogin(username, password);
+		User user = userService.findUser(username, password);
 		String destPage = "/login";
 		if (user != null) {
 			HttpSession httpSession = request.getSession();
