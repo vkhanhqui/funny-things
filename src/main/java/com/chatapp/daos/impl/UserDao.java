@@ -23,7 +23,7 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 
 	@Override
 	public User findByUserNameAndPassword(String userName, String password) {
-		StringBuilder sql = new StringBuilder("select id, username, gender, avatar");
+		StringBuilder sql = new StringBuilder("select username, gender, avatar");
 		sql.append(" from users where username=? and password=?");
 		List<User> users = query(sql.toString(), new UserMapper(), userName, password);
 		return users.isEmpty() ? null : users.get(0);
@@ -31,9 +31,9 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 
 	@Override
 	public List<User> findFriends(String userName) {
-		StringBuilder sql = new StringBuilder("select u2.id, u2.username, u2.avatar, u2.gender");
-		sql.append(" from users u1 join friends f on u1.id = f.id_receiver");
-		sql.append(" join users u2 on u2.id = f.id_sender");
+		StringBuilder sql = new StringBuilder("select u2.username, u2.avatar, u2.gender");
+		sql.append(" from users u1 join friends f on u1.username = f.receiver");
+		sql.append(" join users u2 on u2.username = f.sender and f.status = 1");
 		sql.append(" where u1.username LIKE ?");
 		String param = "%" + userName + "%";
 		List<User> users = query(sql.toString(), new UserMapper(), param);
@@ -46,8 +46,7 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 		String password = user.getPassword();
 		Boolean gender = user.isGender();
 		String avatar = user.getAvatar();
-		StringBuilder sql = new StringBuilder("insert into users(username, password, gender, avatar)");
-		sql.append(" values(?,?,?,?)");
+		StringBuilder sql = new StringBuilder("insert into users values(?,?,?,?)");
 		if (isRegister) {
 			save(sql.toString(), username, password, gender, avatar);
 		} else {

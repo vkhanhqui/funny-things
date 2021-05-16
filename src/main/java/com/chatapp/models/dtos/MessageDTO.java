@@ -66,7 +66,5 @@ public class MessageDTO {
 
 	public void setOnlineList(Set<String> onlineList) {
 		this.onlineList = onlineList;
-	}
-
-	
+	}	
 }

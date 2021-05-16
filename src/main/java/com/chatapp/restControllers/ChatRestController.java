@@ -2,7 +2,6 @@ package com.chatapp.restControllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -12,32 +11,26 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.chatapp.models.dtos.MessageDTO;
+import com.chatapp.services.MessageServiceInterface;
+import com.chatapp.services.impl.MessageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebServlet("/chat-rest-controller")
 public class ChatRestController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	
+	private MessageServiceInterface messageServiceInterface = MessageService.getInstance();
+
 	public ChatRestController() {
 		super();
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {		
-		List<MessageDTO> messages = new ArrayList<>();
-		//current user is a1
-		messages.add(new MessageDTO("a1", "hello","text", "a2"));
-		
-		//clicked user
-		String userId = request.getParameter("userId");
-		
-		for (int i = 0; i < 50; i++) {
-			
-			messages.add(new MessageDTO(userId, "hello","text", "a1"));
-		}
-		
-		//response to json
+			throws ServletException, IOException {
+		String sender = request.getParameter("sender");
+		String receiver = request.getParameter("receiver");
+		List<MessageDTO> messages = messageServiceInterface.getAllMessagesBySenderAndReceiver(sender, receiver);
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(messages);
 
