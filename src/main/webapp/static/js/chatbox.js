@@ -224,7 +224,7 @@ function sendText() {
 function sendAttachments() {
 	var messageType = "attachment";
 	for (file of listFile) {
-		messageContent = file.name;
+		messageContent = file.name.trim();
 		messageType = file.type;
 		var message = buildMessageToJson(messageContent, messageType);
 		console.log(message);

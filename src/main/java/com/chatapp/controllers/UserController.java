@@ -18,7 +18,7 @@ import com.chatapp.services.impl.UserService;
 @MultipartConfig
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private UserServiceInterface userService = UserService.getInstance();
 
 	public UserController() {
@@ -49,6 +49,9 @@ public class UserController extends HttpServlet {
 
 			RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/user-form.jsp");
 			rd.forward(request, response);
+		} else if (status.equals("/logout")) {
+			request.getSession().invalidate();
+			response.sendRedirect("/login");
 		} else {
 			response.sendRedirect("/login");
 		}

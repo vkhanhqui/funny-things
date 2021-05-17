@@ -26,8 +26,11 @@
 			<div class="left-side active">
 				<h2>
 					<a href="<c:url value="/users/update"/>"
-						style="text-decoration: none; color: white;">Welcome
+						style="text-decoration: none; color: white;margin-right: 3rem;">Welcome
 						${user.username}</a>
+					:
+					<a href="<c:url value="/users/logout"/>"
+						style="text-decoration: none; color: white; margin-left: 3rem;">Logout</a>
 				</h2>
 				<div class="tab-control">
 					<i class="fa fa-comment active"></i> <i class="fa fa-comments"></i>
