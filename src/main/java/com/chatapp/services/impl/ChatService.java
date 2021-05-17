@@ -99,8 +99,8 @@ public class ChatService extends ChatServiceAbstract {
 					message = "<audio controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl() + "\" type=\""
 							+ typeFile + "\">\r\n" + "</audio>";
 				} else if (typeFile.startsWith("video")) {
-					message = "<video controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl() + "\" type=\""
-							+ typeFile + "\">\r\n" + "</video>";
+					message = "<video width=\"400\" controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl()
+							+ "\" type=\"" + typeFile + "\">\r\n" + "</video>";
 				}
 				String type = "text";
 				String username = fileDTOs.peek().getSender();

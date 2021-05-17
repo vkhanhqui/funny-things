@@ -331,11 +331,11 @@ img {
     border-radius: .5rem;
     font-size: 1.2rem;
     font-weight: 500;
-    max-width: 15rem;
+    max-width: 20rem;
     margin-right: .5rem;
 }
 
-.message-text img {
+.message-text>* {
     max-width: 100%;
 }
 
