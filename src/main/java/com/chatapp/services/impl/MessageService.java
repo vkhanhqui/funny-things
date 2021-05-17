@@ -7,6 +7,7 @@ import com.chatapp.daos.MessageDaoInterface;
 import com.chatapp.daos.impl.MessageDao;
 import com.chatapp.models.Message;
 import com.chatapp.models.dtos.MessageDTO;
+import com.chatapp.services.FileServiceAbstract;
 import com.chatapp.services.MessageServiceInterface;
 
 public class MessageService implements MessageServiceInterface {
@@ -32,8 +33,11 @@ public class MessageService implements MessageServiceInterface {
 
 	private MessageDTO convertToDTO(Message messageEntity) {
 		String username = messageEntity.getUsername();
-		String message = messageEntity.getMessage();
 		String type = messageEntity.getType();
+		String message = messageEntity.getMessage();
+		if (!type.equals("text")) {
+			message = FileServiceAbstract.toTagHtml(type, username, message);
+		}
 		String receiver = messageEntity.getReceiver();
 		MessageDTO messageDTO = new MessageDTO(username, message, type, receiver);
 		return messageDTO;

@@ -236,7 +236,7 @@ function sendAttachments() {
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
 				+ '</audio>';
 		} else if (messageType.startsWith("video")) {
-			message.message = '<video controls>'
+			message.message = '<video width="400" controls>'
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
 				+ '</video>';
 		}
