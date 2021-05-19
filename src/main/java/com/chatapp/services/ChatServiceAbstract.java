@@ -24,7 +24,7 @@ public abstract class ChatServiceAbstract {
 
 	public abstract void handleFileUpload(ByteBuffer byteBuffer, boolean last, Queue<FileDTO> fileDTOs);
 
-	public abstract boolean isOnline(String username);
+	public abstract boolean isUserOnline(String username);
 	
 	protected Set<String> getUsernames() {
 		Set<String> usernames = new HashSet<String>();

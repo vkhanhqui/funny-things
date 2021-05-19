@@ -40,8 +40,7 @@ public class ChatService extends ChatServiceAbstract {
 	}
 
 	@Override
-	public boolean isOnline(String username) {
-		int i = 1;
+	public boolean isUserOnline(String username) {
 		for(ChatWebsocket chatWebsocket : chatWebsockets) {
 			if(chatWebsocket.getUsername().equals(username)) {
 				return true;

@@ -22,9 +22,6 @@ import com.chatapp.services.impl.UserService;
 import com.chatapp.websockets.ChatWebsocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Servlet implementation class FriendRestController
- */
 @WebServlet("/friend-rest-controller")
 public class FriendRestController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -39,16 +36,21 @@ public class FriendRestController extends HttpServlet {
 			throws ServletException, IOException {
 		String keyWord = request.getParameter("keyword");
 		String userName = request.getParameter("username");
-		List<User> messages = userServiceInterface.findFriendsByKeyWord(userName,keyWord);
-
+		List<User> listUsers;
+		
+		if(keyWord == "") {
+			listUsers = userServiceInterface.findFriends(userName);
+		}
+		else listUsers = userServiceInterface.findFriendsByKeyWord(userName,keyWord);
+		
 		ChatService chatService = ChatService.getInstance();
 		
-		for(User user : messages) {
-			user.isOnline = chatService.isOnline(user.getUsername());
+		for(User user : listUsers) {
+			user.isOnline = chatService.isUserOnline(user.getUsername());
 		}
 		
 		ObjectMapper objectMapper = new ObjectMapper();
-		String json = objectMapper.writeValueAsString(messages);
+		String json = objectMapper.writeValueAsString(listUsers);
 
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
