@@ -54,5 +54,17 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 			save(sql.toString(), password, gender, avatar, username);
 		}
 	}
+	
+	@Override
+	public List<User> findFriendsByKeyWord(String userName,String keyWord) {
+		StringBuilder sql = new StringBuilder("select u2.username,u2.gender,u2.avatar");
+		sql.append(" from users u1 join friends f on u1.username = f.receiver");
+		sql.append(" join users u2 on u2.username = f.sender");
+		sql.append(" where u1.username = ? and u2.username LIKE ? ");
+		sql.append(" order by f.status desc");
+		String param = "%" + keyWord + "%";
+		List<User> users = query(sql.toString(), new UserMapper(),userName,param);
+		return users;
+	}
 
 }

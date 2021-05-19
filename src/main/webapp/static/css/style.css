@@ -172,6 +172,7 @@ img {
     margin-top: 2rem;
     overflow-y: auto;
     max-height: 50rem;
+    list-style: none;
 }
 
 .list-user-search .txt-input {
@@ -300,7 +301,7 @@ img {
 
 .message {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     overflow-y: auto;
     margin-top: 1rem;
 }

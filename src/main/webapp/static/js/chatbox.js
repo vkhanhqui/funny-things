@@ -325,6 +325,44 @@ function customLoadMessage(sender, message) {
 		+ '</li>';
 }
 
+function searchFriendByKeyword(keyword){
+	fetch("http://" + window.location.host + "/friend-rest-controller?username=" + username + "&keyword=" + keyword)
+		.then(function(data) {
+			return data.json();
+		})
+		.then(data => {
+		console.log(data);
+			document.querySelector(".list-user").innerHTML = "";
+			data.forEach(function(data){
+				if(data.isOnline) status = "online";
+				else status = "";
+				
+				let appendUser = '<li id="' + data.username + '" onclick="setReceiver(this);">'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img id="img-' + data.username + '"'
+					+ ' src="http://' + window.location.host + '/files/' + data.username + '/' + data.avatar + '"'
+					+ 'alt="Image of user">'
+					+ '<div id="status-' + data.username + '" class="user-img-dot '+ status +'"></div>'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + data.username + '</span>'
+					+ '<span'
+					+ '</div>'
+					+ '</div>'
+					+ '</li>';
+				document.querySelector(".list-user").innerHTML += appendUser;
+			});
+		});
+		
+		//
+}
+
+function searchUser(ele){
+	searchFriendByKeyword(ele.value);
+	console.log(ele.target);
+}
+
 function goLastestMsg() {
 	var msgLiTags = document.querySelectorAll(".message");
 	var last = msgLiTags[msgLiTags.length - 1];

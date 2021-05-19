@@ -5,6 +5,7 @@ public class User {
 	private String password;
 	private boolean gender;
 	private String avatar;
+	public boolean isOnline;
 
 	public User() {
 

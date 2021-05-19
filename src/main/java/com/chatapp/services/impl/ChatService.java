@@ -40,6 +40,17 @@ public class ChatService extends ChatServiceAbstract {
 	}
 
 	@Override
+	public boolean isUserOnline(String username) {
+		for(ChatWebsocket chatWebsocket : chatWebsockets) {
+			if(chatWebsocket.getUsername().equals(username)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
+	@Override
 	public void sendMessageToAllUsers(MessageDTO message) {
 		message.setOnlineList(getUsernames());
 		chatWebsockets.stream().forEach(chatWebsocket -> {
