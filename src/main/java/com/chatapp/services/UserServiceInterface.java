@@ -13,4 +13,6 @@ public interface UserServiceInterface {
 	public User findUser(String username, String password);
 	
 	public List<User> findFriends(String username);
+	
+	public List<User> findFriendsByKeyWord(String username, String keyword);
 }

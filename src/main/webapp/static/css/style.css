@@ -172,6 +172,7 @@ img {
     margin-top: 2rem;
     overflow-y: auto;
     max-height: 50rem;
+    list-style: none;
 }
 
 .list-user-search .txt-input {

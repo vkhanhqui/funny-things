@@ -36,7 +36,7 @@
 					<i class="fa fa-comment active"></i> <i class="fa fa-comments"></i>
 				</div>
 				<div class="list-user-search">
-					<input type="text" class="txt-input" placeholder="Search...">
+					<input type="text" class="txt-input" placeholder="Search..." onkeyup="searchUser(this)">
 				</div>
 				<div class="list-user">
 					<ul>
