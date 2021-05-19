@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class FriendRestController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private UserServiceInterface userServiceInterface = UserService.getInstance();
-	
+	private ChatService chatService = ChatService.getInstance();
     public FriendRestController() {
         super();
         // TODO Auto-generated constructor stub
@@ -43,7 +43,7 @@ public class FriendRestController extends HttpServlet {
 		}
 		else listUsers = userServiceInterface.findFriendsByKeyWord(userName,keyWord);
 		
-		ChatService chatService = ChatService.getInstance();
+		
 		
 		for(User user : listUsers) {
 			user.isOnline = chatService.isUserOnline(user.getUsername());

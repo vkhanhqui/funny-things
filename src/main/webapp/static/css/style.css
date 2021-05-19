@@ -301,7 +301,7 @@ img {
 
 .message {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     overflow-y: auto;
     margin-top: 1rem;
 }
