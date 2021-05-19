@@ -239,7 +239,12 @@ function sendAttachments() {
 			message.message = '<video width="400" controls>'
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
 				+ '</video>';
+		}else{
+			message.message = '<a href="' + URL.createObjectURL(file) + '">'
+				+ file.name
+				+ '</a>';
 		}
+		console.log(message);
 		setMessage(message);
 	}
 	file = document.querySelector(".list-file");
@@ -294,6 +299,7 @@ function loadMessages() {
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
 			var messages = JSON.parse(this.responseText);
+			console.log(messages);
 			var chatbox = "";
 			messages.forEach(msg => {
 				chatbox += customLoadMessage(msg.username, msg.message);

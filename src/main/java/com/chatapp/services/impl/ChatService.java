@@ -112,7 +112,12 @@ public class ChatService extends ChatServiceAbstract {
 				} else if (typeFile.startsWith("video")) {
 					message = "<video width=\"400\" controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl()
 							+ "\" type=\"" + typeFile + "\">\r\n" + "</video>";
+				}else {
+					message = "<a href=\"" + fileDTOs.peek().getUrl() + "\">\r\n"
+							+ fileDTOs.peek().getFilename()
+							+ "</a>";
 				}
+				System.out.println(message);
 				String type = "text";
 				String username = fileDTOs.peek().getSender();
 				String receiver = fileDTOs.peek().getReceiver();

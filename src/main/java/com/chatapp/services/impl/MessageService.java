@@ -35,6 +35,7 @@ public class MessageService implements MessageServiceInterface {
 		String username = messageEntity.getUsername();
 		String type = messageEntity.getType();
 		String message = messageEntity.getMessage();
+		System.out.println(message);
 		if (!type.equals("text")) {
 			message = FileServiceAbstract.toTagHtml(type, username, message);
 		}

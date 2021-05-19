@@ -175,6 +175,16 @@ img {
     list-style: none;
 }
 
+.logout {
+	position: absolute;
+	right: 0;
+	top: 0;
+	background: var(--txtColor);
+	border-radius: 0 0 0 1rem;
+	padding: 1rem;
+	color: var(--txtColorSecond);
+}
+
 .list-user-search .txt-input {
     background: var(--mainColor);
     color: var(--txtColorSecond);
