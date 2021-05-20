@@ -20,9 +20,11 @@ CREATE TABLE friends (
 	foreign key (sender) references users(username),
 	receiver char(50) NOT NULL,
 	foreign key (receiver) references users(username),
-	primary key(sender, receiver),
+	owner char(50) NOT NULL,
+	foreign key (owner) references users(username),
+	primary key(sender, receiver, owner),
 	status bit not null
-) ;
+) 
 
 CREATE TABLE messages (
 	id int identity(1,1) primary key,
@@ -39,7 +41,7 @@ insert into users values('a1','a1',1,'a1.jpg');
 insert into users values('a2','a2',1,'a2.jpg');
 insert into users values('a3','a3',1,'a3.jpg');
 insert into users values('a4','a4',1,'a4.jpg');
-
+----Tu thhem
 insert into friends values('a1','a2',1);
 insert into friends values('a2','a1',1);
 
@@ -51,7 +53,7 @@ insert into friends values('a2','a4',1);
 
 insert into friends values('a1','a4',0);
 insert into friends values('a4','a1',0);
-
+--------
 insert into messages(sender, receiver, message, message_type) 
 	values('a1','a2','a1 hello a2','text');
 insert into messages(sender, receiver, message, message_type) 

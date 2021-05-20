@@ -60,7 +60,6 @@ function setReceiver(element) {
 	if (document.getElementById('status-' + receiver).classList.contains('online')) {
 		status = 'online';
 	}
-
 	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
 		+ '</div>'
@@ -76,7 +75,8 @@ function setReceiver(element) {
 		+ '</div>'
 		+ '<div class="setting">'
 		+ '<i class="fa fa-cog"></i>'
-		+ '</div>' + '</div>'
+		+ '</div>'
+		+ '</div>'
 		+ '<div class="list-messages-contain">'
 		+ '<ul id="chat" class="list-messages">'
 		+ '</ul>'
@@ -94,12 +94,119 @@ function setReceiver(element) {
 		+ '</form>';
 
 	document.getElementById("receiver").innerHTML = rightSide;
-
+	
 	loadMessages();
 
 	handleResponsive();
 
 	displayFiles();
+	
+	makeFriend(rightSide);
+}
+
+function makeFriend(rightSide) {
+	fetch("http://" + window.location.host + "/friend-rest-controller?sender=" + username + "&receiver=" + receiver)
+		.then(function(data) {
+			return data.json();
+		})
+		.then(data => {
+			console.log(data);
+			if (data.status == false && data.owner == username) {
+				rightSide = '<div class="user-contact">' + '<div class="back">'
+					+ '<i class="fa fa-arrow-left"></i>'
+					+ '</div>'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img src="' + receiverAvatar + '" '
+					+ 'alt="Image of user">'
+					+ '<div class="user-img-dot ' + status + '"></div>'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + receiver + '</span>'
+					+ '</div>'
+					+ '</div>'
+					+ '<div class="setting">'
+					+ '<i class="fa fa-cog"></i>'
+					+ '</div>'
+					+ '<form action="http://localhost:8080/chat" method="post" >'
+					+ '<input type="hidden" name="sender" value="' + username + '">'
+					+ '<input type="hidden" name="receiver" value="' + receiver + '">'
+					+ '<input type="hidden" name="status" value="false">'
+					+ '<input type="hidden" name="isAccept" value="false">'
+					+ '<input type="submit" value="Cho KB">'
+					+ '</form>'
+					+ '</div>'
+					+ '<div class="list-messages-contain">'
+					+ '<ul id="chat" class="list-messages">'
+					+ '</ul>'
+					+ '</div>';
+					
+					document.getElementById("receiver").innerHTML = rightSide;
+			} else if (data.status == false && data.owner != username) {
+				rightSide = '<div class="user-contact">' + '<div class="back">'
+					+ '<i class="fa fa-arrow-left"></i>'
+					+ '</div>'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img src="' + receiverAvatar + '" '
+					+ 'alt="Image of user">'
+					+ '<div class="user-img-dot ' + status + '"></div>'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + receiver + '</span>'
+					+ '</div>'
+					+ '</div>'
+					+ '<div class="setting">'
+					+ '<i class="fa fa-cog"></i>'
+					+ '</div>'
+					+ '<form action="http://localhost:8080/chat" method="post" >'
+					+ '<input type="hidden" name="sender" value="' + username + '">'
+					+ '<input type="hidden" name="receiver" value="' + receiver + '">'
+					+ '<input type="hidden" name="status" value="true">'
+					+ '<input type="hidden" name="isAccept" value="true">'
+					+ '<input type="submit" value="Accept New Friend">'
+					+ '</form>'
+					+ '</div>'
+					+ '<div class="list-messages-contain">'
+					+ '<ul id="chat" class="list-messages">'
+					+ '</ul>'
+					+ '</div>';
+					document.getElementById("receiver").innerHTML = rightSide;
+			}
+
+		})
+		.catch(ex => {
+			rightSide = '<div class="user-contact">' + '<div class="back">'
+				+ '<i class="fa fa-arrow-left"></i>'
+				+ '</div>'
+				+ '<div class="user-contain">'
+				+ '<div class="user-img">'
+				+ '<img src="' + receiverAvatar + '" '
+				+ 'alt="Image of user">'
+				+ '<div class="user-img-dot ' + status + '"></div>'
+				+ '</div>'
+				+ '<div class="user-info">'
+				+ '<span class="user-name">' + receiver + '</span>'
+				+ '</div>'
+				+ '</div>'
+				+ '<div class="setting">'
+				+ '<i class="fa fa-cog"></i>'
+				+ '</div>'
+				+ '<form action="http://localhost:8080/chat" method="post" >'
+				+ '<input type="hidden" name="sender" value="' + username + '">'
+				+ '<input type="hidden" name="receiver" value="' + receiver + '">'
+				+ '<input type="hidden" name="status" value="false">'
+				+ '<input type="hidden" name="isAccept" value="false">'
+				+ '<input type="submit" value="Add Friend">'
+				+ '</form>'
+				+ '</div>'
+				+ '<div class="list-messages-contain">'
+				+ '<ul id="chat" class="list-messages">'
+				+ '</ul>'
+				+ '</div>';
+
+			document.getElementById("receiver").innerHTML = rightSide;
+		});
 }
 
 function handleResponsive() {
@@ -325,25 +432,25 @@ function customLoadMessage(sender, message) {
 		+ '</li>';
 }
 
-function searchFriendByKeyword(keyword){
-	fetch("http://" + window.location.host + "/friend-rest-controller?username=" + username + "&keyword=" + keyword)
+function searchFriendByKeyword(keyword) {
+	fetch("http://" + window.location.host + "/users-rest-controller?username=" + username + "&keyword=" + keyword)
 		.then(function(data) {
 			return data.json();
 		})
 		.then(data => {
-		console.log(data);
+			console.log(data);
 			document.querySelector(".list-user").innerHTML = "";
-			data.forEach(function(data){
-				if(data.isOnline) status = "online";
+			data.forEach(function(data) {
+				if (data.isOnline) status = "online";
 				else status = "";
-				
+
 				let appendUser = '<li id="' + data.username + '" onclick="setReceiver(this);">'
 					+ '<div class="user-contain">'
 					+ '<div class="user-img">'
 					+ '<img id="img-' + data.username + '"'
 					+ ' src="http://' + window.location.host + '/files/' + data.username + '/' + data.avatar + '"'
 					+ 'alt="Image of user">'
-					+ '<div id="status-' + data.username + '" class="user-img-dot '+ status +'"></div>'
+					+ '<div id="status-' + data.username + '" class="user-img-dot ' + status + '"></div>'
 					+ '</div>'
 					+ '<div class="user-info">'
 					+ '<span class="user-name">' + data.username + '</span>'
@@ -354,11 +461,11 @@ function searchFriendByKeyword(keyword){
 				document.querySelector(".list-user").innerHTML += appendUser;
 			});
 		});
-		
-		//
+
+	//
 }
 
-function searchUser(ele){
+function searchUser(ele) {
 	searchFriendByKeyword(ele.value);
 	console.log(ele.target);
 }
