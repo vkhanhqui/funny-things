@@ -339,6 +339,9 @@ function sendAttachments() {
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
 				+ '</video>';
 		}
+		else {
+			message.message = '<a href= "' + URL.createObjectURL(file) + '">' + messageContent + '</a>'
+		}
 		setMessage(message);
 	}
 	file = document.querySelector(".list-file");

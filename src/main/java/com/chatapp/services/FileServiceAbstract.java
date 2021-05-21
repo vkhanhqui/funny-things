@@ -23,6 +23,9 @@ public abstract class FileServiceAbstract {
 		} else if (type.startsWith("image")) {
 			tag = "<img src=\"" + url + "\" alt=\"\">";
 		}
+		else {
+			tag = "<a href="+url+">"+message+"</a>";
+		}
 		return tag;
 	}
 
