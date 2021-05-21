@@ -94,13 +94,13 @@ function setReceiver(element) {
 		+ '</form>';
 
 	document.getElementById("receiver").innerHTML = rightSide;
-	
+
 	loadMessages();
 
 	handleResponsive();
 
 	displayFiles();
-	
+
 	makeFriend(rightSide);
 }
 
@@ -110,7 +110,6 @@ function makeFriend(rightSide) {
 			return data.json();
 		})
 		.then(data => {
-			console.log(data);
 			if (data.status == false && data.owner == username) {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
@@ -128,20 +127,15 @@ function makeFriend(rightSide) {
 					+ '<div class="setting">'
 					+ '<i class="fa fa-cog"></i>'
 					+ '</div>'
-					+ '<form action="http://localhost:8080/chat" method="post" >'
-					+ '<input type="hidden" name="sender" value="' + username + '">'
-					+ '<input type="hidden" name="receiver" value="' + receiver + '">'
-					+ '<input type="hidden" name="status" value="false">'
-					+ '<input type="hidden" name="isAccept" value="false">'
-					+ '<input type="submit" value="Cho KB">'
+					+ 'Sent Request'
 					+ '</form>'
 					+ '</div>'
 					+ '<div class="list-messages-contain">'
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-					
-					document.getElementById("receiver").innerHTML = rightSide;
+
+				document.getElementById("receiver").innerHTML = rightSide;
 			} else if (data.status == false && data.owner != username) {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
@@ -159,19 +153,19 @@ function makeFriend(rightSide) {
 					+ '<div class="setting">'
 					+ '<i class="fa fa-cog"></i>'
 					+ '</div>'
-					+ '<form action="http://localhost:8080/chat" method="post" >'
+					+ '<form action="http://' + window.location.host + '/chat" method="post" >'
 					+ '<input type="hidden" name="sender" value="' + username + '">'
 					+ '<input type="hidden" name="receiver" value="' + receiver + '">'
 					+ '<input type="hidden" name="status" value="true">'
 					+ '<input type="hidden" name="isAccept" value="true">'
-					+ '<input type="submit" value="Accept New Friend">'
+					+ '<input type="submit" value="Accept Friend Request">'
 					+ '</form>'
 					+ '</div>'
 					+ '<div class="list-messages-contain">'
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-					document.getElementById("receiver").innerHTML = rightSide;
+				document.getElementById("receiver").innerHTML = rightSide;
 			}
 
 		})
@@ -192,7 +186,7 @@ function makeFriend(rightSide) {
 				+ '<div class="setting">'
 				+ '<i class="fa fa-cog"></i>'
 				+ '</div>'
-				+ '<form action="http://localhost:8080/chat" method="post" >'
+				+ '<form action="http://' + window.location.host + '/chat" method="post" >'
 				+ '<input type="hidden" name="sender" value="' + username + '">'
 				+ '<input type="hidden" name="receiver" value="' + receiver + '">'
 				+ '<input type="hidden" name="status" value="false">'
@@ -324,7 +318,6 @@ function sendText() {
 	document.getElementById("message").value = '';
 	var message = buildMessageToJson(messageContent, messageType);
 	setMessage(message);
-	console.log(message);
 	websocket.send(JSON.stringify(message));
 }
 
@@ -334,7 +327,6 @@ function sendAttachments() {
 		messageContent = file.name.trim();
 		messageType = file.type;
 		var message = buildMessageToJson(messageContent, messageType);
-		console.log(message);
 		websocket.send(JSON.stringify(message));
 		websocket.send(file);
 		message.message = '<img src="' + URL.createObjectURL(file) + '" alt="">';
@@ -403,7 +395,11 @@ function loadMessages() {
 			var messages = JSON.parse(this.responseText);
 			var chatbox = "";
 			messages.forEach(msg => {
-				chatbox += customLoadMessage(msg.username, msg.message);
+				try {
+					chatbox += customLoadMessage(msg.username, msg.message);
+				} catch (ex) {
+
+				}
 			});
 			currentChatbox.innerHTML = chatbox;
 			goLastestMsg();
@@ -418,7 +414,10 @@ function customLoadMessage(sender, message) {
 	var imgSrc = receiverAvatar;
 	var msgDisplay = '<li>'
 		+ '<div class="message';
-	if (username != sender) {
+	if (receiver != sender && username != sender) {
+		return '';
+	}
+	else if (receiver == sender) {
 		msgDisplay += '">';
 	} else {
 		imgSrc = userAvatar;
@@ -438,7 +437,6 @@ function searchFriendByKeyword(keyword) {
 			return data.json();
 		})
 		.then(data => {
-			console.log(data);
 			document.querySelector(".list-user").innerHTML = "";
 			data.forEach(function(data) {
 				if (data.isOnline) status = "online";
@@ -461,17 +459,16 @@ function searchFriendByKeyword(keyword) {
 				document.querySelector(".list-user").innerHTML += appendUser;
 			});
 		});
-
-	//
 }
 
 function searchUser(ele) {
 	searchFriendByKeyword(ele.value);
-	console.log(ele.target);
 }
 
 function goLastestMsg() {
 	var msgLiTags = document.querySelectorAll(".message");
 	var last = msgLiTags[msgLiTags.length - 1];
-	last.scrollIntoView();
+	try {
+		last.scrollIntoView();
+	} catch (ex) { }
 }
