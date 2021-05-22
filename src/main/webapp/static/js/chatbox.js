@@ -329,7 +329,7 @@ function sendAttachments() {
 		var message = buildMessageToJson(messageContent, messageType);
 		websocket.send(JSON.stringify(message));
 		websocket.send(file);
-		message.message = '<img src="' + URL.createObjectURL(file) + '" alt="">';
+		
 		if (messageType.startsWith("audio")) {
 			message.message = '<audio controls>'
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
@@ -338,6 +338,8 @@ function sendAttachments() {
 			message.message = '<video width="400" controls>'
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
 				+ '</video>';
+		}else if (messageType.startsWith("image")) {
+			message.message = '<img src="' + URL.createObjectURL(file) + '" alt="">';
 		}
 		else {
 			message.message = '<a href= "' + URL.createObjectURL(file) + '">' + messageContent + '</a>'
