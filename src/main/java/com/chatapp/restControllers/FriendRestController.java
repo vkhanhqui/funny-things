@@ -27,9 +27,9 @@ public class FriendRestController extends HttpServlet {
 		String receiver = request.getParameter("receiver");
 
 		Friend friend = new FriendDao().findFriend(sender, receiver);
-//		if(friend == null) {
-//			friend = new Friend(sender, receiver, sender, false);
-//		}
+		if(friend == null) {
+			friend = new Friend("any", "any", "any", false);
+		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(friend);
 

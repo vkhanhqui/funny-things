@@ -110,7 +110,12 @@ function makeFriend(rightSide) {
 			return data.json();
 		})
 		.then(data => {
-			if (data.status == false && data.owner == username) {
+			var status = '';
+			if (document.getElementById('status-' + receiver).classList.contains('online')) {
+				status = 'online';
+			}
+		
+			if (data.status == false && data.owner == username && data.owner != "any") {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
 					+ '</div>'
@@ -118,25 +123,22 @@ function makeFriend(rightSide) {
 					+ '<div class="user-img">'
 					+ '<img src="' + receiverAvatar + '" '
 					+ 'alt="Image of user">'
-					+ '<div class="user-img-dot ' + status + '"></div>'
+					+ '<div class="user-img-dot '+ status +'"></div>'
 					+ '</div>'
 					+ '<div class="user-info">'
 					+ '<span class="user-name">' + receiver + '</span>'
 					+ '</div>'
 					+ '</div>'
-					+ '<div class="setting">'
-					+ '<i class="fa fa-cog"></i>'
-					+ '</div>'
-					+ 'Sent Request'
+					+ '<span style="font-size:1.8rem">Sent Request</span>'
 					+ '</form>'
 					+ '</div>'
 					+ '<div class="list-messages-contain">'
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-
-				document.getElementById("receiver").innerHTML = rightSide;
-			} else if (data.status == false && data.owner != username) {
+					
+					document.getElementById("receiver").innerHTML = rightSide;
+			} else if (data.status == false && data.owner != username && data.owner != "any") {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
 					+ '</div>'
@@ -149,58 +151,52 @@ function makeFriend(rightSide) {
 					+ '<div class="user-info">'
 					+ '<span class="user-name">' + receiver + '</span>'
 					+ '</div>'
-					+ '</div>'
-					+ '<div class="setting">'
-					+ '<i class="fa fa-cog"></i>'
 					+ '</div>'
 					+ '<form action="http://' + window.location.host + '/chat" method="post" >'
 					+ '<input type="hidden" name="sender" value="' + username + '">'
 					+ '<input type="hidden" name="receiver" value="' + receiver + '">'
 					+ '<input type="hidden" name="status" value="true">'
 					+ '<input type="hidden" name="isAccept" value="true">'
-					+ '<input type="submit" value="Accept Friend Request">'
+					+ '<input class="btn" type="submit" value="Accept Friend Request">'
 					+ '</form>'
 					+ '</div>'
 					+ '<div class="list-messages-contain">'
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-				document.getElementById("receiver").innerHTML = rightSide;
+					document.getElementById("receiver").innerHTML = rightSide;
+					
+			}else if(data.status == false && data.sender == "any" && data.receiver == "any"){
+				rightSide = '<div class="user-contact">' + '<div class="back">'
+					+ '<i class="fa fa-arrow-left"></i>'
+					+ '</div>'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img src="' + receiverAvatar + '" '
+					+ 'alt="Image of user">'
+					+ '<div class="user-img-dot ' + status + '"></div>'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + receiver + '</span>'
+					+ '</div>'
+					+ '</div>'
+					+ '<form action="http://' + window.location.host + '/chat" method="post" >'
+					+ '<input type="hidden" name="sender" value="' + username + '">'
+					+ '<input type="hidden" name="receiver" value="' + receiver + '">'
+					+ '<input type="hidden" name="status" value="false">'
+					+ '<input type="hidden" name="isAccept" value="false">'
+					+ '<input class="btn" type="submit" value="Add Friend">'
+					+ '</form>'
+					+ '</div>'
+					+ '<div class="list-messages-contain">'
+					+ '<ul id="chat" class="list-messages">'
+					+ '</ul>'
+					+ '</div>';
+					document.getElementById("receiver").innerHTML = rightSide;
+					
 			}
-
 		})
-		.catch(ex => {
-			rightSide = '<div class="user-contact">' + '<div class="back">'
-				+ '<i class="fa fa-arrow-left"></i>'
-				+ '</div>'
-				+ '<div class="user-contain">'
-				+ '<div class="user-img">'
-				+ '<img src="' + receiverAvatar + '" '
-				+ 'alt="Image of user">'
-				+ '<div class="user-img-dot ' + status + '"></div>'
-				+ '</div>'
-				+ '<div class="user-info">'
-				+ '<span class="user-name">' + receiver + '</span>'
-				+ '</div>'
-				+ '</div>'
-				+ '<div class="setting">'
-				+ '<i class="fa fa-cog"></i>'
-				+ '</div>'
-				+ '<form action="http://' + window.location.host + '/chat" method="post" >'
-				+ '<input type="hidden" name="sender" value="' + username + '">'
-				+ '<input type="hidden" name="receiver" value="' + receiver + '">'
-				+ '<input type="hidden" name="status" value="false">'
-				+ '<input type="hidden" name="isAccept" value="false">'
-				+ '<input type="submit" value="Add Friend">'
-				+ '</form>'
-				+ '</div>'
-				+ '<div class="list-messages-contain">'
-				+ '<ul id="chat" class="list-messages">'
-				+ '</ul>'
-				+ '</div>';
-
-			document.getElementById("receiver").innerHTML = rightSide;
-		});
+		.catch(ex => console.log(ex));
 }
 
 function handleResponsive() {

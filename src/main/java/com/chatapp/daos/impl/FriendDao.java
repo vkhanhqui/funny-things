@@ -31,9 +31,6 @@ public class FriendDao extends GenericDao<Friend> {
 				"select sender,receiver, owner, status from friends where sender=? and receiver=?");
 
 		List<Friend> friends = query(sql.toString(), new FriendMapper(), sender, receiver);
-		if (friends.isEmpty()) {
-			friends = query(sql.toString(), new FriendMapper(), receiver, sender);
-		}
 		return friends.isEmpty() ? null : friends.get(0);
 	}
 }
