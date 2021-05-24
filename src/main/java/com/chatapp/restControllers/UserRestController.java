@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebServlet("/users-rest-controller")
 public class UserRestController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private UserServiceInterface userServiceInterface = UserService.getInstance();
 	private ChatService chatService = ChatService.getInstance();
 
@@ -38,7 +38,7 @@ public class UserRestController extends HttpServlet {
 			listUsers = userServiceInterface.findFriendsByKeyWord(userName, keyWord);
 		}
 		for (User user : listUsers) {
-			user.isOnline = chatService.isUserOnline(user.getUsername());
+			user.setOnline(chatService.isUserOnline(user.getUsername()));
 		}
 		ObjectMapper objectMapper = new ObjectMapper();
 		String json = objectMapper.writeValueAsString(listUsers);

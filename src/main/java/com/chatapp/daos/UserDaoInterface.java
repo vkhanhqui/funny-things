@@ -12,4 +12,6 @@ public interface UserDaoInterface extends GenericDaoInterface<User> {
 	List<User> findFriends(String userName);
 	
 	List<User> findFriendsByKeyWord(String userName,String keyword);
+	
+	List<User> findUsersByConversationId(Long id);
 }

@@ -5,7 +5,8 @@ public class User {
 	private String password;
 	private boolean gender;
 	private String avatar;
-	public boolean isOnline;
+	private boolean isOnline;
+	private boolean isAdmin;
 
 	public User() {
 
@@ -49,4 +50,21 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
+	public boolean isOnline() {
+		return isOnline;
+	}
+
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+
 }

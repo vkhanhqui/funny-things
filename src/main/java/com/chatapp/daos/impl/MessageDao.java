@@ -46,4 +46,16 @@ public class MessageDao extends GenericDao<Message> implements MessageDaoInterfa
 		save(sql.toString(), sender, receiver, msg, type);
 	}
 
+	@Override
+	public List<Message> findAllMessagesByConvesationId(Long id) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select m.sender, m.message, m.message_type");
+		sql.append(" from messages m join conversations c");
+		sql.append(" on m.conversations_id = c.id");
+		sql.append(" where c.id = ?");
+		sql.append(" order by created_at asc");
+		List<Message> listMessages = query(sql.toString(), new MessageMapper(), id);
+		return listMessages;
+	}
+
 }
