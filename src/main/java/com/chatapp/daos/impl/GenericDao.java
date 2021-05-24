@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +29,13 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 			Class.forName(driverName);
 			url.append(server);
 			url.append(";databaseName=" + databaseName);
-			//url.append(";user=" + user);
-			//url.append(";password=" + password);
-			url.append(";integratedSecurity=true");
+			url.append(";user=" + user);
+			url.append(";password=" + password);
+//			url.append(";integratedSecurity=true");
 			return DriverManager.getConnection(url.toString());
 		} catch (ClassNotFoundException | SQLException ex) {
 			return null;
-		}	
+		}
 	}
 
 	@Override
@@ -94,16 +95,23 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 	}
 
 	@Override
-	public void save(String sql, Object... parameters) {
+	public Long save(String sql, Object... parameters) {
 		Connection connection = null;
-		PreparedStatement statement = null;
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
 		try {
+			Long id = null;
 			connection = getConnection();
 			connection.setAutoCommit(false);
-			statement = connection.prepareStatement(sql);
-			setParameter(statement, parameters);
-			statement.executeUpdate();
+			preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			setParameter(preparedStatement, parameters);
+			preparedStatement.executeUpdate();
+			resultSet = preparedStatement.getGeneratedKeys();
+			if (resultSet.next()) {
+				id = resultSet.getLong(1);
+			}
 			connection.commit();
+			return id;
 		} catch (SQLException ex) {
 			if (connection != null) {
 				try {
@@ -117,13 +125,14 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 				if (connection != null) {
 					connection.close();
 				}
-				if (statement != null) {
-					statement.close();
+				if (preparedStatement != null) {
+					preparedStatement.close();
 				}
 			} catch (SQLException ex2) {
 				ex2.printStackTrace();
 			}
 		}
+		return null;
 	}
 
 	@Override
