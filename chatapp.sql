@@ -184,6 +184,7 @@ select m.sender, m.message, m.message_type
 from messages m join conversations c
 	on m.conversations_id = c.id
 where c.id = 1
+order by created_at asc
 
 --delete data
 truncate table friends;
