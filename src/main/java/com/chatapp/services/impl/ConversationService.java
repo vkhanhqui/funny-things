@@ -35,6 +35,13 @@ public class ConversationService implements ConversationServiceInterface {
 		return user;
 	}
 
+	private ConversationDTO convertToConversationDTO(Conversation conversation) {
+		ConversationDTO conversationDTO = new ConversationDTO();
+		conversationDTO.setName(conversation.getName());
+		conversationDTO.setId(conversation.getId());
+		return conversationDTO;
+	}
+
 	@Override
 	public void saveConversation(ConversationDTO conversationDTO) {
 		Conversation conversation = new Conversation();
@@ -42,6 +49,15 @@ public class ConversationService implements ConversationServiceInterface {
 		List<User> users = conversationDTO.getUsers().stream().map(userDTO -> convertToUserEntity(userDTO))
 				.collect(Collectors.toList());
 		conversationDaoInterface.saveConversation(conversation, users);
+		conversationDTO.setId(conversation.getId());
+	}
+
+	@Override
+	public List<ConversationDTO> getAllConversationsByUsername(String username) {
+		List<Conversation> conversations = conversationDaoInterface.findAllConversationsByUsername(username);
+		List<ConversationDTO> conversationDTOs = conversations.stream()
+				.map(conversation -> convertToConversationDTO(conversation)).collect(Collectors.toList());
+		return conversationDTOs;
 	}
 
 }

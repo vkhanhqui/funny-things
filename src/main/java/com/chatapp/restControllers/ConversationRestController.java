@@ -3,6 +3,7 @@ package com.chatapp.restControllers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,7 +28,25 @@ public class ConversationRestController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+		String username = request.getParameter("username");
+		String conversationId = request.getParameter("id");
+		String json = "Must have username or conversation id as request param";
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		if (username != null) {
+			List<ConversationDTO> conversationDTOs = conversationServiceInterface
+					.getAllConversationsByUsername(username);
+			json = objectMapper.writeValueAsString(conversationDTOs);
+		} 
+		else if (conversationId != null) {
+			
+		}
+
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter printWriter = response.getWriter();
+		printWriter.print(json);
+		printWriter.flush();
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -53,6 +72,7 @@ public class ConversationRestController extends HttpServlet {
 		ObjectMapper objectMapper = new ObjectMapper();
 		ConversationDTO conversationDTO = objectMapper.readValue(requestBody.toString(), ConversationDTO.class);
 		conversationServiceInterface.saveConversation(conversationDTO);
+		
 		json = objectMapper.writeValueAsString(conversationDTO);
 
 		printWriter.print(json);

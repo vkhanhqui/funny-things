@@ -3,6 +3,7 @@ package com.chatapp.daos.impl;
 import java.util.List;
 
 import com.chatapp.daos.ConversationDaoInterface;
+import com.chatapp.mappers.impl.ConversationMapper;
 import com.chatapp.models.Conversation;
 import com.chatapp.models.User;
 
@@ -36,6 +37,17 @@ public class ConversationDao extends GenericDao<Conversation> implements Convers
 			sqlAddUserToConversation.append(" values(?,?,?)");
 			save(sqlAddUserToConversation.toString(), conversationId, user.getUsername(), user.isAdmin());
 		});
+	}
+
+	@Override
+	public List<Conversation> findAllConversationsByUsername(String username) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select c.id, c.name");
+		sql.append(" from conversations c join conversations_users cu");
+		sql.append(" on c.id = cu.conversations_id");
+		sql.append(" where cu.username = ?");
+		List<Conversation> conversations = query(sql.toString(), new ConversationMapper(), username);
+		return conversations;
 	}
 
 }

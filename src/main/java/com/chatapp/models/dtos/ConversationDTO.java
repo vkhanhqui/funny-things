@@ -6,17 +6,32 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConversationDTO {
+	@JsonProperty("id")
+	private Long id;
+
 	@JsonProperty("name")
 	private String name;
 
 	@JsonProperty("users")
 	private List<UserDTO> users;
 
+	public ConversationDTO() {
+	}
+
 	@JsonCreator
-	public ConversationDTO(@JsonProperty("name") String name, @JsonProperty("users") List<UserDTO> users) {
-		super();
+	public ConversationDTO(@JsonProperty("id") Long id, @JsonProperty("name") String name,
+			@JsonProperty("users") List<UserDTO> users) {
+		this.id = id;
 		this.name = name;
 		this.users = users;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
