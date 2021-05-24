@@ -4,9 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserDTO {
 	private String username;
+	private String avatar;
 	private boolean isAdmin;
+	
+	public UserDTO() {
+	}
 
-	public UserDTO(@JsonProperty("username") String username, @JsonProperty("isAdmin") boolean isAdmin) {
+	public UserDTO(@JsonProperty("username") String username, @JsonProperty("avatar") String avatar,
+			@JsonProperty("isAdmin") boolean isAdmin) {
 		this.username = username;
 		this.isAdmin = isAdmin;
 	}
@@ -17,6 +22,14 @@ public class UserDTO {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 	public boolean isAdmin() {

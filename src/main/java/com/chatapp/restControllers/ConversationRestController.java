@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.chatapp.models.dtos.ConversationDTO;
+import com.chatapp.models.dtos.UserDTO;
 import com.chatapp.services.ConversationServiceInterface;
 import com.chatapp.services.impl.ConversationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,13 +34,14 @@ public class ConversationRestController extends HttpServlet {
 		String json = "Must have username or conversation id as request param";
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		if (username != null) {
+		if (username != null && !username.isEmpty()) {
 			List<ConversationDTO> conversationDTOs = conversationServiceInterface
 					.getAllConversationsByUsername(username);
 			json = objectMapper.writeValueAsString(conversationDTOs);
-		} 
-		else if (conversationId != null) {
-			
+		} else if (conversationId != null && !conversationId.isEmpty()) {
+			Long id = Long.parseLong(conversationId);
+			List<UserDTO> userDTOs = conversationServiceInterface.getAllUsersByConversationId(id);
+			json = objectMapper.writeValueAsString(userDTOs);
 		}
 
 		response.setContentType("application/json");
@@ -72,7 +74,7 @@ public class ConversationRestController extends HttpServlet {
 		ObjectMapper objectMapper = new ObjectMapper();
 		ConversationDTO conversationDTO = objectMapper.readValue(requestBody.toString(), ConversationDTO.class);
 		conversationServiceInterface.saveConversation(conversationDTO);
-		
+
 		json = objectMapper.writeValueAsString(conversationDTO);
 
 		printWriter.print(json);
