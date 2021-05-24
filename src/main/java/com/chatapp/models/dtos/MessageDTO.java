@@ -19,6 +19,9 @@ public class MessageDTO {
 	@JsonProperty("onlineList")
 	private Set<String> onlineList = new HashSet<String>();
 
+	public MessageDTO() {
+	}
+
 	@JsonCreator
 	public MessageDTO(@JsonProperty("username") String username, @JsonProperty("message") String message,
 			@JsonProperty("type") String type, @JsonProperty("receiver") String receiver) {
@@ -66,5 +69,5 @@ public class MessageDTO {
 
 	public void setOnlineList(Set<String> onlineList) {
 		this.onlineList = onlineList;
-	}	
+	}
 }

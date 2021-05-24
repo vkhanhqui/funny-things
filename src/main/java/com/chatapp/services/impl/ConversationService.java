@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.chatapp.daos.ConversationDaoInterface;
+import com.chatapp.daos.MessageDaoInterface;
 import com.chatapp.daos.UserDaoInterface;
 import com.chatapp.daos.impl.ConversationDao;
+import com.chatapp.daos.impl.MessageDao;
 import com.chatapp.daos.impl.UserDao;
 import com.chatapp.models.Conversation;
+import com.chatapp.models.Message;
 import com.chatapp.models.User;
 import com.chatapp.models.dtos.ConversationDTO;
+import com.chatapp.models.dtos.MessageDTO;
 import com.chatapp.models.dtos.UserDTO;
 import com.chatapp.services.ConversationServiceInterface;
 
@@ -18,6 +22,8 @@ public class ConversationService implements ConversationServiceInterface {
 	private ConversationDaoInterface conversationDaoInterface = ConversationDao.getInstance();
 
 	private UserDaoInterface userDaoInterface = UserDao.getInstace();
+
+	private MessageDaoInterface messageDaoInterface = MessageDao.getInstance();
 
 	private static ConversationService instance = null;
 
@@ -54,6 +60,14 @@ public class ConversationService implements ConversationServiceInterface {
 		return conversationDTO;
 	}
 
+	private MessageDTO convertToMessageDTO(Message message) {
+		MessageDTO messageDTO = new MessageDTO();
+		messageDTO.setUsername(message.getUsername());
+		messageDTO.setMessage(message.getMessage());
+		messageDTO.setType(message.getType());
+		return messageDTO;
+	}
+
 	@Override
 	public void saveConversation(ConversationDTO conversationDTO) {
 		Conversation conversation = new Conversation();
@@ -77,6 +91,13 @@ public class ConversationService implements ConversationServiceInterface {
 		List<UserDTO> userDTOs = userDaoInterface.findUsersByConversationId(id).stream()
 				.map(user -> convertToUserDTO(user)).collect(Collectors.toList());
 		return userDTOs;
+	}
+
+	@Override
+	public List<MessageDTO> getAllMessagesByConversationId(Long id) {
+		List<MessageDTO> messageDTOs = messageDaoInterface.findAllMessagesByConvesationId(id).stream()
+				.map(message -> convertToMessageDTO(message)).collect(Collectors.toList());
+		return messageDTOs;
 	}
 
 }

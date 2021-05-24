@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.chatapp.models.dtos.ConversationDTO;
+import com.chatapp.models.dtos.MessageDTO;
 import com.chatapp.models.dtos.UserDTO;
 import com.chatapp.services.ConversationServiceInterface;
 import com.chatapp.services.impl.ConversationService;
@@ -30,18 +31,32 @@ public class ConversationRestController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String username = request.getParameter("username");
-		String conversationId = request.getParameter("id");
+		String usersConversationId = request.getParameter("usersConversationId");
+		String messagesConversationId = request.getParameter("messagesConversationId");
 		String json = "Must have username or conversation id as request param";
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		if (username != null && !username.isEmpty()) {
+
 			List<ConversationDTO> conversationDTOs = conversationServiceInterface
 					.getAllConversationsByUsername(username);
+
 			json = objectMapper.writeValueAsString(conversationDTOs);
-		} else if (conversationId != null && !conversationId.isEmpty()) {
-			Long id = Long.parseLong(conversationId);
+
+		} else if (usersConversationId != null && !usersConversationId.isEmpty()) {
+
+			Long id = Long.parseLong(usersConversationId);
 			List<UserDTO> userDTOs = conversationServiceInterface.getAllUsersByConversationId(id);
+
 			json = objectMapper.writeValueAsString(userDTOs);
+
+		} else if (messagesConversationId != null && !messagesConversationId.isEmpty()) {
+
+			Long id = Long.parseLong(messagesConversationId);
+			List<MessageDTO> messageDTOs = conversationServiceInterface.getAllMessagesByConversationId(id);
+
+			json = objectMapper.writeValueAsString(messageDTOs);
+
 		}
 
 		response.setContentType("application/json");
