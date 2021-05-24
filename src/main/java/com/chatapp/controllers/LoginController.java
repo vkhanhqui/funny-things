@@ -11,13 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.chatapp.models.User;
+import com.chatapp.services.FileServiceAbstract;
 import com.chatapp.services.UserServiceInterface;
 import com.chatapp.services.impl.UserService;
 
 @WebServlet("/login")
 public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	
+
 	private UserServiceInterface userService = UserService.getInstance();
 
 	public LoginController() {
@@ -26,6 +27,11 @@ public class LoginController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		if (FileServiceAbstract.rootURL.isEmpty() || FileServiceAbstract.rootURL.contains("localhost")) {
+			String url = request.getRequestURL().toString();
+			FileServiceAbstract.rootURL = url.replaceAll("login", "files/");
+			System.out.println(FileServiceAbstract.rootURL);
+		}
 		User user = (User) request.getSession().getAttribute("user");
 		if (user != null) {
 			response.sendRedirect("/chat");

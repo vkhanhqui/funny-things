@@ -41,15 +41,14 @@ public class ChatService extends ChatServiceAbstract {
 
 	@Override
 	public boolean isUserOnline(String username) {
-		for(ChatWebsocket chatWebsocket : chatWebsockets) {
-			if(chatWebsocket.getUsername().equals(username)) {
+		for (ChatWebsocket chatWebsocket : chatWebsockets) {
+			if (chatWebsocket.getUsername().equals(username)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	
 	@Override
 	public void sendMessageToAllUsers(MessageDTO message) {
 		message.setOnlineList(getUsernames());
@@ -112,6 +111,10 @@ public class ChatService extends ChatServiceAbstract {
 				} else if (typeFile.startsWith("video")) {
 					message = "<video width=\"400\" controls>\r\n" + "  <source src=\"" + fileDTOs.peek().getUrl()
 							+ "\" type=\"" + typeFile + "\">\r\n" + "</video>";
+				} else if (typeFile.startsWith("image")) {
+					message = "<img src=\"" + fileDTOs.peek().getUrl() + "\" alt=\"\">";
+				} else {
+					message = "<a href=" + fileDTOs.peek().getUrl() + ">" + fileDTOs.peek().getFilename() + "</a>";
 				}
 				String type = "text";
 				String username = fileDTOs.peek().getSender();

@@ -10,7 +10,7 @@ public abstract class FileServiceAbstract {
 
 	public static Path rootLocation = Paths.get("archive");
 
-	public static String rootURL = "http://localhost:8080/files/";
+	public static String rootURL = "";
 
 	public static String toTagHtml(String type, String username, String message) {
 		String tag = "";
@@ -22,6 +22,9 @@ public abstract class FileServiceAbstract {
 					+ "</video>";
 		} else if (type.startsWith("image")) {
 			tag = "<img src=\"" + url + "\" alt=\"\">";
+		}
+		else {
+			tag = "<a href="+url+">"+message+"</a>";
 		}
 		return tag;
 	}

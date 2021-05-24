@@ -53,7 +53,7 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 			}
 			return results;
 		} catch (SQLException ex) {
-			return null;
+			return new ArrayList<>();
 		} finally {
 			try {
 				if (connection != null) {
@@ -66,7 +66,7 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 					resultSet.close();
 				}
 			} catch (SQLException ex) {
-				return null;
+				return new ArrayList<>();
 			}
 		}
 	}

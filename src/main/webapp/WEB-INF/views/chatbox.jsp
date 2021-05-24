@@ -50,8 +50,7 @@
 										<div id="status-${friend.username}" class="user-img-dot"></div>
 									</div>
 									<div class="user-info">
-										<span class="user-name">${friend.username}</span> <span
-											class="user-last-message">Hello!</span>
+										<span class="user-name">${friend.username}</span>
 									</div>
 								</div>
 							</li>

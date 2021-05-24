@@ -33,7 +33,7 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 	public List<User> findFriends(String userName) {
 		StringBuilder sql = new StringBuilder("select u2.username, u2.avatar, u2.gender");
 		sql.append(" from users u1 join friends f on u1.username = f.receiver");
-		sql.append(" join users u2 on u2.username = f.sender and f.status = 1");
+		sql.append(" join users u2 on u2.username = f.sender");
 		sql.append(" where u1.username LIKE ?");
 		String param = "%" + userName + "%";
 		List<User> users = query(sql.toString(), new UserMapper(), param);
@@ -57,14 +57,12 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 	
 	@Override
 	public List<User> findFriendsByKeyWord(String userName,String keyWord) {
-		StringBuilder sql = new StringBuilder("select u2.username,u2.gender,u2.avatar");
-		sql.append(" from users u1 join friends f on u1.username = f.receiver");
-		sql.append(" join users u2 on u2.username = f.sender");
-		sql.append(" where u1.username = ? and u2.username LIKE ? ");
-		sql.append(" order by f.status desc");
+		StringBuilder sql = new StringBuilder("select u2.username, u2.avatar, u2.gender");
+		sql.append(" from users u2 where username != ? and username like ?");
 		String param = "%" + keyWord + "%";
-		List<User> users = query(sql.toString(), new UserMapper(),userName,param);
+		List<User> users = query(sql.toString(), new UserMapper(), userName, param);
 		return users;
+
 	}
 
 }
