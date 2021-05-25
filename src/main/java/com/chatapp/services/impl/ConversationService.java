@@ -55,9 +55,16 @@ public class ConversationService implements ConversationServiceInterface {
 
 	private ConversationDTO convertToConversationDTO(Conversation conversation) {
 		ConversationDTO conversationDTO = new ConversationDTO();
-		conversationDTO.setName(conversation.getName());
 		conversationDTO.setId(conversation.getId());
+		conversationDTO.setName(conversation.getName());
 		return conversationDTO;
+	}
+
+	private Conversation convertToConversation(ConversationDTO conversationDTO) {
+		Conversation conversation = new Conversation();
+		conversation.setId(conversationDTO.getId());
+		conversation.setName(conversationDTO.getName());
+		return conversation;
 	}
 
 	private MessageDTO convertToMessageDTO(Message message) {
@@ -70,8 +77,7 @@ public class ConversationService implements ConversationServiceInterface {
 
 	@Override
 	public void saveConversation(ConversationDTO conversationDTO) {
-		Conversation conversation = new Conversation();
-		conversation.setName(conversationDTO.getName());
+		Conversation conversation = convertToConversation(conversationDTO);
 		List<User> users = conversationDTO.getUsers().stream().map(userDTO -> convertToUserEntity(userDTO))
 				.collect(Collectors.toList());
 		conversationDaoInterface.saveConversation(conversation, users);

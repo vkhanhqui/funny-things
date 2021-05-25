@@ -24,18 +24,19 @@ public class ConversationDao extends GenericDao<Conversation> implements Convers
 
 	@Override
 	public void saveConversation(Conversation conversation, List<User> users) {
-		StringBuilder sqlCreateConversation = new StringBuilder();
-		sqlCreateConversation.append("insert into conversations(name)");
-		sqlCreateConversation.append(" values(?)");
-		Long conversationId = save(sqlCreateConversation.toString(), conversation.getName());
-		conversation.setId(conversationId);
-
+		if (conversation.getId() == null) {
+			StringBuilder sqlCreateConversation = new StringBuilder();
+			sqlCreateConversation.append("insert into conversations(name)");
+			sqlCreateConversation.append(" values(?)");
+			Long conversationId = save(sqlCreateConversation.toString(), conversation.getName());
+			conversation.setId(conversationId);
+		}
 		users.forEach(user -> {
 			StringBuilder sqlAddUserToConversation = new StringBuilder();
 			sqlAddUserToConversation.append("insert into conversations_users(conversations_id, username,");
 			sqlAddUserToConversation.append(" is_admin)");
 			sqlAddUserToConversation.append(" values(?,?,?)");
-			save(sqlAddUserToConversation.toString(), conversationId, user.getUsername(), user.isAdmin());
+			save(sqlAddUserToConversation.toString(), conversation.getId(), user.getUsername(), user.isAdmin());
 		});
 	}
 
