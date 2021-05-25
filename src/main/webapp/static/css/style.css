@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap');
+
 
 * {
     margin: 0;
@@ -139,6 +140,7 @@ img {
     padding: 2rem 1.5rem;
     box-sizing: border-box;
     border-radius: 1rem 0rem 0rem 1rem;
+    position: relative;
 }
 
 .conversation-container .right-side {
@@ -147,6 +149,58 @@ img {
     box-sizing: border-box;
     border-radius: 0rem 1rem 1rem 0rem;
     overflow: hidden;
+}
+
+.add-group {
+	position: absolute;
+	left: 2rem;
+	bottom: 2rem;
+	font-size: 1.8rem;
+	cursor: pointer;
+	display: none;
+	padding: 0.5rem 1rem;
+	background: var(--mainColor);
+	z-index: 9;
+}
+
+.add-group.active {
+	display: block;
+}
+
+.modal-box {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	max-width: 20rem;
+	background: var(--txtColorSecond);
+	color: var(--txtBlack);
+	padding: 1rem;
+	box-sizing: border-box;
+	z-index: 999;
+	display: none;
+}
+
+.modal-box.active {
+	display: block;
+}
+
+.modal-box-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 1rem;
+	font-size: 1.4rem;
+	font-weight: 600;
+}
+
+.modal-box-body input {
+	background: #dbdbdb;
+}
+
+.modal-box-close {
+	padding: 1rem;
+	cursor: pointer;
 }
 
 .tab-control {
@@ -397,7 +451,7 @@ img {
 
 .form-send-message {
     background: var(--txtColorSecond);
-    height: 5.5rem;
+    height: 5.6rem;
     align-items: center;
     display: flex;
     position: relative;

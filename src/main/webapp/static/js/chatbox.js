@@ -4,6 +4,8 @@ var websocket = null;
 var receiver = null;
 var userAvatar = null;
 var receiverAvatar = null;
+var groupName = null;
+var groupId = null
 
 var back = null;
 var rightSide = null;
@@ -16,6 +18,8 @@ var file = null;
 var listFile = [];
 var typeFile = "image";
 var deleteAttach = null;
+
+var typeChat = "user";
 
 window.onload = function() {
 	if ("WebSocket" in window) {
@@ -44,13 +48,28 @@ window.onload = function() {
 	}
 }
 
+window.onclick = function(e){
+	let modalBox = document.querySelector(".modal-box");
+	let addGroup = document.querySelector(".add-group");
+	let closeModalBox = document.querySelector(".modal-box-close");
+	
+	if(closeModalBox.contains(e.target)){
+		toggleModal(false);
+	}
+	else if(modalBox.contains(e.target) || addGroup.contains(e.target)){
+		toggleModal(true);
+	}else{
+		toggleModal(false);
+	}
+	
+	console.log(e.target);
+}
+
 function cleanUp() {
 	username = null;
 	websocket = null;
 	receiver = null;
 }
-
-handleResponsive();
 
 function setReceiver(element) {
 	receiver = element.id;
@@ -81,14 +100,14 @@ function setReceiver(element) {
 		+ '<ul id="chat" class="list-messages">'
 		+ '</ul>'
 		+ '</div>'
-		+ '<form class="form-send-message">'
+		+ '<form class="form-send-message" onsubmit="return sendMessage(event)">'
 		+ '<ul class="list-file"></ul> '
 		+ '<input type="text" id="message" class="txt-input" placeholder="Type message...">'
 		+ '<label class="btn btn-image" for="attach"><i class="fa fa-file"></i></label>'
 		+ '<input type="file" multiple id="attach">'
 		+ '<label class="btn btn-image" for="image"><i class="fa fa-file-image-o"></i></label>'
 		+ '<input type="file" accept="image/*" multiple id="image">'
-		+ '<button type="button" class="btn btn-send" onclick="sendMessage();">'
+		+ '<button type="submit" class="btn btn-send">'
 		+ '<i class="fa fa-paper-plane"></i>'
 		+ '</button>'
 		+ '</form>';
@@ -97,11 +116,150 @@ function setReceiver(element) {
 
 	loadMessages();
 
-	handleResponsive();
-
 	displayFiles();
 
 	makeFriend(rightSide);
+}
+
+function setGroup(element) {
+	receiver = element.id;
+	groupName = element.getAttribute("data-name");
+	groupId  = element.getAttribute("id");
+	console.log("receiver: " + receiver);
+
+	var rightSide = '<div class="user-contact">' + '<div class="back">'
+		+ '<i class="fa fa-arrow-left"></i>'
+		+ '</div>'
+		+ '<div class="user-contain">'
+		+ '<div class="user-img">'
+		+ '<img src="' + receiverAvatar + '" '
+		+ 'alt="Image of user">'
+		+ '</div>'
+		+ '<div class="user-info">'
+		+ '<span class="user-name">' + groupName + '</span>'
+		+ '</div>'
+		+ '</div>'
+		+ '<div class="setting">'
+		+ '<i class="fa fa-cog"></i>'
+		+ '</div>'
+		+ '</div>'
+		+ '<div class="list-messages-contain">'
+		+ '<ul id="chat" class="list-messages">'
+		+ '</ul>'
+		+ '</div>'
+		+ '<form class="form-send-message" onsubmit="return sendMessage(event)">'
+		+ '<ul class="list-file"></ul> '
+		+ '<input type="text" id="message" class="txt-input" placeholder="Type message...">'
+		+ '<label class="btn btn-image" for="attach"><i class="fa fa-file"></i></label>'
+		+ '<input type="file" multiple id="attach">'
+		+ '<label class="btn btn-image" for="image"><i class="fa fa-file-image-o"></i></label>'
+		+ '<input type="file" accept="image/*" multiple id="image">'
+		+ '<button type="submit" class="btn btn-send">'
+		+ '<i class="fa fa-paper-plane"></i>'
+		+ '</button>'
+		+ '</form>';
+
+	document.getElementById("receiver").innerHTML = rightSide;
+
+	loadMessagesGroup();
+
+	displayFiles();
+
+	handleResponsive();
+}
+
+function resetChat(){
+	let chatBtn = document.querySelectorAll(".tab-control i");
+	let searchTxt = document.querySelector(".list-user-search input");
+	let addGroupBtn = document.querySelector(".add-group");
+	
+	searchTxt.value = "";
+	
+	chatBtn.forEach(function(ele){
+		ele.classList.remove("active");
+	});
+	
+	if(typeChat == "group"){
+		addGroupBtn.classList.add("active");
+	}else{
+		addGroupBtn.classList.remove("active");
+	}
+}
+
+function createGroup(e){
+	e.preventDefault();
+	
+	let groupName = document.querySelector(".txt-group-name").value;
+	
+	let object = new Object();
+	let user = new Object();
+	
+	user.username = username;
+	user.admin = true;
+	
+	object.name = groupName;
+	object.users = [];
+	object.users.push(user);
+	console.log(JSON.stringify(object));
+	
+	fetch("http://" + window.location.host + "/conversations-rest-controller",{
+			method: "post",
+			cache: 'no-cache',
+			headers: {
+		      'Content-Type': 'application/json;charset=utf-8'
+		    },
+			body: JSON.stringify(object)
+		})
+		.then(function(data) {
+			return data.json();
+		})
+		.then(function(data){
+			console.log(data);
+			
+			if(typeChat != "group") return;
+			let appendUser = '<li id="' + data.id + '" data-name="'+ data.name +'" onclick="setGroup(this);">'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img id="img-' + data.username + '"'
+					+ ' src="http://' + window.location.host + '/files/' + data.id
+					+ 'alt="Image of user">'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + data.name + '</span>'
+					+ '<span'
+					+ '</div>'
+					+ '</div>'
+					+ '</li>';
+			document.querySelector(".list-user").innerHTML += appendUser;
+			document.querySelector(".txt-group-name").value = "";
+			
+			toggleModal(false);
+		});
+}
+
+function toggleModal(bol){
+	let modalBox = document.querySelector(".modal-box");
+	
+	if(bol) modalBox.classList.add("active");
+	else modalBox.classList.remove("active");
+}
+
+function chatOne(ele){
+	typeChat = "user";
+	resetChat();
+	ele.classList.add("active");
+	searchFriendByKeyword("");
+	listFiles = [];
+	handleResponsive();
+}
+
+function chatGroup(ele){
+	typeChat = "group";
+	resetChat();
+	ele.classList.add("active");
+	fetchGroup();
+	listFiles = [];
+	handleResponsive();
 }
 
 function makeFriend(rightSide) {
@@ -195,9 +353,42 @@ function makeFriend(rightSide) {
 					document.getElementById("receiver").innerHTML = rightSide;
 					
 			}
+			
+			handleResponsive();
 		})
 		.catch(ex => console.log(ex));
 }
+
+function fetchGroup(){
+	fetch("http://" + window.location.host + "/conversations-rest-controller?username=" + username)
+		.then(function(data) {
+			return data.json();
+		})
+		.then(data => {
+			document.querySelector(".list-user").innerHTML = "";
+			data.forEach(function(data) {
+				if (data.isOnline) status = "online";
+				else status = "";
+
+				let appendUser = '<li id="' + data.id + '" data-name="'+ data.name +'" onclick="setGroup(this);">'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img id="img-' + data.username + '"'
+					+ ' src="http://' + window.location.host + '/files/' + data.id
+					+ 'alt="Image of user">'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + data.name + '</span>'
+					+ '<span'
+					+ '</div>'
+					+ '</div>'
+					+ '</li>';
+				document.querySelector(".list-user").innerHTML += appendUser;
+			});
+		});
+}
+
+handleResponsive();
 
 function handleResponsive() {
 	back = document.querySelector(".back");
@@ -299,13 +490,17 @@ function renderFile(typeFile) {
 	deleteAttach = document.querySelectorAll(".delete-attach");
 }
 
-function sendMessage() {
+function sendMessage(e) {
+	e.preventDefault();
+	
 	var inputText = document.getElementById("message").value;
 	if (inputText != '') {
 		sendText();
 	} else {
 		sendAttachments();
 	}
+	
+	return false;
 }
 
 function sendText() {
@@ -388,6 +583,28 @@ function setOnline(username, isOnline) {
 	}
 }
 
+function loadMessagesGroup(){
+	var currentChatbox = document.getElementById("chat");
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var messages = JSON.parse(this.responseText);
+			var chatbox = "";
+			messages.forEach(msg => {
+				try {
+					chatbox += customLoadMessageGroup(msg.username, msg.message);
+				} catch (ex) {
+
+				}
+			});
+			currentChatbox.innerHTML = chatbox;
+			goLastestMsg();
+		}
+	};
+	xhttp.open("GET", "http://" + window.location.host + "/conversations-rest-controller?messagesConversationId=" + groupId, true);
+	xhttp.send();
+}
+
 function loadMessages() {
 	var currentChatbox = document.getElementById("chat");
 	var xhttp = new XMLHttpRequest();
@@ -432,6 +649,24 @@ function customLoadMessage(sender, message) {
 		+ '</li>';
 }
 
+function customLoadMessageGroup(sender, message){
+	var imgSrc = receiverAvatar;
+	var msgDisplay = '<li>'
+		+ '<div class="message';
+	if (username != sender) {
+		msgDisplay += '">';
+	} else {
+		imgSrc = userAvatar;
+		msgDisplay += ' right">';
+	}
+	return msgDisplay + '<div class="message-img">'
+		+ '<img src="' + imgSrc + '" alt="">'
+		+ ' </div>'
+		+ '<div class="message-text">' + message + '</div>'
+		+ '</div>'
+		+ '</li>';
+}
+
 function searchFriendByKeyword(keyword) {
 	fetch("http://" + window.location.host + "/users-rest-controller?username=" + username + "&keyword=" + keyword)
 		.then(function(data) {
@@ -463,7 +698,12 @@ function searchFriendByKeyword(keyword) {
 }
 
 function searchUser(ele) {
-	searchFriendByKeyword(ele.value);
+	if(typeChat == "user"){
+		searchFriendByKeyword(ele.value);
+	}else{
+		console.log("Search Group by Keyword");
+		//searchGroupByKeyword(ele.value);
+	}
 }
 
 function goLastestMsg() {

@@ -28,7 +28,7 @@ CREATE TABLE friends (
 
 create table conversations(
 	id int identity(1,1) primary key,
-	name varchar(50) NOT NULL
+	name nvarchar(50) NOT NULL
 ) ;
 
 create table conversations_users(
