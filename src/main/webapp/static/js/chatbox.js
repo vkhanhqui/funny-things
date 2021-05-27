@@ -4,6 +4,7 @@ var websocket = null;
 var receiver = null;
 var userAvatar = null;
 var receiverAvatar = null;
+
 var groupName = null;
 var groupId = null
 
@@ -20,6 +21,8 @@ var typeFile = "image";
 var deleteAttach = null;
 
 var typeChat = "user";
+
+var listUserAdd = [];
 
 window.onload = function() {
 	if ("WebSocket" in window) {
@@ -49,21 +52,12 @@ window.onload = function() {
 }
 
 window.onclick = function(e){
-	let modalBox = document.querySelector(".modal-box");
-	let addGroup = document.querySelector(".add-group");
-	let closeModalBox = document.querySelector(".modal-box-close");
-	
-	if(closeModalBox.contains(e.target)){
-		toggleModal(false);
-	}
-	else if(modalBox.contains(e.target) || addGroup.contains(e.target)){
-		toggleModal(true);
-	}else{
-		toggleModal(false);
-	}
+	let modals = document.querySelectorAll(".modal-box");
+	let toggleBtns = document.querySelectorAll(".toggle-btn");
 	
 	console.log(e.target);
 }
+
 
 function cleanUp() {
 	username = null;
@@ -125,8 +119,11 @@ function setGroup(element) {
 	receiver = element.id;
 	groupName = element.getAttribute("data-name");
 	groupId  = element.getAttribute("id");
+	listUserAdd = [];
+	
+	let numberMember = element.getAttribute("data-number");
 	console.log("receiver: " + receiver);
-
+	
 	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
 		+ '</div>'
@@ -139,6 +136,10 @@ function setGroup(element) {
 		+ '<span class="user-name">' + groupName + '</span>'
 		+ '</div>'
 		+ '</div>'
+        + '<div class="invite-user">'
+        + '<span class="total-invite-user">'+ numberMember +' paticipants</span>'
+        + '<span data-id="add-user" onclick="toggleModal(this, true)" class="invite">Invite</span>'
+        + '</div>'
 		+ '<div class="setting">'
 		+ '<i class="fa fa-cog"></i>'
 		+ '</div>'
@@ -186,6 +187,7 @@ function resetChat(){
 	}
 }
 
+
 function createGroup(e){
 	e.preventDefault();
 	
@@ -230,18 +232,72 @@ function createGroup(e){
 					+ '</div>'
 					+ '</div>'
 					+ '</li>';
-			document.querySelector(".list-user").innerHTML += appendUser;
+			document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			document.querySelector(".txt-group-name").value = "";
 			
-			toggleModal(false);
+			toggleAllModal();
 		});
 }
 
-function toggleModal(bol){
-	let modalBox = document.querySelector(".modal-box");
+function addMember(e){
+	e.preventDefault();
 	
-	if(bol) modalBox.classList.add("active");
-	else modalBox.classList.remove("active");
+	let object = new Object();
+	object.name = groupName;
+	object.id = groupId;
+	object.users = [];
+	
+	
+	listUserAdd.forEach(function(username){
+		let user = new Object();
+		
+		user.username = username;
+		user.admin = false;
+		user.avatar = null;
+		
+		object.users.push(user);		
+	});
+	
+	console.log(JSON.stringify(object));
+	console.log(groupName);
+	
+	fetch("http://" + window.location.host + "/conversations-rest-controller",{
+			method: "post",
+			cache: 'no-cache',
+			headers: {
+		      'Content-Type': 'application/json;charset=utf-8'
+		    },
+			body: JSON.stringify(object)
+		})
+		.then(function(data) {
+			return data.json();
+		})
+		.then(function(data){
+			console.log(data);
+			
+			toggleAllModal();
+		});
+}
+
+function toggleAllModal(){
+	let modalBox = document.querySelectorAll(".modal-box");
+	
+	modalBox.forEach(function(modal){
+		modal.classList.remove("active");		
+	});
+
+}
+
+function toggleModal(ele, mode){
+	let modalBox = document.querySelectorAll(".modal-box");
+	let id = ele.getAttribute("data-id");
+	
+	modalBox.forEach(function(modal){
+		modal.classList.remove("active");		
+	});
+	
+	if(mode) document.getElementById(id).classList.add("active");
+	else document.getElementById(id).classList.remove("active");
 }
 
 function chatOne(ele){
@@ -260,6 +316,17 @@ function chatGroup(ele){
 	fetchGroup();
 	listFiles = [];
 	handleResponsive();
+}
+
+function addUserChange(e){
+	if(e.checked){
+		listUserAdd.push(e.value);
+	}else{
+		let index = listUserAdd.indexOf(e.value);
+		listUserAdd.splice(index, 1);
+	}
+	
+	console.log(listUserAdd);
 }
 
 function makeFriend(rightSide) {
@@ -365,12 +432,13 @@ function fetchGroup(){
 			return data.json();
 		})
 		.then(data => {
-			document.querySelector(".list-user").innerHTML = "";
+			document.querySelector(".left-side .list-user").innerHTML = "";
 			data.forEach(function(data) {
 				if (data.isOnline) status = "online";
 				else status = "";
-
-				let appendUser = '<li id="' + data.id + '" data-name="'+ data.name +'" onclick="setGroup(this);">'
+				let numberMember = data.users ? data.users.length : 0;
+				
+				let appendUser = '<li id="' + data.id + '" data-number="'+ numberMember +'" data-name="'+ data.name +'" onclick="setGroup(this);">'
 					+ '<div class="user-contain">'
 					+ '<div class="user-img">'
 					+ '<img id="img-' + data.username + '"'
@@ -383,7 +451,7 @@ function fetchGroup(){
 					+ '</div>'
 					+ '</div>'
 					+ '</li>';
-				document.querySelector(".list-user").innerHTML += appendUser;
+				document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			});
 		});
 }
@@ -394,7 +462,7 @@ function handleResponsive() {
 	back = document.querySelector(".back");
 	rightSide = document.querySelector(".right-side");
 	leftSide = document.querySelector(".left-side");
-	conversation = document.querySelectorAll(".user-contain");
+	conversation = document.querySelectorAll(".right-side .user-contain");
 
 	if (back) {
 		back.addEventListener("click", function() {
@@ -575,7 +643,8 @@ function setMessage(msg) {
 }
 
 function setOnline(username, isOnline) {
-	var ele = document.getElementById('status-' + username);
+	let ele = document.getElementById('status-' + username);
+
 	if (isOnline === true) {
 		ele.classList.add('online');
 	} else {
@@ -673,9 +742,11 @@ function searchFriendByKeyword(keyword) {
 			return data.json();
 		})
 		.then(data => {
-			document.querySelector(".list-user").innerHTML = "";
+		
+			console.log(data);
+			document.querySelector(".left-side .list-user").innerHTML = "";
 			data.forEach(function(data) {
-				if (data.isOnline) status = "online";
+				if (data.online) status = "online";
 				else status = "";
 
 				let appendUser = '<li id="' + data.username + '" onclick="setReceiver(this);">'
@@ -688,11 +759,48 @@ function searchFriendByKeyword(keyword) {
 					+ '</div>'
 					+ '<div class="user-info">'
 					+ '<span class="user-name">' + data.username + '</span>'
-					+ '<span'
 					+ '</div>'
 					+ '</div>'
 					+ '</li>';
-				document.querySelector(".list-user").innerHTML += appendUser;
+				document.querySelector(".left-side .list-user").innerHTML += appendUser;
+			});
+		});
+}
+
+function searchMemberByKeyword(ele) {
+	let keyword = ele.value;
+	fetch("http://" + window.location.host + "/users-rest-controller?username=" + username + "&keyword=" + keyword)
+		.then(function(data) {
+			return data.json();
+		})
+		.then(data => {
+		
+			console.log(data);
+			document.querySelector(".add-member-body .list-user ul").innerHTML = "";
+			data.forEach(function(data) {
+				if (data.online) status = "online";
+				else status = "";
+				
+				let check = "";
+				if(listUserAdd.indexOf(data.username) >= 0) check="checked";
+
+				let appendUser = '<li>'
+					+ '<input id="member-'+ data.username +'" type="checkbox" '+ check +' value="'+ data.username +'" onchange="addUserChange(this)">'
+					+ '<label for="member-'+ data.username +'">'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img '
+					+ ' src="http://' + window.location.host + '/files/' + data.username + '/' + data.avatar + '"'
+					+ 'alt="Image of user">'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + data.username + '</span>'
+					+ '</div>'
+					+ '</div>'
+					+ '</label>'
+					+ '<div class="user-select-dot"></div>'
+					+ '</li>';
+				document.querySelector(".add-member-body .list-user ul").innerHTML += appendUser;
 			});
 		});
 }

@@ -23,12 +23,12 @@
 	</p>
 	<div class="container">
 		<div class="conversation-container">
-			<div class="modal-box border">
+			<div class="modal-box border" id="add-group">
 				<div class="modal-box-head">
 					<div class="modal-box-title">
 						Add Group
 					</div>
-					<div class="modal-box-close">
+					<div class="modal-box-close" data-id="add-group" onclick="toggleModal(this, false)">
 						<i class="fa fa-times"></i>
 					</div>
 				</div>
@@ -40,8 +40,32 @@
 					<button type="submit" class="btn">Create Group</button>		
 				</form>
 			</div>
+			
+			<div class="modal-box border" id="add-user">
+				<div class="modal-box-head">
+					<div class="modal-box-title">
+						Add Member
+					</div>
+					<div class="modal-box-close" data-id="add-user" onclick="toggleModal(this, false)">
+						<i class="fa fa-times"></i>
+					</div>
+				</div>
+				<hr>
+				<form action="" onsubmit="return addMember(event);">
+					<div class="modal-box-body add-member-body">
+						<input type="text" class="txt-input txt-group-name" placeholder="Name of member..." onkeyup="searchMemberByKeyword(this)">
+						
+						<div class="list-user">
+							<ul>
+							</ul>
+						</div>
+					</div>		
+					<button type="submit" class="btn">Add Members</button>		
+				</form>
+			</div>
+			
 			<div class="left-side active">
-				<div class="add-group border"><i class="fa fa-plus-circle"></i></div>
+				<div class="add-group border" data-id="add-group" onclick="toggleModal(this, true)"><i class="fa fa-plus-circle"></i></div>
 				<h2>
 					<a href="<c:url value="/users/update"/>"
 						style="text-decoration: none; color: white;margin-right: 3rem;">Welcome

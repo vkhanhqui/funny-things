@@ -172,7 +172,7 @@ img {
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	max-width: 20rem;
+	width: 30rem;
 	background: var(--txtColorSecond);
 	color: var(--txtBlack);
 	padding: 1rem;
@@ -201,6 +201,53 @@ img {
 .modal-box-close {
 	padding: 1rem;
 	cursor: pointer;
+}
+
+.user-select-dot {
+	width: 1.2rem;
+	height: 1.2rem;
+	border-radius: 50%;
+	border: 0.1rem solid var(--txtBlack);
+	position: relative;
+}
+
+.user-select-dot::before {
+	content: "";
+	position: absolute;
+	width: .8rem;
+	height: .8rem;
+	border-radius: 50%;
+	background: var(--mainColor);
+	left: calc(50% - 0.4rem);
+	top: calc(50% - 0.4rem);
+	z-index: 9999;
+	display: none;
+}
+
+.add-member-body li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.add-member-body li:hover {
+	background: none !important;
+}
+
+.add-member-body label {
+	flex-grow: 1;
+}
+
+.add-member-body .list-user {
+	max-height: 25rem !important;
+}
+
+.add-member-body input[type="checkbox"] {
+	display: none;
+}
+
+.add-member-body input[type="checkbox"]:checked ~ .user-select-dot::before {
+	display: block;
 }
 
 .tab-control {
@@ -251,6 +298,7 @@ img {
 
 .user-contain {
     display: flex;
+    align-items: center;
 }
 
 .user-img {
@@ -332,17 +380,17 @@ img {
     border-right: 0.1rem solid var(--txtBlack);
 }
 
-.setting, .invite {
+.setting, .invite, .add-member {
     cursor: pointer;
 }
 
-.setting {
+.setting, .add-member {
     font-size: 1.6rem;
     padding: .8rem 1rem;
     border-radius: .5rem;
 }
 
-.setting:hover {
+.setting:hover, .add-member:hover {
     background: var(--mainColor);
     color: var(--txtColorSecond);
 }
