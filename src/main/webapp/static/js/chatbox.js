@@ -23,6 +23,8 @@ var deleteAttach = null;
 var typeChat = "user";
 
 var listUserAdd = [];
+var listUserDelete = [];
+var numberMember = 0;
 
 window.onload = function() {
 	if ("WebSocket" in window) {
@@ -54,8 +56,17 @@ window.onload = function() {
 window.onclick = function(e) {
 	let modals = document.querySelectorAll(".modal-box");
 	let toggleBtns = document.querySelectorAll(".toggle-btn");
+	let count = 0;
 
-	console.log(e.target);
+	modals.forEach(function(modal){
+		if(modal.contains(e.target)) count++;
+	});
+	
+	toggleBtns.forEach(function(toggleBtn){
+		if(toggleBtn.contains(e.target)) count++;
+	});
+	
+	if(count !== 1) toggleAllModal();
 }
 
 
@@ -118,11 +129,12 @@ function setReceiver(element) {
 function setGroup(element) {
 	receiver = element.id;
 	groupName = element.getAttribute("data-name");
-	groupId = element.getAttribute("id");
+	groupId = element.getAttribute("data-id");
 	receiverAvatar = document.getElementById("img-group-" + groupId).src;
+	
 	listUserAdd = [];
 
-	let numberMember = element.getAttribute("data-number");
+	numberMember = parseInt(element.getAttribute("data-number"));
 	console.log("receiver: " + receiver);
 	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
@@ -138,9 +150,9 @@ function setGroup(element) {
 		+ '</div>'
 		+ '<div class="invite-user">'
 		+ '<span class="total-invite-user">' + numberMember + ' paticipants</span>'
-		+ '<span data-id="add-user" onclick="toggleModal(this, true)" class="invite">Invite</span>'
+		+ '<span data-id="add-user" onclick="toggleModal(this, true); searchMemberByKeyword(``);" class="invite toggle-btn">Invite</span>'
 		+ '</div>'
-		+ '<div class="setting">'
+		+ '<div class="setting toggle-btn" data-id="manage-user" onclick="toggleModal(this, true);  fetchUser();">'
 		+ '<i class="fa fa-cog"></i>'
 		+ '</div>'
 		+ '</div>'
@@ -202,6 +214,7 @@ function createGroup(e) {
 	object.name = groupName;
 	object.users = [];
 	object.users.push(user);
+	toggleAllModal();
 	console.log(JSON.stringify(object));
 
 	fetch("http://" + window.location.host + "/conversations-rest-controller", {
@@ -219,23 +232,22 @@ function createGroup(e) {
 			console.log(data);
 
 			if (typeChat != "group") return;
-			let appendUser = '<li id="' + data.id + '" data-number="' + data.users.length + '" data-name="' + data.name + '" onclick="setGroup(this);">'
-				+ '<div class="user-contain">'
-				+ '<div class="user-img">'
-				+ '<img id="img-group-' + data.id + '"'
-				+ ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"'
-				+ ' alt="Image of user">'
-				+ '</div>'
-				+ '<div class="user-info">'
-				+ '<span class="user-name">' + data.name + '</span>'
-				+ '<span'
-				+ '</div>'
-				+ '</div>'
-				+ '</li>';
+			let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
+				let appendUser = '<li id="group-' + data.id + '">'
+					+ '<div class="user-contain" data-id="'+ data.id +'" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
+					+ '<div class="user-img">'
+					+ '<img id="img-group-' + data.id + '"'
+					+ imgSrc
+					+ ' alt="Image of user">'
+					+ '</div>'
+					+ '<div class="user-info" style="flex-grow:1 ;">'
+					+ '<span class="user-name">' + data.name + '</span>'
+					+ '</div>'
+					+ '</div>'
+					+ '<div class="group-delete border" data-id="'+ data.id +'" onclick="deleteGroup(this)">Delete</div>'
+					+ '</li>';
 			document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			document.querySelector(".txt-group-name").value = "";
-
-			toggleAllModal();
 		});
 }
 
@@ -272,9 +284,91 @@ function addMember(e) {
 		})
 		.then(function(data) {
 			console.log(data);
+			numberMember += parseInt(listUserAdd.length);
+			listUserAdd = [];
+			let inviteNumber = document.querySelector(".total-invite-user");
+			if(inviteNumber) inviteNumber.innerHTML = numberMember + " paticipants";
 
 			toggleAllModal();
 		});
+}
+
+function fetchUser(){
+	
+	fetch("http://" + window.location.host + "/conversations-rest-controller?usersConversationId=" + groupId)
+		.then(data => data.json())
+		.then(users => {
+			console.log(users);
+		
+			document.querySelector(".manage-member-body .list-user ul").innerHTML = "";
+			
+			users.forEach(function(data){
+				if(data.username == username) return;
+				
+				let appendUser = '<li>'
+						+ '<div class="user-contain">'
+						+ '<div class="user-img">'
+						+ '<img '
+						+ ' src="http://' + window.location.host + '/files/' + data.username + '/' + data.avatar + '"'
+						+ 'alt="Image of user">'
+						+ '</div>'
+						+ '<div class="user-info" style="flex-grow: 1;">'
+						+ '<span class="user-name">' + data.username + '</span>'
+						+ '</div>';
+						
+					if(!data.admin)
+						appendUser += '<div class="user-delete" style="font-weight: 700;" data-username="'+ data.username +'" onclick="deleteMember(this)">Delete</div>'
+					
+					appendUser +='</div></li>';
+					
+				document.querySelector(".manage-member-body .list-user ul").innerHTML += appendUser;	
+			});
+			
+		})
+		.catch(ex => console.log(ex));
+
+}
+
+function deleteGroup(ele){
+	let grpId = ele.getAttribute("data-id");
+	
+	if(grpId == groupId) document.querySelector(".right-side").innerHTML = "";
+
+	fetch("http://" + window.location.host + "/conversations-rest-controller?conversationId="+ grpId, {
+			method: 'delete'
+		})
+		.then(function(data) {
+			return data.json();
+		})
+		.then(function(data) {
+		
+			let groupNumber = document.getElementById("group-" + grpId);
+			if(groupNumber) groupNumber.outerHTML = "";
+			
+		})
+		.catch(ex => console.log(ex));
+}
+
+function deleteMember(ele){
+	let username = ele.getAttribute("data-username");
+
+	fetch("http://" + window.location.host + "/conversations-rest-controller?conversationId="+ groupId +"&username=" + username, {
+			method: 'delete'
+		})
+		.then(function(data) {
+			return data.json();
+		})
+		.then(function(data) {
+		
+			numberMember -= 1;
+			
+			let inviteNumber = document.querySelector(".total-invite-user");
+			if(inviteNumber) inviteNumber.innerHTML = numberMember + " paticipants";
+	
+			toggleAllModal();
+		})
+		.catch(ex => console.log(ex));
+		
 }
 
 function toggleAllModal() {
@@ -289,10 +383,11 @@ function toggleAllModal() {
 function toggleModal(ele, mode) {
 	let modalBox = document.querySelectorAll(".modal-box");
 	let id = ele.getAttribute("data-id");
-
+	
 	modalBox.forEach(function(modal) {
 		modal.classList.remove("active");
 	});
+	
 
 	if (mode) document.getElementById(id).classList.add("active");
 	else document.getElementById(id).classList.remove("active");
@@ -433,18 +528,18 @@ function fetchGroup() {
 
 				console.log(data);
 				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
-				let appendUser = '<li id="' + data.id + '" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
-					+ '<div class="user-contain">'
+				let appendUser = '<li id="group-' + data.id + '">'
+					+ '<div class="user-contain" data-id="'+ data.id +'" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
 					+ '<div class="user-img">'
 					+ '<img id="img-group-' + data.id + '"'
 					+ imgSrc
 					+ ' alt="Image of user">'
 					+ '</div>'
-					+ '<div class="user-info">'
+					+ '<div class="user-info" style="flex-grow:1 ;">'
 					+ '<span class="user-name">' + data.name + '</span>'
-					+ '<span'
 					+ '</div>'
 					+ '</div>'
+					+ '<div class="group-delete border" data-id="'+ data.id +'" onclick="deleteGroup(this)">Delete</div>'
 					+ '</li>';
 				document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			});

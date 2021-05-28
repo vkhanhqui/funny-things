@@ -132,6 +132,7 @@ img {
     display: flex;
     flex-wrap: wrap;
     height: 70rem;
+    overflow: hidden;
 }
 
 .conversation-container .left-side {
@@ -196,6 +197,14 @@ img {
 
 .modal-box-body input {
 	background: #dbdbdb;
+}
+
+.modal-box-body .list-user {
+	max-height: 25rem;
+}
+
+.modal-box-body .list-user li:hover {
+	background: none;
 }
 
 .modal-box-close {
@@ -263,6 +272,7 @@ img {
     cursor: pointer;
     padding: 1.5rem 0rem;
     border-radius: .5rem;
+    box-sizing: border-box;
 }
 
 .tab-control i.active, .tab-control i:hover {
@@ -274,6 +284,11 @@ img {
     overflow-y: auto;
     max-height: 50rem;
     list-style: none;
+    box-sizing: border-box;
+}
+
+.list-user li {
+	position: relative;
 }
 
 .list-user-search .txt-input {
@@ -290,6 +305,7 @@ img {
     padding: 1rem;
     border-radius: .5rem;
     cursor: pointer;
+    box-sizing: border-box;
 }
 
 .list-user li:hover, .list-user li.active {
@@ -299,6 +315,17 @@ img {
 .user-contain {
     display: flex;
     align-items: center;
+    position: relative;
+}
+
+.group-delete {
+	position: absolute;
+	right: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 10;
+	padding: 1rem;
+	background: var(--txtBlack);
 }
 
 .user-img {

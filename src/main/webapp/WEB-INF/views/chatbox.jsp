@@ -28,7 +28,7 @@
 					<div class="modal-box-title">
 						Add Group
 					</div>
-					<div class="modal-box-close" data-id="add-group" onclick="toggleModal(this, false)">
+					<div class="modal-box-close toggle-btn" data-id="add-group" onclick="toggleModal(this, false)">
 						<i class="fa fa-times"></i>
 					</div>
 				</div>
@@ -46,7 +46,7 @@
 					<div class="modal-box-title">
 						Add Member
 					</div>
-					<div class="modal-box-close" data-id="add-user" onclick="toggleModal(this, false)">
+					<div class="modal-box-close toggle-btn" data-id="add-user" onclick="toggleModal(this, false)">
 						<i class="fa fa-times"></i>
 					</div>
 				</div>
@@ -64,8 +64,26 @@
 				</form>
 			</div>
 			
+			<div class="modal-box border" id="manage-user">
+				<div class="modal-box-head">
+					<div class="modal-box-title">
+						All Member Of Group
+					</div>
+					<div class="modal-box-close toggle-btn" data-id="manage-user" onclick="toggleModal(this, false)">
+						<i class="fa fa-times"></i>
+					</div>
+				</div>
+				<hr>
+				<div class="modal-box-body manage-member-body">
+					<div class="list-user">
+						<ul>
+						</ul>
+					</div>
+				</div>	
+			</div>
+			
 			<div class="left-side active">
-				<div class="add-group border" data-id="add-group" onclick="toggleModal(this, true)"><i class="fa fa-plus-circle"></i></div>
+				<div class="add-group border toggle-btn" data-id="add-group" onclick="toggleModal(this, true)"><i class="fa fa-plus-circle"></i></div>
 				<h2>
 					<a href="<c:url value="/users/update"/>"
 						style="text-decoration: none; color: white;margin-right: 3rem;">Welcome
