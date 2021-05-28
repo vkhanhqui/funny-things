@@ -429,8 +429,6 @@ function fetchGroup() {
 		.then(data => {
 			document.querySelector(".left-side .list-user").innerHTML = "";
 			data.forEach(function(data) {
-				if (data.isOnline) status = "online";
-				else status = "";
 				let numberMember = data.users ? data.users.length : 0;
 
 				console.log(data);
@@ -799,12 +797,49 @@ function searchMemberByKeyword(ele) {
 		});
 }
 
+function searchGroupByKeyword(value) {
+	let keyword = value;
+	fetch("http://" + window.location.host + "/conversations-rest-controller?username=" + username + "&conversationKeyword=" + keyword)
+		.then(function(data) {
+			return data.json();
+		})
+		.then(data => {
+
+			console.log(data);
+			document.querySelector(".left-side .list-user").innerHTML = "";
+			data.forEach(function(data) {
+			
+				let numberMember = data.users ? data.users.length : 0;
+
+				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
+				let appendUser = '<li id="' + data.id + '" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img id="img-group-' + data.id + '"'
+					+ imgSrc
+					+ ' alt="Image of user">'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<span class="user-name">' + data.name + '</span>'
+					+ '<span'
+					+ '</div>'
+					+ '</div>'
+					+ '</li>';
+				document.querySelector(".left-side .list-user").innerHTML += appendUser;
+			});
+		});
+}
+
 function searchUser(ele) {
 	if (typeChat == "user") {
 		searchFriendByKeyword(ele.value);
 	} else {
 		console.log("Search Group by Keyword");
-		//searchGroupByKeyword(ele.value);
+		if(ele.value == ""){
+			fetchGroup();
+		}else{
+			searchGroupByKeyword(ele.value);
+		}
 	}
 }
 

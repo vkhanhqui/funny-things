@@ -29,9 +29,9 @@ public class GenericDao<T> implements GenericDaoInterface<T> {
 			Class.forName(driverName);
 			url.append(server);
 			url.append(";databaseName=" + databaseName);
-			url.append(";user=" + user);
-			url.append(";password=" + password);
-//			url.append(";integratedSecurity=true");
+//			url.append(";user=" + user);
+//			url.append(";password=" + password);
+			url.append(";integratedSecurity=true");
 			return DriverManager.getConnection(url.toString());
 		} catch (ClassNotFoundException | SQLException ex) {
 			return null;
