@@ -232,6 +232,9 @@ function createGroup(e) {
 			console.log(data);
 
 			if (typeChat != "group") return;
+			
+			let numberMember = data.users.length;
+			
 			let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
 				let appendUser = '<li id="group-' + data.id + '">'
 					+ '<div class="user-contain" data-id="'+ data.id +'" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
@@ -288,7 +291,9 @@ function addMember(e) {
 			listUserAdd = [];
 			let inviteNumber = document.querySelector(".total-invite-user");
 			if(inviteNumber) inviteNumber.innerHTML = numberMember + " paticipants";
-
+			
+			document.getElementById("group-" + groupId).querySelector(".user-contain").setAttribute("data-number", numberMember);
+			
 			toggleAllModal();
 		});
 }
