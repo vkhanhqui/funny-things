@@ -40,12 +40,12 @@ public class MessageDao extends GenericDao<Message> implements MessageDaoInterfa
 		StringBuilder sql = new StringBuilder("insert into messages(sender, receiver, message, message_type)");
 		sql.append(" values(?,?,?,?)");
 		String sender = message.getUsername();
+		String receiver = message.getReceiver();
 		String msg = message.getMessage();
 		String type = message.getType();
 		if (!type.equals("text")) {
 			msg = msg.replaceAll(" ", "");
 		}
-		String receiver = message.getReceiver();
 		save(sql.toString(), sender, receiver, msg, type);
 	}
 

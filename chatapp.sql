@@ -46,7 +46,7 @@ CREATE TABLE messages (
 	sender char(50) NOT NULL,
 	receiver char(50),
 	message text NOT NULL,
-	message_type char(20) NOT NULL,
+	message_type char(100) NOT NULL,
 	created_at datetime default current_timestamp,
 	conversations_id int,
 	foreign key (sender) references users(username),
@@ -143,7 +143,7 @@ select * from users;
 
 select * from friends;
 
-select * from messages where conversations_id=1;
+select * from messages;
 
 select * from conversations;
 
@@ -223,5 +223,3 @@ from conversations c join conversations_users cu
 on cu.conversations_id = c.id
 where c.name like '%con heo%'
 and cu.username = 'a1'
-
-select * from conversations_users
