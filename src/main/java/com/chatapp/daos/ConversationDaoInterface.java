@@ -9,4 +9,6 @@ public interface ConversationDaoInterface {
 	void saveConversation(Conversation conversation, List<User> users);
 
 	List<Conversation> findAllConversationsByUsername(String username);
+	
+	Conversation findConversationById(Long id);
 }

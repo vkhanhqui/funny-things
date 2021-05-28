@@ -28,7 +28,8 @@ CREATE TABLE friends (
 
 create table conversations(
 	id int identity(1,1) primary key,
-	name nvarchar(50) NOT NULL
+	name nvarchar(50) NOT NULL,
+	avatar char(50) NOT NULL
 ) ;
 
 create table conversations_users(
@@ -93,9 +94,14 @@ insert into messages(sender, receiver, message, message_type)
 	values('a3','a2','a3 hello a2','text');
 
 --conversation
-insert into conversations(name) values('con heo');
-insert into conversations(name) values('con ga');
-insert into conversations(name) values('con cho');
+insert into conversations(name, avatar) values('con heo'
+	,concat('group-'
+	,CAST(IDENT_CURRENT('conversations') as char(50))
+));
+
+update conversations 
+set name='con heo',avatar='group-7' 
+where id=7
 
 --conversation_user
 --con heo group has a1, a2, a3 -> a1 is admin
@@ -133,7 +139,7 @@ select * from users;
 
 select * from friends;
 
-select * from messages;
+select * from messages where conversations_id=1;
 
 select * from conversations;
 
@@ -163,7 +169,17 @@ from users u1 join friends f on u1.username = f.receiver
 join users u2 on u2.username = f.sender
 where u1.username = 'a1' 
 and f.status = 1
-and u2.username like '%a%';
+and u2.username like '%a%'
+and u2.username not in (
+	select u.username
+	from users u join conversations_users cu
+		on u.username = cu.username
+	join conversations c
+		on c.id = cu.conversations_id
+	where c.id = 1
+);
+
+
 
 --load groups which a1 is joined
 select c.id, c.name
@@ -180,9 +196,10 @@ join conversations c
 where c.id = 1
 
 --load messages in con heo group 
-select m.sender, m.message, m.message_type
+select m.sender, u.avatar, m.message, m.receiver, m.message_type
 from messages m join conversations c
-	on m.conversations_id = c.id
+on m.conversations_id = c.id
+join users u on u.username = m.sender
 where c.id = 1
 order by created_at asc
 

@@ -14,6 +14,7 @@ public class ConversationMapper implements RowMapperInterface<Conversation> {
 		try {
 			conversation.setId(rs.getLong("id"));
 			conversation.setName(rs.getString("name"));
+			conversation.setAvatar(rs.getString("avatar"));
 		} catch (SQLException e) {
 			return null;
 		}

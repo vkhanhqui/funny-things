@@ -51,10 +51,10 @@ window.onload = function() {
 	}
 }
 
-window.onclick = function(e){
+window.onclick = function(e) {
 	let modals = document.querySelectorAll(".modal-box");
 	let toggleBtns = document.querySelectorAll(".toggle-btn");
-	
+
 	console.log(e.target);
 }
 
@@ -118,28 +118,28 @@ function setReceiver(element) {
 function setGroup(element) {
 	receiver = element.id;
 	groupName = element.getAttribute("data-name");
-	groupId  = element.getAttribute("id");
+	groupId = element.getAttribute("id");
+	receiverAvatar = document.getElementById("img-group-" + groupId).src;
 	listUserAdd = [];
-	
+
 	let numberMember = element.getAttribute("data-number");
 	console.log("receiver: " + receiver);
-	
 	var rightSide = '<div class="user-contact">' + '<div class="back">'
 		+ '<i class="fa fa-arrow-left"></i>'
 		+ '</div>'
 		+ '<div class="user-contain">'
 		+ '<div class="user-img">'
-		+ '<img src="' + receiverAvatar + '" '
+		+ '<img id="img-group-' + groupId + '" src="' + receiverAvatar + '"'
 		+ 'alt="Image of user">'
 		+ '</div>'
 		+ '<div class="user-info">'
-		+ '<span class="user-name">' + groupName + '</span>'
+		+ '<a href="http://' + window.location.host + '/conversation?conversationId=' + groupId + '" class="user-name">' + groupName + '</a>'
 		+ '</div>'
 		+ '</div>'
-        + '<div class="invite-user">'
-        + '<span class="total-invite-user">'+ numberMember +' paticipants</span>'
-        + '<span data-id="add-user" onclick="toggleModal(this, true)" class="invite">Invite</span>'
-        + '</div>'
+		+ '<div class="invite-user">'
+		+ '<span class="total-invite-user">' + numberMember + ' paticipants</span>'
+		+ '<span data-id="add-user" onclick="toggleModal(this, true)" class="invite">Invite</span>'
+		+ '</div>'
 		+ '<div class="setting">'
 		+ '<i class="fa fa-cog"></i>'
 		+ '</div>'
@@ -169,163 +169,159 @@ function setGroup(element) {
 	handleResponsive();
 }
 
-function resetChat(){
+function resetChat() {
 	let chatBtn = document.querySelectorAll(".tab-control i");
 	let searchTxt = document.querySelector(".list-user-search input");
 	let addGroupBtn = document.querySelector(".add-group");
-	
+
 	searchTxt.value = "";
-	
-	chatBtn.forEach(function(ele){
+
+	chatBtn.forEach(function(ele) {
 		ele.classList.remove("active");
 	});
-	
-	if(typeChat == "group"){
+
+	if (typeChat == "group") {
 		addGroupBtn.classList.add("active");
-	}else{
+	} else {
 		addGroupBtn.classList.remove("active");
 	}
 }
 
 
-function createGroup(e){
+function createGroup(e) {
 	e.preventDefault();
-	
+
 	let groupName = document.querySelector(".txt-group-name").value;
-	
+
 	let object = new Object();
 	let user = new Object();
-	
+
 	user.username = username;
 	user.admin = true;
-	
+
 	object.name = groupName;
 	object.users = [];
 	object.users.push(user);
 	console.log(JSON.stringify(object));
-	
-	fetch("http://" + window.location.host + "/conversations-rest-controller",{
-			method: "post",
-			cache: 'no-cache',
-			headers: {
-		      'Content-Type': 'application/json;charset=utf-8'
-		    },
-			body: JSON.stringify(object)
-		})
+
+	fetch("http://" + window.location.host + "/conversations-rest-controller", {
+		method: "post",
+		cache: 'no-cache',
+		headers: {
+			'Content-Type': 'application/json;charset=utf-8'
+		},
+		body: JSON.stringify(object)
+	})
 		.then(function(data) {
 			return data.json();
 		})
-		.then(function(data){
+		.then(function(data) {
 			console.log(data);
-			
-			if(typeChat != "group") return;
-			let appendUser = '<li id="' + data.id + '" data-name="'+ data.name +'" onclick="setGroup(this);">'
-					+ '<div class="user-contain">'
-					+ '<div class="user-img">'
-					+ '<img id="img-' + data.username + '"'
-					+ ' src="http://' + window.location.host + '/files/' + data.id
-					+ 'alt="Image of user">'
-					+ '</div>'
-					+ '<div class="user-info">'
-					+ '<span class="user-name">' + data.name + '</span>'
-					+ '<span'
-					+ '</div>'
-					+ '</div>'
-					+ '</li>';
+
+			if (typeChat != "group") return;
+			let appendUser = '<li id="' + data.id + '" data-number="' + data.users.length + '" data-name="' + data.name + '" onclick="setGroup(this);">'
+				+ '<div class="user-contain">'
+				+ '<div class="user-img">'
+				+ '<img id="img-group-' + data.id + '"'
+				+ ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"'
+				+ ' alt="Image of user">'
+				+ '</div>'
+				+ '<div class="user-info">'
+				+ '<span class="user-name">' + data.name + '</span>'
+				+ '<span'
+				+ '</div>'
+				+ '</div>'
+				+ '</li>';
 			document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			document.querySelector(".txt-group-name").value = "";
-			
+
 			toggleAllModal();
 		});
 }
 
-function addMember(e){
+function addMember(e) {
 	e.preventDefault();
-	
+
 	let object = new Object();
 	object.name = groupName;
 	object.id = groupId;
 	object.users = [];
-	
-	
-	listUserAdd.forEach(function(username){
+
+
+	listUserAdd.forEach(function(username) {
 		let user = new Object();
-		
+
 		user.username = username;
 		user.admin = false;
 		user.avatar = null;
-		
-		object.users.push(user);		
+
+		object.users.push(user);
 	});
-	
-	console.log(JSON.stringify(object));
-	console.log(groupName);
-	
-	fetch("http://" + window.location.host + "/conversations-rest-controller",{
-			method: "post",
-			cache: 'no-cache',
-			headers: {
-		      'Content-Type': 'application/json;charset=utf-8'
-		    },
-			body: JSON.stringify(object)
-		})
+
+
+	fetch("http://" + window.location.host + "/conversations-rest-controller", {
+		method: "post",
+		cache: 'no-cache',
+		headers: {
+			'Content-Type': 'application/json;charset=utf-8'
+		},
+		body: JSON.stringify(object)
+	})
 		.then(function(data) {
 			return data.json();
 		})
-		.then(function(data){
+		.then(function(data) {
 			console.log(data);
-			
+
 			toggleAllModal();
 		});
 }
 
-function toggleAllModal(){
+function toggleAllModal() {
 	let modalBox = document.querySelectorAll(".modal-box");
-	
-	modalBox.forEach(function(modal){
-		modal.classList.remove("active");		
+
+	modalBox.forEach(function(modal) {
+		modal.classList.remove("active");
 	});
 
 }
 
-function toggleModal(ele, mode){
+function toggleModal(ele, mode) {
 	let modalBox = document.querySelectorAll(".modal-box");
 	let id = ele.getAttribute("data-id");
-	
-	modalBox.forEach(function(modal){
-		modal.classList.remove("active");		
+
+	modalBox.forEach(function(modal) {
+		modal.classList.remove("active");
 	});
-	
-	if(mode) document.getElementById(id).classList.add("active");
+
+	if (mode) document.getElementById(id).classList.add("active");
 	else document.getElementById(id).classList.remove("active");
 }
 
-function chatOne(ele){
+function chatOne(ele) {
 	typeChat = "user";
 	resetChat();
 	ele.classList.add("active");
 	searchFriendByKeyword("");
 	listFiles = [];
-	handleResponsive();
 }
 
-function chatGroup(ele){
+function chatGroup(ele) {
 	typeChat = "group";
 	resetChat();
 	ele.classList.add("active");
 	fetchGroup();
 	listFiles = [];
-	handleResponsive();
 }
 
-function addUserChange(e){
-	if(e.checked){
+function addUserChange(e) {
+	if (e.checked) {
 		listUserAdd.push(e.value);
-	}else{
+	} else {
 		let index = listUserAdd.indexOf(e.value);
 		listUserAdd.splice(index, 1);
 	}
-	
+
 	console.log(listUserAdd);
 }
 
@@ -339,7 +335,7 @@ function makeFriend(rightSide) {
 			if (document.getElementById('status-' + receiver).classList.contains('online')) {
 				status = 'online';
 			}
-		
+
 			if (data.status == false && data.owner == username && data.owner != "any") {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
@@ -348,7 +344,7 @@ function makeFriend(rightSide) {
 					+ '<div class="user-img">'
 					+ '<img src="' + receiverAvatar + '" '
 					+ 'alt="Image of user">'
-					+ '<div class="user-img-dot '+ status +'"></div>'
+					+ '<div class="user-img-dot ' + status + '"></div>'
 					+ '</div>'
 					+ '<div class="user-info">'
 					+ '<span class="user-name">' + receiver + '</span>'
@@ -361,8 +357,8 @@ function makeFriend(rightSide) {
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-					
-					document.getElementById("receiver").innerHTML = rightSide;
+
+				document.getElementById("receiver").innerHTML = rightSide;
 			} else if (data.status == false && data.owner != username && data.owner != "any") {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
@@ -389,9 +385,9 @@ function makeFriend(rightSide) {
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-					document.getElementById("receiver").innerHTML = rightSide;
-					
-			}else if(data.status == false && data.sender == "any" && data.receiver == "any"){
+				document.getElementById("receiver").innerHTML = rightSide;
+
+			} else if (data.status == false && data.sender == "any" && data.receiver == "any") {
 				rightSide = '<div class="user-contact">' + '<div class="back">'
 					+ '<i class="fa fa-arrow-left"></i>'
 					+ '</div>'
@@ -417,16 +413,15 @@ function makeFriend(rightSide) {
 					+ '<ul id="chat" class="list-messages">'
 					+ '</ul>'
 					+ '</div>';
-					document.getElementById("receiver").innerHTML = rightSide;
-					
+				document.getElementById("receiver").innerHTML = rightSide;
 			}
-			
+
 			handleResponsive();
 		})
 		.catch(ex => console.log(ex));
 }
 
-function fetchGroup(){
+function fetchGroup() {
 	fetch("http://" + window.location.host + "/conversations-rest-controller?username=" + username)
 		.then(function(data) {
 			return data.json();
@@ -437,13 +432,15 @@ function fetchGroup(){
 				if (data.isOnline) status = "online";
 				else status = "";
 				let numberMember = data.users ? data.users.length : 0;
-				
-				let appendUser = '<li id="' + data.id + '" data-number="'+ numberMember +'" data-name="'+ data.name +'" onclick="setGroup(this);">'
+
+				console.log(data);
+				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
+				let appendUser = '<li id="' + data.id + '" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
 					+ '<div class="user-contain">'
 					+ '<div class="user-img">'
-					+ '<img id="img-' + data.username + '"'
-					+ ' src="http://' + window.location.host + '/files/' + data.id
-					+ 'alt="Image of user">'
+					+ '<img id="img-group-' + data.id + '"'
+					+ imgSrc
+					+ ' alt="Image of user">'
 					+ '</div>'
 					+ '<div class="user-info">'
 					+ '<span class="user-name">' + data.name + '</span>'
@@ -453,16 +450,16 @@ function fetchGroup(){
 					+ '</li>';
 				document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			});
+		}).catch(ex => {
+			console.log(ex);
 		});
 }
 
-handleResponsive();
 
 function handleResponsive() {
 	back = document.querySelector(".back");
 	rightSide = document.querySelector(".right-side");
 	leftSide = document.querySelector(".left-side");
-	conversation = document.querySelectorAll(".right-side .user-contain");
 
 	if (back) {
 		back.addEventListener("click", function() {
@@ -473,12 +470,9 @@ function handleResponsive() {
 		});
 	}
 
-	conversation.forEach(function(element, index) {
-		element.addEventListener("click", function() {
-			rightSide.classList.add("active");
-			leftSide.classList.remove("active");
-		});
-	});
+	rightSide.classList.add("active");
+	leftSide.classList.remove("active");
+
 }
 
 function displayFiles() {
@@ -560,14 +554,14 @@ function renderFile(typeFile) {
 
 function sendMessage(e) {
 	e.preventDefault();
-	
+
 	var inputText = document.getElementById("message").value;
 	if (inputText != '') {
 		sendText();
 	} else {
 		sendAttachments();
 	}
-	
+
 	return false;
 }
 
@@ -588,7 +582,7 @@ function sendAttachments() {
 		var message = buildMessageToJson(messageContent, messageType);
 		websocket.send(JSON.stringify(message));
 		websocket.send(file);
-		
+
 		if (messageType.startsWith("audio")) {
 			message.message = '<audio controls>'
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
@@ -597,7 +591,7 @@ function sendAttachments() {
 			message.message = '<video width="400" controls>'
 				+ '<source src="' + URL.createObjectURL(file) + '" type="' + messageType + '">'
 				+ '</video>';
-		}else if (messageType.startsWith("image")) {
+		} else if (messageType.startsWith("image")) {
 			message.message = '<img src="' + URL.createObjectURL(file) + '" alt="">';
 		}
 		else {
@@ -652,7 +646,7 @@ function setOnline(username, isOnline) {
 	}
 }
 
-function loadMessagesGroup(){
+function loadMessagesGroup() {
 	var currentChatbox = document.getElementById("chat");
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -718,7 +712,7 @@ function customLoadMessage(sender, message) {
 		+ '</li>';
 }
 
-function customLoadMessageGroup(sender, message){
+function customLoadMessageGroup(sender, message) {
 	var imgSrc = receiverAvatar;
 	var msgDisplay = '<li>'
 		+ '<div class="message';
@@ -742,7 +736,7 @@ function searchFriendByKeyword(keyword) {
 			return data.json();
 		})
 		.then(data => {
-		
+
 			console.log(data);
 			document.querySelector(".left-side .list-user").innerHTML = "";
 			data.forEach(function(data) {
@@ -769,24 +763,24 @@ function searchFriendByKeyword(keyword) {
 
 function searchMemberByKeyword(ele) {
 	let keyword = ele.value;
-	fetch("http://" + window.location.host + "/users-rest-controller?username=" + username + "&keyword=" + keyword)
+	fetch("http://" + window.location.host + "/users-rest-controller?username=" + username + "&keyword=" + keyword + "&conversationId=" + groupId)
 		.then(function(data) {
 			return data.json();
 		})
 		.then(data => {
-		
+
 			console.log(data);
 			document.querySelector(".add-member-body .list-user ul").innerHTML = "";
 			data.forEach(function(data) {
 				if (data.online) status = "online";
 				else status = "";
-				
+
 				let check = "";
-				if(listUserAdd.indexOf(data.username) >= 0) check="checked";
+				if (listUserAdd.indexOf(data.username) >= 0) check = "checked";
 
 				let appendUser = '<li>'
-					+ '<input id="member-'+ data.username +'" type="checkbox" '+ check +' value="'+ data.username +'" onchange="addUserChange(this)">'
-					+ '<label for="member-'+ data.username +'">'
+					+ '<input id="member-' + data.username + '" type="checkbox" ' + check + ' value="' + data.username + '" onchange="addUserChange(this)">'
+					+ '<label for="member-' + data.username + '">'
 					+ '<div class="user-contain">'
 					+ '<div class="user-img">'
 					+ '<img '
@@ -806,9 +800,9 @@ function searchMemberByKeyword(ele) {
 }
 
 function searchUser(ele) {
-	if(typeChat == "user"){
+	if (typeChat == "user") {
 		searchFriendByKeyword(ele.value);
-	}else{
+	} else {
 		console.log("Search Group by Keyword");
 		//searchGroupByKeyword(ele.value);
 	}

@@ -29,10 +29,15 @@ public class UserRestController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		String keyWord = request.getParameter("keyword");
 		String userName = request.getParameter("username");
+		String keyWord = request.getParameter("keyword");
+		String conversationId = request.getParameter("conversationId");
 		List<User> listUsers;
-		if (keyWord.isEmpty()) {
+		if (conversationId != null && !conversationId.isEmpty()) {
+			Long id = Long.parseLong(conversationId);
+			listUsers = userServiceInterface.getFriendsNotInConversation(userName, keyWord, id);
+		}
+		else if (keyWord.isEmpty()) {
 			listUsers = userServiceInterface.findFriends(userName);
 		} else {
 			listUsers = userServiceInterface.findFriendsByKeyWord(userName, keyWord);

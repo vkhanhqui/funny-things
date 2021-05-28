@@ -42,6 +42,9 @@ public class MessageDao extends GenericDao<Message> implements MessageDaoInterfa
 		String sender = message.getUsername();
 		String msg = message.getMessage();
 		String type = message.getType();
+		if (!type.equals("text")) {
+			msg = msg.replaceAll(" ", "");
+		}
 		String receiver = message.getReceiver();
 		save(sql.toString(), sender, receiver, msg, type);
 	}
@@ -49,9 +52,10 @@ public class MessageDao extends GenericDao<Message> implements MessageDaoInterfa
 	@Override
 	public List<Message> findAllMessagesByConvesationId(Long id) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select m.sender, m.message, m.message_type");
+		sql.append("select m.sender, u.avatar, m.message, m.message_type, m.receiver");
 		sql.append(" from messages m join conversations c");
 		sql.append(" on m.conversations_id = c.id");
+		sql.append(" join users u on u.username = m.sender");
 		sql.append(" where c.id = ?");
 		sql.append(" order by created_at asc");
 		List<Message> listMessages = query(sql.toString(), new MessageMapper(), id);

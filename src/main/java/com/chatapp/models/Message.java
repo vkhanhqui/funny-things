@@ -4,11 +4,12 @@ public class Message {
 
 	private String username;
 	private String message;
+	private String avatar;
 	private String type;
 	private String receiver;
-	
+
 	public Message() {
-		
+
 	}
 
 	public Message(String username, String message, String type, String receiver) {
@@ -32,6 +33,14 @@ public class Message {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 	public String getType() {

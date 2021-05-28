@@ -40,7 +40,10 @@ public class ConversationRestController extends HttpServlet {
 
 			List<ConversationDTO> conversationDTOs = conversationServiceInterface
 					.getAllConversationsByUsername(username);
-
+			for (ConversationDTO conversationDTO : conversationDTOs) {
+				conversationDTO
+						.setUsers(conversationServiceInterface.getAllUsersByConversationId(conversationDTO.getId()));
+			}
 			json = objectMapper.writeValueAsString(conversationDTOs);
 
 		} else if (usersConversationId != null && !usersConversationId.isEmpty()) {
