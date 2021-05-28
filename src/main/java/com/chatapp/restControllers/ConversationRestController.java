@@ -28,15 +28,25 @@ public class ConversationRestController extends HttpServlet {
 		super();
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String usersConversationId = request.getParameter("usersConversationId");
 		String messagesConversationId = request.getParameter("messagesConversationId");
+		String conversationKeyword = request.getParameter("conversationKeyword");
 		String json = "Must have username or conversation id as request param";
 
 		ObjectMapper objectMapper = new ObjectMapper();
-		if (username != null && !username.isEmpty()) {
+
+		if (conversationKeyword != null && !conversationKeyword.isEmpty() && username != null && !username.isEmpty()) {
+
+			List<ConversationDTO> conversationDTOs = conversationServiceInterface
+					.getConversationsOfUserByKeyword(username, conversationKeyword);
+
+			json = objectMapper.writeValueAsString(conversationDTOs);
+
+		} else if (username != null && !username.isEmpty()) {
 
 			List<ConversationDTO> conversationDTOs = conversationServiceInterface
 					.getAllConversationsByUsername(username);
@@ -69,6 +79,7 @@ public class ConversationRestController extends HttpServlet {
 		printWriter.flush();
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setContentType("application/json");
@@ -95,6 +106,31 @@ public class ConversationRestController extends HttpServlet {
 
 		json = objectMapper.writeValueAsString(conversationDTO);
 
+		printWriter.print(json);
+		printWriter.flush();
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String username = request.getParameter("username");
+		String conversationId = request.getParameter("conversationId");
+		String json = "Must have username or conversation id as request param";
+		if (conversationId != null && !conversationId.isEmpty()) {
+			Long id = Long.parseLong(conversationId);
+			if (username != null && !username.isEmpty()) {
+				conversationServiceInterface.deleteUserFromConversation(id, username);
+				json = "delete User by Id " + username + " From Conversation by Id " + id + " successfully";
+			} else {
+				conversationServiceInterface.deleteConversationById(id);
+				json = "delete Conversation By Id " + id + " successfully";
+			}
+		}
+		ObjectMapper objectMapper = new ObjectMapper();
+		json = objectMapper.writeValueAsString(json);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		PrintWriter printWriter = response.getWriter();
 		printWriter.print(json);
 		printWriter.flush();
 	}

@@ -97,11 +97,15 @@ insert into messages(sender, receiver, message, message_type)
 insert into conversations(name, avatar) values('con heo'
 	,concat('group-'
 	,CAST(IDENT_CURRENT('conversations') as char(50))
+	,'.png'
 ));
 
-update conversations 
-set name='con heo',avatar='group-7' 
-where id=7
+insert into conversations_users(conversations_id, username, is_admin) 
+	values(IDENT_CURRENT('conversations'),'a1',1);
+insert into conversations_users(conversations_id, username, is_admin) 
+	values(IDENT_CURRENT('conversations'),'a2',0);
+insert into conversations_users(conversations_id, username, is_admin) 
+	values(IDENT_CURRENT('conversations'),'a3',0);
 
 --conversation_user
 --con heo group has a1, a2, a3 -> a1 is admin
@@ -179,8 +183,6 @@ and u2.username not in (
 	where c.id = 1
 );
 
-
-
 --load groups which a1 is joined
 select c.id, c.name
 from conversations c join conversations_users cu
@@ -203,13 +205,23 @@ join users u on u.username = m.sender
 where c.id = 1
 order by created_at asc
 
---delete data
-truncate table friends;
-truncate table conversations_users;
-truncate table messages;
-truncate table users;
-truncate table conversations;
+--delete conversation by id
+delete from conversations_users 
+where conversations_id= 1;
 
---drop
-drop table messages;
-drop table conversations_users;
+delete from conversations 
+where id = 1;
+
+--delete user from conversation
+delete from conversations_users 
+where username = 'a2' 
+and conversations_id = 1;
+
+--find conversation by keyword
+select c.id, c.name, c.avatar
+from conversations c join conversations_users cu
+on cu.conversations_id = c.id
+where c.name like '%con heo%'
+and cu.username = 'a1'
+
+select * from conversations_users

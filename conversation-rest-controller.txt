@@ -1,0 +1,159 @@
+
+Lấy groups của user a1
+GET /conversations-rest-controller?username=a1
+response body
+[
+    {
+        "id": 1,
+        "name": "con heo",
+        "users": null
+    },
+    {
+        "id": 2,
+        "name": "con heo",
+        "users": null
+    }
+]
+
+Tạo group
+POST /conversations-rest-controller
+request body
+{
+    "name": "con heo",
+    "users": [
+        {
+            "username": "a1",
+            "admin": true
+        },
+        {
+            "username": "a2",
+            "admin": false
+        },
+        {
+            "username": "a3",
+            "admin": false
+        }
+    ]
+}
+response body
+{
+    "id": 7,
+    "name": "con heo",
+    "users": [
+        {
+            "username": "a1",
+            "avatar": null,
+            "admin": true
+        },
+        {
+            "username": "a2",
+            "avatar": null,
+            "admin": false
+        },
+        {
+            "username": "a3",
+            "avatar": null,
+            "admin": false
+        }
+    ]
+}
+
+Lấy users theo group id
+GET /conversations-rest-controller?usersConversationId=1
+response body
+[
+    {
+        "username": "a1",
+        "avatar": "a1.jpg",
+        "admin": true
+    },
+    {
+        "username": "a2",
+        "avatar": "a2.jpg",
+        "admin": false
+    }
+]
+
+Lấy messages theo group id
+GET /conversations-rest-controller?messagesConversationId=1
+response body
+[
+    {
+        "username": "a1",
+        "message": "a1 hello group con heo",
+        "type": "text",
+        "receiver": null,
+        "onlineList": []
+    },
+    {
+        "username": "a2",
+        "message": "a2 hello group con heo",
+        "type": "text",
+        "receiver": null,
+        "onlineList": []
+    },
+    {
+        "username": "a2",
+        "message": "a2 hello group con heo-lan 2",
+        "type": "text",
+        "receiver": null,
+        "onlineList": []
+    },
+    {
+        "username": "a3",
+        "message": "a3 hello group con heo",
+        "type": "text",
+        "receiver": null,
+        "onlineList": []
+    }
+]
+
+Thêm người vào group
+POST /conversations-rest-controller
+request body
+{
+    "id": 8,
+    "name": "con heo",
+    "users": [
+        {
+            "username": "a4",
+            "admin": false
+        }
+    ]
+}
+response body
+{
+    "id": 8,
+    "name": "con heo",
+    "users": [
+        {
+            "username": "a4",
+            "avatar": null,
+            "admin": false
+        }
+    ]
+}
+
+Lấy group theo keyword
+GET /conversations-rest-controller?conversationKeyword=con heo&username=a1
+response body
+[
+    {
+        "id": 4,
+        "name": "con heo",
+        "avatar": "group-4",
+        "users": null
+    },
+    {
+        "id": 5,
+        "name": "con heo",
+        "avatar": "group-5",
+        "users": null
+    }
+]
+
+Xóa group theo id
+DELETE /conversations-rest-controller?conversationId=1
+
+Xóa người dùng khỏi group
+DELETE /conversations-rest-controller?conversationId=1&username=a1

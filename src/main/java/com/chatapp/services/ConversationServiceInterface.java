@@ -18,6 +18,12 @@ public interface ConversationServiceInterface {
 	public List<MessageDTO> getAllMessagesByConversationId(Long id);
 
 	public void updateConversationById(Long id, String name, Part avatar);
-	
+
 	public ConversationDTO getConversationById(Long id);
+
+	void deleteConversationById(Long id);
+
+	void deleteUserFromConversation(Long conversationId, String username);
+
+	public List<ConversationDTO> getConversationsOfUserByKeyword(String username, String keyword);
 }

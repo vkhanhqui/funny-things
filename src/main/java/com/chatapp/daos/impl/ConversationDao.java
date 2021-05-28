@@ -78,4 +78,36 @@ public class ConversationDao extends GenericDao<Conversation> implements Convers
 		return conversations.isEmpty() ? null : conversations.get(0);
 	}
 
+	@Override
+	public void deleteConversationById(Long id) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("delete from conversations_users ");
+		sql.append(" where conversations_id= ?;");
+		sql.append(" delete from conversations");
+		sql.append(" where id = ?;");
+		save(sql.toString(), id, id);
+	}
+
+	@Override
+	public void deleteUserFromConversation(Long conversationId, String username) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("delete from conversations_users");
+		sql.append(" where conversations_id = ?");
+		sql.append(" and username= ?");
+		save(sql.toString(), conversationId, username);
+	}
+
+	@Override
+	public List<Conversation> findConversationsOfUserByKeyword(String username, String keyword) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select c.id, c.name, c.avatar");
+		sql.append(" from conversations c join conversations_users cu");
+		sql.append(" on cu.conversations_id = c.id");
+		sql.append(" where c.name like ?");
+		sql.append(" and cu.username = ?");
+		String param = "%" + keyword + "%";
+		List<Conversation> conversations = query(sql.toString(), new ConversationMapper(), param, username);
+		return conversations;
+	}
+
 }

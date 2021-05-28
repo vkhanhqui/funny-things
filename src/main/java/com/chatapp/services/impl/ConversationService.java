@@ -155,4 +155,23 @@ public class ConversationService implements ConversationServiceInterface {
 		Conversation conversation = conversationDaoInterface.findConversationById(id);
 		return convertToConversationDTO(conversation);
 	}
+
+	@Override
+	public void deleteConversationById(Long id) {
+		conversationDaoInterface.deleteConversationById(id);
+
+	}
+
+	@Override
+	public void deleteUserFromConversation(Long conversationId, String username) {
+		conversationDaoInterface.deleteUserFromConversation(conversationId, username);
+	}
+
+	@Override
+	public List<ConversationDTO> getConversationsOfUserByKeyword(String username, String keyword) {
+		List<ConversationDTO> conversationDTOs = conversationDaoInterface
+				.findConversationsOfUserByKeyword(username, keyword).stream()
+				.map(conversation -> convertToConversationDTO(conversation)).collect(Collectors.toList());
+		return conversationDTOs;
+	}
 }
