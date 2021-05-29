@@ -136,49 +136,62 @@ function setGroup(element) {
 
 	numberMember = parseInt(element.getAttribute("data-number"));
 	console.log("receiver: " + receiver);
-	var rightSide = '<div class="user-contact">' + '<div class="back">'
-		+ '<i class="fa fa-arrow-left"></i>'
-		+ '</div>'
-		+ '<div class="user-contain">'
-		+ '<div class="user-img">'
-		+ '<img id="img-group-' + groupId + '" src="' + receiverAvatar + '"'
-		+ 'alt="Image of user">'
-		+ '</div>'
-		+ '<div class="user-info">'
-		+ '<a href="http://' + window.location.host + '/conversation?conversationId=' + groupId + '" class="user-name">' + groupName + '</a>'
-		+ '</div>'
-		+ '</div>'
-		+ '<div class="invite-user">'
-		+ '<span class="total-invite-user">' + numberMember + ' paticipants</span>'
-		+ '<span data-id="add-user" onclick="toggleModal(this, true); searchMemberByKeyword(``);" class="invite toggle-btn">Invite</span>'
-		+ '</div>'
-		+ '<div class="setting toggle-btn" data-id="manage-user" onclick="toggleModal(this, true);  fetchUser();">'
-		+ '<i class="fa fa-cog"></i>'
-		+ '</div>'
-		+ '</div>'
-		+ '<div class="list-messages-contain">'
-		+ '<ul id="chat" class="list-messages">'
-		+ '</ul>'
-		+ '</div>'
-		+ '<form class="form-send-message" onsubmit="return sendMessage(event)">'
-		+ '<ul class="list-file"></ul> '
-		+ '<input type="text" id="message" class="txt-input" placeholder="Type message...">'
-		+ '<label class="btn btn-image" for="attach"><i class="fa fa-file"></i></label>'
-		+ '<input type="file" multiple id="attach">'
-		+ '<label class="btn btn-image" for="image"><i class="fa fa-file-image-o"></i></label>'
-		+ '<input type="file" accept="image/*" multiple id="image">'
-		+ '<button type="submit" class="btn btn-send">'
-		+ '<i class="fa fa-paper-plane"></i>'
-		+ '</button>'
-		+ '</form>';
-
-	document.getElementById("receiver").innerHTML = rightSide;
-
-	loadMessagesGroup();
-
-	displayFiles();
-
-	handleResponsive();
+	
+	fetch("http://" + window.location.host + "/conversations-rest-controller?usersConversationId=" + groupId)
+		.then(data => data.json())
+		.then(data => {
+			let findObject = data.find(element => element.username == username);
+			let isAdmin = findObject.admin;
+		
+			var rightSide = '<div class="user-contact">' + '<div class="back">'
+					+ '<i class="fa fa-arrow-left"></i>'
+					+ '</div>'
+					+ '<div class="user-contain">'
+					+ '<div class="user-img">'
+					+ '<img id="img-group-' + groupId + '" src="' + receiverAvatar + '"'
+					+ 'alt="Image of user">'
+					+ '</div>'
+					+ '<div class="user-info">'
+					+ '<a href="http://' + window.location.host + '/conversation?conversationId=' + groupId + '" class="user-name">' + groupName + '</a>'
+					+ '</div>'
+					+ '</div>'
+					+ '<div class="invite-user">'
+					+ '<span class="total-invite-user">' + numberMember + ' paticipants</span>'
+					+ '<span data-id="add-user" onclick="toggleModal(this, true); searchMemberByKeyword(``);" class="invite toggle-btn">Invite</span>'
+					+ '</div>';
+					
+					if(isAdmin){
+						rightSide += '<div class="setting toggle-btn" data-id="manage-user" onclick="toggleModal(this, true);  fetchUser();">'
+								  + '<i class="fa fa-cog"></i>'
+								  + '</div>';
+					}
+					
+					rightSide += '</div>'
+					+ '<div class="list-messages-contain">'
+					+ '<ul id="chat" class="list-messages">'
+					+ '</ul>'
+					+ '</div>'
+					+ '<form class="form-send-message" onsubmit="return sendMessage(event)">'
+					+ '<ul class="list-file"></ul> '
+					+ '<input type="text" id="message" class="txt-input" placeholder="Type message...">'
+					+ '<label class="btn btn-image" for="attach"><i class="fa fa-file"></i></label>'
+					+ '<input type="file" multiple id="attach">'
+					+ '<label class="btn btn-image" for="image"><i class="fa fa-file-image-o"></i></label>'
+					+ '<input type="file" accept="image/*" multiple id="image">'
+					+ '<button type="submit" class="btn btn-send">'
+					+ '<i class="fa fa-paper-plane"></i>'
+					+ '</button>'
+					+ '</form>';
+			
+				document.getElementById("receiver").innerHTML = rightSide;
+			
+				loadMessagesGroup();
+			
+				displayFiles();
+			
+				handleResponsive();
+		})
+		.catch(ex => console.log(ex));
 }
 
 function resetChat() {
@@ -527,11 +540,15 @@ function fetchGroup() {
 			return data.json();
 		})
 		.then(data => {
+		
 			document.querySelector(".left-side .list-user").innerHTML = "";
 			data.forEach(function(data) {
 				let numberMember = data.users ? data.users.length : 0;
 
 				console.log(data);
+				let findObject = data.users.find(element => element.username == username);
+				let isAdmin = findObject.admin;
+				
 				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
 				let appendUser = '<li id="group-' + data.id + '">'
 					+ '<div class="user-contain" data-id="'+ data.id +'" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
@@ -543,9 +560,11 @@ function fetchGroup() {
 					+ '<div class="user-info" style="flex-grow:1 ;">'
 					+ '<span class="user-name">' + data.name + '</span>'
 					+ '</div>'
-					+ '</div>'
-					+ '<div class="group-delete border" data-id="'+ data.id +'" onclick="deleteGroup(this)">Delete</div>'
-					+ '</li>';
+					+ '</div>';
+				if(isAdmin){
+					appendUser += '<div class="group-delete border" data-id="'+ data.id +'" onclick="deleteGroup(this)">Delete</div>';
+				}
+				appendUser += '</li>';
 				document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			});
 		}).catch(ex => {
@@ -910,21 +929,25 @@ function searchGroupByKeyword(value) {
 			data.forEach(function(data) {
 			
 				let numberMember = data.users ? data.users.length : 0;
-
+				//let findObject = data.users.find(element => element.username == username);
+				//let isAdmin = findObject.admin;
 				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
-				let appendUser = '<li id="' + data.id + '" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
-					+ '<div class="user-contain">'
+				
+				let appendUser = '<li id="group-' + data.id + '">'
+					+ '<div class="user-contain" data-id="'+ data.id +'" data-number="' + numberMember + '" data-name="' + data.name + '" onclick="setGroup(this);">'
 					+ '<div class="user-img">'
 					+ '<img id="img-group-' + data.id + '"'
 					+ imgSrc
 					+ ' alt="Image of user">'
 					+ '</div>'
-					+ '<div class="user-info">'
+					+ '<div class="user-info" style="flex-grow:1 ;">'
 					+ '<span class="user-name">' + data.name + '</span>'
-					+ '<span'
 					+ '</div>'
-					+ '</div>'
-					+ '</li>';
+					+ '</div>';
+				
+				appendUser += '<div class="group-delete border" data-id="'+ data.id +'" onclick="deleteGroup(this)">Delete</div>';
+				
+				appendUser += '</li>';
 				document.querySelector(".left-side .list-user").innerHTML += appendUser;
 			});
 		});
