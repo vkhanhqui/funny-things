@@ -8,16 +8,26 @@ public class FileDTO {
 	private FileOutputStream fileOutputStream;
 	private String sender;
 	private String receiver;
+	private Long groupId;
 	private String url;
 
 	public FileDTO(String filename, String typeFile, FileOutputStream fileOutputStream, String sender, String receiver,
-			String url) {
+			Long groupId, String url) {
 		this.filename = filename;
 		this.typeFile = typeFile;
 		this.fileOutputStream = fileOutputStream;
 		this.sender = sender;
 		this.receiver = receiver;
+		this.groupId = groupId;
 		this.url = url;
+	}
+
+	public Long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
 	}
 
 	public String getFilename() {

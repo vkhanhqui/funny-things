@@ -79,10 +79,12 @@ public class ChatService extends ChatServiceAbstract {
 			File uploadedFile = new File(destFile);
 			String sender = message.getUsername();
 			String receiver = message.getReceiver();
+			Long groupId = message.getGroupId();
 			String url = FileServiceAbstract.rootURL + sender + "/" + fileName;
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile, false);
-				FileDTO newFileDTO = new FileDTO(fileName, message.getType(), fileOutputStream, sender, receiver, url);
+				FileDTO newFileDTO = new FileDTO(fileName, message.getType(), fileOutputStream, sender, receiver,
+						groupId, url);
 				fileDTOs.add(newFileDTO);
 			} catch (FileNotFoundException ex) {
 				ex.printStackTrace();
@@ -144,7 +146,8 @@ public class ChatService extends ChatServiceAbstract {
 				String type = "text";
 				String username = fileDTOs.peek().getSender();
 				String receiver = fileDTOs.peek().getReceiver();
-				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver, null);
+				Long groupId = fileDTOs.peek().getGroupId();
+				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver, groupId);
 				fileDTOs.remove();
 				sendMessageToOneUser(messageResponse, fileDTOs);
 			}

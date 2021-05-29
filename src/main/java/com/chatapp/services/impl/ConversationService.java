@@ -77,12 +77,17 @@ public class ConversationService implements ConversationServiceInterface {
 		}
 		return conversation;
 	}
-
-	private MessageDTO convertToMessageDTO(Message message) {
-		MessageDTO messageDTO = new MessageDTO();
-		messageDTO.setUsername(message.getUsername());
-		messageDTO.setMessage(message.getMessage());
-		messageDTO.setType(message.getType());
+	
+	private MessageDTO convertToMessageDTO(Message messageEntity) {
+		String username = messageEntity.getUsername();
+		String type = messageEntity.getType();
+		String message = messageEntity.getMessage();
+		if (!type.equals("text")) {
+			message = FileServiceAbstract.toTagHtml(type, username, message);
+		}
+		String receiver = messageEntity.getReceiver();
+		Long groupId = messageEntity.getGroupId();
+		MessageDTO messageDTO = new MessageDTO(username, message, type, receiver, groupId);
 		return messageDTO;
 	}
 
