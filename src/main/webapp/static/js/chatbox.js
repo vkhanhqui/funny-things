@@ -36,6 +36,7 @@ window.onload = function() {
 		};
 
 		websocket.onmessage = function(data) {
+			console.log("onMsg: " + data.data);
 			setMessage(JSON.parse(data.data));
 		};
 
@@ -235,7 +236,6 @@ function createGroup(e) {
 	object.users = [];
 	object.users.push(user);
 	toggleAllModal();
-	console.log(JSON.stringify(object));
 
 	fetch("http://" + window.location.host + "/conversations-rest-controller", {
 		method: "post",
@@ -689,7 +689,6 @@ function sendText() {
 	var messageType = "text";
 	document.getElementById("message").value = '';
 	var message = buildMessageToJson(messageContent, messageType);
-	console.log("msg: " + JSON.stringify(message));
 	setMessage(message);
 	websocket.send(JSON.stringify(message));
 }
@@ -700,7 +699,6 @@ function sendAttachments() {
 		messageContent = file.name.trim();
 		messageType = file.type;
 		var message = buildMessageToJson(messageContent, messageType);
-		console.log("msg: " + JSON.stringify(message));
 		websocket.send(JSON.stringify(message));
 		websocket.send(file);
 
@@ -740,7 +738,12 @@ function setMessage(msg) {
 	console.log("online users: " + msg.onlineList);
 	if (msg.message != '[P]open' && msg.message != '[P]close') {
 		var currentChat = document.getElementById('chat').innerHTML;
-		var newChatMsg = customLoadMessage(msg.username, msg.message);
+		var newChatMsg = '';
+		if (msg.receiver != null) {
+			newChatMsg = customLoadMessage(msg.username, msg.message);
+		} else {
+			newChatMsg = customLoadMessageGroup(msg.username, msg.groupId, msg.message);
+		}
 		document.getElementById('chat').innerHTML = currentChat
 			+ newChatMsg;
 		goLastestMsg();
@@ -777,7 +780,7 @@ function loadMessagesGroup() {
 			var chatbox = "";
 			messages.forEach(msg => {
 				try {
-					chatbox += customLoadMessageGroup(msg.username, msg.message);
+					chatbox += customLoadMessageGroup(msg.username, groupId, msg.message);
 				} catch (ex) {
 
 				}
@@ -834,10 +837,13 @@ function customLoadMessage(sender, message) {
 		+ '</li>';
 }
 
-function customLoadMessageGroup(sender, message) {
+function customLoadMessageGroup(sender, groupIdFromServer, message) {
 	var imgSrc = receiverAvatar;
 	var msgDisplay = '<li>'
 		+ '<div class="message';
+	if (groupIdFromServer != groupId) {
+		return '';
+	}
 	if (username != sender) {
 		msgDisplay += '">';
 	} else {
