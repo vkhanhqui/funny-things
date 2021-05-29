@@ -119,7 +119,7 @@ public class ChatService extends ChatServiceAbstract {
 				String type = "text";
 				String username = fileDTOs.peek().getSender();
 				String receiver = fileDTOs.peek().getReceiver();
-				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver);
+				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver, null);
 				fileDTOs.remove();
 				sendMessageToOneUser(messageResponse, fileDTOs);
 			}

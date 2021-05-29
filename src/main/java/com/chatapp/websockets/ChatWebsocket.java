@@ -37,7 +37,7 @@ public class ChatWebsocket {
 			this.session = session;
 			this.username = username;
 			String receiver = "all";
-			MessageDTO msgResponse = new MessageDTO(this.username, "[P]open", "text", receiver);
+			MessageDTO msgResponse = new MessageDTO(this.username, "[P]open", "text", receiver, null);
 			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}
@@ -62,7 +62,7 @@ public class ChatWebsocket {
 	public void onClose(Session session) {
 		if (chatService.close(this)) {
 			String receiver = "all";
-			MessageDTO msgResponse = new MessageDTO(this.username, "[P]close", "text", receiver);
+			MessageDTO msgResponse = new MessageDTO(this.username, "[P]close", "text", receiver, null);
 			chatService.sendMessageToAllUsers(msgResponse);
 		}
 	}

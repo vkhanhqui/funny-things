@@ -37,16 +37,24 @@ public class MessageDao extends GenericDao<Message> implements MessageDaoInterfa
 
 	@Override
 	public void saveMessage(Message message) {
-		StringBuilder sql = new StringBuilder("insert into messages(sender, receiver, message, message_type)");
-		sql.append(" values(?,?,?,?)");
+		StringBuilder sql = new StringBuilder();
 		String sender = message.getUsername();
 		String receiver = message.getReceiver();
 		String msg = message.getMessage();
 		String type = message.getType();
+		Long conversations_id = message.getGroupId();
 		if (!type.equals("text")) {
 			msg = msg.replaceAll(" ", "");
 		}
-		save(sql.toString(), sender, receiver, msg, type);
+		if (receiver != null) {
+			sql.append("insert into messages(sender, receiver, message, message_type)");
+			sql.append(" values(?,?,?,?)");
+			save(sql.toString(), sender, receiver, msg, type);
+		} else {
+			sql.append("insert into messages(sender, message, message_type,conversations_id)");
+			sql.append(" values(?,?,?,?)");
+			save(sql.toString(), sender, msg, type, conversations_id);
+		}
 	}
 
 	@Override

@@ -16,6 +16,8 @@ public class MessageDTO {
 	private String type;
 	@JsonProperty("receiver")
 	private String receiver;
+	@JsonProperty("groupId")
+	private Long groupId;
 	@JsonProperty("onlineList")
 	private Set<String> onlineList = new HashSet<String>();
 
@@ -24,11 +26,21 @@ public class MessageDTO {
 
 	@JsonCreator
 	public MessageDTO(@JsonProperty("username") String username, @JsonProperty("message") String message,
-			@JsonProperty("type") String type, @JsonProperty("receiver") String receiver) {
+			@JsonProperty("type") String type, @JsonProperty("receiver") String receiver,
+			@JsonProperty("groupId") Long groupId) {
 		this.username = username;
 		this.message = message;
 		this.type = type;
 		this.receiver = receiver;
+		this.groupId = groupId;
+	}
+
+	public Long getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Long groupId) {
+		this.groupId = groupId;
 	}
 
 	public String getUsername() {
