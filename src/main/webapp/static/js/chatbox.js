@@ -738,7 +738,7 @@ function setMessage(msg) {
 		if (msg.receiver != null) {
 			newChatMsg = customLoadMessage(msg.username, msg.message);
 		} else {
-			newChatMsg = customLoadMessageGroup(msg.username, msg.groupId, msg.message);
+			newChatMsg = customLoadMessageGroup(msg.username, msg.groupId, msg.message, msg.avatar);
 		}
 		document.getElementById('chat').innerHTML = currentChat
 			+ newChatMsg;
@@ -776,7 +776,7 @@ function loadMessagesGroup() {
 			var chatbox = "";
 			messages.forEach(msg => {
 				try {
-					chatbox += customLoadMessageGroup(msg.username, groupId, msg.message);
+					chatbox += customLoadMessageGroup(msg.username, groupId, msg.message, msg.avatar);
 				} catch (ex) {
 
 				}
@@ -833,9 +833,8 @@ function customLoadMessage(sender, message) {
 		+ '</li>';
 }
 
-function customLoadMessageGroup(sender, groupIdFromServer, message) {
-	var imgSrc = receiverAvatar;
-	//let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
+function customLoadMessageGroup(sender, groupIdFromServer, message, avatar) {
+	let imgSrc = 'http://' + window.location.host + '/files/' + sender + '/' + avatar;
 	var msgDisplay = '<li>'
 		+ '<div class="message';
 	if (groupIdFromServer != groupId) {
