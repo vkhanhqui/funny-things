@@ -431,8 +431,8 @@ img {
 .message {
     display: flex;
     align-items: flex-end;
-    overflow-y: auto;
-    margin-top: 1rem;
+    /* overflow-y: auto; */
+    margin-top: 2rem;
 }
 
 .message.right {
@@ -447,6 +447,20 @@ img {
     width: 3rem;
     height: 3rem;
     margin-right: .5rem;
+    position: relative;
+}
+
+.message-img .sender-name {
+	position: absolute;
+	left: 4rem;
+	bottom: -1.5rem;
+	color: var(--txtColor);
+	font-style: italic;
+	font-weight: 700;
+}
+
+.message.right .sender-name {
+	left: -2rem;
 }
 
 .message-img img {

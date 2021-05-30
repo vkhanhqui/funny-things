@@ -36,6 +36,7 @@ window.onload = function() {
 		};
 
 		websocket.onmessage = function(data) {
+			console.log(data);
 			setMessage(JSON.parse(data.data));
 		};
 
@@ -834,6 +835,7 @@ function customLoadMessage(sender, message) {
 
 function customLoadMessageGroup(sender, groupIdFromServer, message) {
 	var imgSrc = receiverAvatar;
+	//let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
 	var msgDisplay = '<li>'
 		+ '<div class="message';
 	if (groupIdFromServer != groupId) {
@@ -847,6 +849,7 @@ function customLoadMessageGroup(sender, groupIdFromServer, message) {
 	}
 	return msgDisplay + '<div class="message-img">'
 		+ '<img src="' + imgSrc + '" alt="">'
+		+ '<div class="sender-name">'+ sender +'</div>'
 		+ ' </div>'
 		+ '<div class="message-text">' + message + '</div>'
 		+ '</div>'
