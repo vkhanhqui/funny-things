@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,7 +44,11 @@ public class ConversationRestController extends HttpServlet {
 
 			List<ConversationDTO> conversationDTOs = conversationServiceInterface
 					.getConversationsOfUserByKeyword(username, conversationKeyword);
-
+			for (ConversationDTO c : conversationDTOs) {
+				List<UserDTO> userDTOs = conversationServiceInterface.getAllUsersByConversationId(c.getId()).stream()
+						.filter(u -> u.isAdmin()).collect(Collectors.toList());
+				c.setUsers(userDTOs);
+			}
 			json = objectMapper.writeValueAsString(conversationDTOs);
 
 		} else if (username != null && !username.isEmpty()) {
