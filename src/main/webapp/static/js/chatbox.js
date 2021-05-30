@@ -166,15 +166,11 @@ function setGroup(element) {
 				+ '<div class="invite-user">'
 				+ '<span class="total-invite-user">' + numberMember + ' paticipants</span>'
 				+ '<span data-id="add-user" onclick="toggleModal(this, true); searchMemberByKeyword(``);" class="invite toggle-btn">Invite</span>'
-				+ '</div>';
-
-			if (isAdmin) {
-				rightSide += '<div class="setting toggle-btn" data-id="manage-user" onclick="toggleModal(this, true);  fetchUser();">'
-					+ '<i class="fa fa-cog"></i>'
-					+ '</div>';
-			}
-
-			rightSide += '</div>'
+				+ '</div>'
+				+ '<div class="setting toggle-btn" data-id="manage-user" onclick="toggleModal(this, true);  fetchUser();">'
+				+ '<i class="fa fa-cog"></i>'
+				+ '</div>'
+				+ '</div>'
 				+ '<div class="list-messages-contain">'
 				+ '<ul id="chat" class="list-messages">'
 				+ '</ul>'
@@ -321,9 +317,15 @@ function fetchUser() {
 	fetch("http://" + window.location.host + "/conversations-rest-controller?usersConversationId=" + groupId)
 		.then(data => data.json())
 		.then(users => {
-
 			document.querySelector(".manage-member-body .list-user ul").innerHTML = "";
-
+			
+			if(users.length == 1){
+				document.querySelector(".manage-member-body .list-user ul").innerHTML = "No members in group";
+				document.querySelector(".manage-member-body .list-user ul").style = "text-align: center; font-size: 1.8rem;";
+			}else{
+				document.querySelector(".manage-member-body .list-user ul").style = "";
+			}
+			
 			users.forEach(function(data) {
 				if (data.username == username) return;
 
@@ -937,8 +939,11 @@ function searchGroupByKeyword(value) {
 			data.forEach(function(data) {
 
 				let numberMember = data.users ? data.users.length : 0;
-				//let findObject = data.users.find(element => element.username == username);
-				//let isAdmin = findObject.admin;
+				let findObject = data.users.find(element => element.username == username);
+				let isAdmin = false;
+				
+				if(findObject) isAdmin = findObject.admin;
+				
 				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
 
 				let appendUser = '<li id="group-' + data.id + '">'
@@ -952,8 +957,8 @@ function searchGroupByKeyword(value) {
 					+ '<span class="user-name">' + data.name + '</span>'
 					+ '</div>'
 					+ '</div>';
-
-				appendUser += '<div class="group-delete border" data-id="' + data.id + '" onclick="deleteGroup(this)">Delete</div>';
+				if(isAdmin)
+					appendUser += '<div class="group-delete border" data-id="' + data.id + '" onclick="deleteGroup(this)">Delete</div>';
 
 				appendUser += '</li>';
 				document.querySelector(".left-side .list-user").innerHTML += appendUser;

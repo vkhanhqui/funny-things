@@ -223,3 +223,5 @@ from conversations c join conversations_users cu
 on cu.conversations_id = c.id
 where c.name like '%con heo%'
 and cu.username = 'a1'
+
+select * from conversations;
