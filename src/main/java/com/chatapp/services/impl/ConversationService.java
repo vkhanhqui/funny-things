@@ -77,7 +77,7 @@ public class ConversationService implements ConversationServiceInterface {
 		}
 		return conversation;
 	}
-	
+
 	private MessageDTO convertToMessageDTO(Message messageEntity) {
 		String username = messageEntity.getUsername();
 		String type = messageEntity.getType();
@@ -88,6 +88,7 @@ public class ConversationService implements ConversationServiceInterface {
 		String receiver = messageEntity.getReceiver();
 		Long groupId = messageEntity.getGroupId();
 		MessageDTO messageDTO = new MessageDTO(username, message, type, receiver, groupId);
+		messageDTO.setAvatar(messageEntity.getAvatar());
 		return messageDTO;
 	}
 

@@ -10,6 +10,8 @@ public class MessageDTO {
 
 	@JsonProperty("username")
 	private String username;
+	@JsonProperty("avatar")
+	private String avatar;
 	@JsonProperty("message")
 	private String message;
 	@JsonProperty("type")
@@ -33,6 +35,14 @@ public class MessageDTO {
 		this.type = type;
 		this.receiver = receiver;
 		this.groupId = groupId;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 	public Long getGroupId() {
