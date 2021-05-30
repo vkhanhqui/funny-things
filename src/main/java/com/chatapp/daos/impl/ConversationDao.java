@@ -83,9 +83,13 @@ public class ConversationDao extends GenericDao<Conversation> implements Convers
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from conversations_users ");
 		sql.append(" where conversations_id= ?;");
-		sql.append(" delete from conversations");
+
+		sql.append("delete from messages ");
+		sql.append(" where conversations_id= ?;");
+
+		sql.append("delete from conversations");
 		sql.append(" where id = ?;");
-		save(sql.toString(), id, id);
+		save(sql.toString(), id, id, id);
 	}
 
 	@Override
@@ -93,8 +97,11 @@ public class ConversationDao extends GenericDao<Conversation> implements Convers
 		StringBuilder sql = new StringBuilder();
 		sql.append("delete from conversations_users");
 		sql.append(" where conversations_id = ?");
-		sql.append(" and username= ?");
-		save(sql.toString(), conversationId, username);
+		sql.append(" and username= ?;");
+
+		sql.append("delete messages");
+		sql.append(" where sender = ?;");
+		save(sql.toString(), conversationId, username, username);
 	}
 
 	@Override

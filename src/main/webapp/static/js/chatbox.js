@@ -36,7 +36,6 @@ window.onload = function() {
 		};
 
 		websocket.onmessage = function(data) {
-			console.log("onMsg: " + data.data);
 			setMessage(JSON.parse(data.data));
 		};
 
@@ -80,8 +79,6 @@ function cleanUp() {
 function setReceiver(element) {
 	groupId = null;
 	receiver = element.id;
-	console.log("receiver: " + receiver);
-	console.log("groupId: " + groupId);
 	receiverAvatar = document.getElementById('img-' + receiver).src;
 	var status = '';
 	if (document.getElementById('status-' + receiver).classList.contains('online')) {
@@ -130,13 +127,9 @@ function setReceiver(element) {
 }
 
 function setGroup(element) {
-	//receiver = element.id;
 	receiver = null;
 	groupName = element.getAttribute("data-name");
 	groupId = element.getAttribute("data-id");
-
-	console.log("setGr--receiver: " + receiver);
-	console.log("setGr--groupId: " + groupId);
 
 	receiverAvatar = document.getElementById("img-group-" + groupId).src;
 
@@ -318,14 +311,14 @@ function fetchUser() {
 		.then(data => data.json())
 		.then(users => {
 			document.querySelector(".manage-member-body .list-user ul").innerHTML = "";
-			
-			if(users.length == 1){
+
+			if (users.length == 1) {
 				document.querySelector(".manage-member-body .list-user ul").innerHTML = "No members in group";
 				document.querySelector(".manage-member-body .list-user ul").style = "text-align: center; font-size: 1.8rem;";
-			}else{
+			} else {
 				document.querySelector(".manage-member-body .list-user ul").style = "";
 			}
-			
+
 			users.forEach(function(data) {
 				if (data.username == username) return;
 
@@ -941,9 +934,9 @@ function searchGroupByKeyword(value) {
 				let numberMember = data.users ? data.users.length : 0;
 				let findObject = data.users.find(element => element.username == username);
 				let isAdmin = false;
-				
-				if(findObject) isAdmin = findObject.admin;
-				
+
+				if (findObject) isAdmin = findObject.admin;
+
 				let imgSrc = ' src="http://' + window.location.host + '/files/group-' + data.id + '/' + data.avatar + '"';
 
 				let appendUser = '<li id="group-' + data.id + '">'
@@ -957,7 +950,7 @@ function searchGroupByKeyword(value) {
 					+ '<span class="user-name">' + data.name + '</span>'
 					+ '</div>'
 					+ '</div>';
-				if(isAdmin)
+				if (isAdmin)
 					appendUser += '<div class="group-delete border" data-id="' + data.id + '" onclick="deleteGroup(this)">Delete</div>';
 
 				appendUser += '</li>';
@@ -970,7 +963,6 @@ function searchUser(ele) {
 	if (typeChat == "user") {
 		searchFriendByKeyword(ele.value);
 	} else {
-		console.log("Search Group by Keyword");
 		if (ele.value == "") {
 			fetchGroup();
 		} else {
