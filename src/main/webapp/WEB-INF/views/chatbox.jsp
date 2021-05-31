@@ -23,7 +23,67 @@
 	</p>
 	<div class="container">
 		<div class="conversation-container">
+			<div class="modal-box border" id="add-group">
+				<div class="modal-box-head">
+					<div class="modal-box-title">
+						Add Group
+					</div>
+					<div class="modal-box-close toggle-btn" data-id="add-group" onclick="toggleModal(this, false)">
+						<i class="fa fa-times"></i>
+					</div>
+				</div>
+				<hr>
+				<form action="" onsubmit="return createGroup(event);">
+					<div class="modal-box-body">
+						<input type="text" class="txt-input txt-group-name" placeholder="Group Name...">
+					</div>		
+					<button type="submit" class="btn">Create Group</button>		
+				</form>
+			</div>
+			
+			<div class="modal-box border" id="add-user">
+				<div class="modal-box-head">
+					<div class="modal-box-title">
+						Add Member
+					</div>
+					<div class="modal-box-close toggle-btn" data-id="add-user" onclick="toggleModal(this, false)">
+						<i class="fa fa-times"></i>
+					</div>
+				</div>
+				<hr>
+				<form action="" onsubmit="return addMember(event);">
+					<div class="modal-box-body add-member-body">
+						<input type="text" class="txt-input txt-group-name" placeholder="Name of member..." onkeyup="searchMemberByKeyword(this)">
+						
+						<div class="list-user">
+							<ul>
+							</ul>
+						</div>
+					</div>		
+					<button type="submit" class="btn">Add Members</button>		
+				</form>
+			</div>
+			
+			<div class="modal-box border" id="manage-user">
+				<div class="modal-box-head">
+					<div class="modal-box-title">
+						All Member Of Group
+					</div>
+					<div class="modal-box-close toggle-btn" data-id="manage-user" onclick="toggleModal(this, false)">
+						<i class="fa fa-times"></i>
+					</div>
+				</div>
+				<hr>
+				<div class="modal-box-body manage-member-body">
+					<div class="list-user">
+						<ul>
+						</ul>
+					</div>
+				</div>	
+			</div>
+			
 			<div class="left-side active">
+				<div class="add-group border toggle-btn" data-id="add-group" onclick="toggleModal(this, true)"><i class="fa fa-plus-circle"></i></div>
 				<h2>
 					<a href="<c:url value="/users/update"/>"
 						style="text-decoration: none; color: white;margin-right: 3rem;">Welcome
@@ -33,10 +93,11 @@
 						style="text-decoration: none; color: white; margin-left: 3rem;">Logout</a>
 				</h2>
 				<div class="tab-control">
-					<i class="fa fa-comment active"></i> <i class="fa fa-comments"></i>
+					<i class="fa fa-comment active" onclick="chatOne(this)"></i>
+					<i class="fa fa-comments" onclick="chatGroup(this)"></i>
 				</div>
 				<div class="list-user-search">
-					<input type="text" class="txt-input" placeholder="Search..." onkeyup="searchUser(this)">
+					<input type="text" class="txt-input" data-type="user" placeholder="Search..." onkeyup="searchUser(this)">
 				</div>
 				<div class="list-user">
 					<ul>

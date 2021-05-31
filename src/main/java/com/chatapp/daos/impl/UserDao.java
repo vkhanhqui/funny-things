@@ -78,4 +78,25 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 		return users;
 	}
 
+	@Override
+	public List<User> findFriendsNotInConversation(String userName, String keyword, Long conversationId) {
+		StringBuilder sql = new StringBuilder();
+		sql.append("select u2.username,u2.avatar,u2.gender");
+		sql.append(" from users u1 join friends f on u1.username = f.receiver ");
+		sql.append(" join users u2 on u2.username = f.sender");
+		sql.append(" where u1.username = ?");
+		sql.append(" and f.status = 1");
+		sql.append(" and u2.username like ?");
+		sql.append(" and u2.username not in (");
+		sql.append(" select u.username");
+		sql.append(" from users u join conversations_users cu");
+		sql.append(" on u.username = cu.username");
+		sql.append(" join conversations c");
+		sql.append(" on c.id = cu.conversations_id");
+		sql.append(" where c.id = ?)");
+		String param = "%" + keyword + "%";
+		List<User> users = query(sql.toString(), new UserMapper(), userName, param, conversationId);
+		return users;
+	}
+
 }

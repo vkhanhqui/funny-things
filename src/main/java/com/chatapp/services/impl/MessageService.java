@@ -27,7 +27,8 @@ public class MessageService implements MessageServiceInterface {
 		String message = messageDTO.getMessage();
 		String type = messageDTO.getType();
 		String receiver = messageDTO.getReceiver();
-		Message messageEntity = new Message(username, message, type, receiver);
+		Long groupId = messageDTO.getGroupId();
+		Message messageEntity = new Message(username, message, type, receiver, groupId);
 		return messageEntity;
 	}
 
@@ -39,7 +40,8 @@ public class MessageService implements MessageServiceInterface {
 			message = FileServiceAbstract.toTagHtml(type, username, message);
 		}
 		String receiver = messageEntity.getReceiver();
-		MessageDTO messageDTO = new MessageDTO(username, message, type, receiver);
+		Long groupId = messageEntity.getGroupId();
+		MessageDTO messageDTO = new MessageDTO(username, message, type, receiver, groupId);
 		return messageDTO;
 	}
 

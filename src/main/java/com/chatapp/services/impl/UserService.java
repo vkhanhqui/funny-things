@@ -68,15 +68,21 @@ public class UserService implements UserServiceInterface {
 		User user = userDaoInterface.findByUserNameAndPassword(username, password);
 		return user;
 	}
-	
+
 	@Override
 	public List<User> findFriends(String username) {
 		List<User> friends = userDaoInterface.findFriends(username);
 		return friends;
 	}
-	
+
 	public List<User> findFriendsByKeyWord(String username, String keyword) {
 		List<User> friends = userDaoInterface.findFriendsByKeyWord(username, keyword);
+		return friends;
+	}
+
+	@Override
+	public List<User> getFriendsNotInConversation(String userName, String keyword, Long conversationId) {
+		List<User> friends = userDaoInterface.findFriendsNotInConversation(userName, keyword, conversationId);
 		return friends;
 	}
 }

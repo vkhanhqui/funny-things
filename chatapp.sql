@@ -1,6 +1,6 @@
 drop database chatapp;
 
-create database chatapp;
+create database chatapp COLLATE Latin1_General_100_CI_AI_KS_WS_SC;
 
 use chatapp;
 
@@ -28,7 +28,8 @@ CREATE TABLE friends (
 
 create table conversations(
 	id int identity(1,1) primary key,
-	name varchar(50) NOT NULL
+	name nvarchar(50) NOT NULL,
+	avatar char(50) NOT NULL
 ) ;
 
 create table conversations_users(
@@ -44,8 +45,8 @@ CREATE TABLE messages (
 	id int identity(1,1) primary key,
 	sender char(50) NOT NULL,
 	receiver char(50),
-	message text NOT NULL,
-	message_type char(20) NOT NULL,
+	message nvarchar(max) NOT NULL,
+	message_type char(100) NOT NULL,
 	created_at datetime default current_timestamp,
 	conversations_id int,
 	foreign key (sender) references users(username),
@@ -75,10 +76,10 @@ insert into friends values('a4','a1','a1',0);
 --message
 --a1 vs a2
 insert into messages(sender, receiver, message, message_type) 
-	values('a1','a2','a1 hello a2','text');
+	values('a1','a2','a1 chào a2','text');
 --a2 vs a1
 insert into messages(sender, receiver, message, message_type) 
-	values('a2','a1','a2 hello a1','text');
+	values('a2','a1','a2 xin chào Võ Khánh Quí nà a1','text');
 insert into messages(sender, receiver, message, message_type) 
 	values('a2','a1','a2 hello a1 - lan 2','text');
 insert into messages(sender, receiver, message, message_type) 
@@ -93,9 +94,18 @@ insert into messages(sender, receiver, message, message_type)
 	values('a3','a2','a3 hello a2','text');
 
 --conversation
-insert into conversations(name) values('con heo');
-insert into conversations(name) values('con ga');
-insert into conversations(name) values('con cho');
+insert into conversations(name, avatar) values('con heo'
+	,concat('group-'
+	,CAST(IDENT_CURRENT('conversations') as char(50))
+	,'.png'
+));
+
+insert into conversations_users(conversations_id, username, is_admin) 
+	values(IDENT_CURRENT('conversations'),'a1',1);
+insert into conversations_users(conversations_id, username, is_admin) 
+	values(IDENT_CURRENT('conversations'),'a2',0);
+insert into conversations_users(conversations_id, username, is_admin) 
+	values(IDENT_CURRENT('conversations'),'a3',0);
 
 --conversation_user
 --con heo group has a1, a2, a3 -> a1 is admin
@@ -163,7 +173,15 @@ from users u1 join friends f on u1.username = f.receiver
 join users u2 on u2.username = f.sender
 where u1.username = 'a1' 
 and f.status = 1
-and u2.username like '%a%';
+and u2.username like '%a%'
+and u2.username not in (
+	select u.username
+	from users u join conversations_users cu
+		on u.username = cu.username
+	join conversations c
+		on c.id = cu.conversations_id
+	where c.id = 1
+);
 
 --load groups which a1 is joined
 select c.id, c.name
@@ -180,19 +198,30 @@ join conversations c
 where c.id = 1
 
 --load messages in con heo group 
-select m.sender, m.message, m.message_type
+select m.sender, u.avatar, m.message, m.receiver, m.message_type
 from messages m join conversations c
-	on m.conversations_id = c.id
+on m.conversations_id = c.id
+join users u on u.username = m.sender
 where c.id = 1
 order by created_at asc
 
---delete data
-truncate table friends;
-truncate table conversations_users;
-truncate table messages;
-truncate table users;
-truncate table conversations;
+--delete conversation by id
+delete from conversations_users 
+where conversations_id= 1;
 
---drop
-drop table messages;
-drop table conversations_users;
+delete from conversations 
+where id = 1;
+
+--delete user from conversation
+delete from conversations_users 
+where username = 'a2' 
+and conversations_id = 1;
+
+--find conversation by keyword
+select c.id, c.name, c.avatar
+from conversations c join conversations_users cu
+on cu.conversations_id = c.id
+where c.name like '%con heo%'
+and cu.username = 'a1'
+
+select * from conversations;

@@ -37,21 +37,33 @@ public class MessageDao extends GenericDao<Message> implements MessageDaoInterfa
 
 	@Override
 	public void saveMessage(Message message) {
-		StringBuilder sql = new StringBuilder("insert into messages(sender, receiver, message, message_type)");
-		sql.append(" values(?,?,?,?)");
+		StringBuilder sql = new StringBuilder();
 		String sender = message.getUsername();
+		String receiver = message.getReceiver();
 		String msg = message.getMessage();
 		String type = message.getType();
-		String receiver = message.getReceiver();
-		save(sql.toString(), sender, receiver, msg, type);
+		Long conversations_id = message.getGroupId();
+		if (!type.equals("text")) {
+			msg = msg.replaceAll(" ", "");
+		}
+		if (receiver != null) {
+			sql.append("insert into messages(sender, receiver, message, message_type)");
+			sql.append(" values(?,?,?,?)");
+			save(sql.toString(), sender, receiver, msg, type);
+		} else {
+			sql.append("insert into messages(sender, message, message_type,conversations_id)");
+			sql.append(" values(?,?,?,?)");
+			save(sql.toString(), sender, msg, type, conversations_id);
+		}
 	}
 
 	@Override
 	public List<Message> findAllMessagesByConvesationId(Long id) {
 		StringBuilder sql = new StringBuilder();
-		sql.append("select m.sender, m.message, m.message_type");
+		sql.append("select m.sender, u.avatar, m.message, m.message_type, m.receiver");
 		sql.append(" from messages m join conversations c");
 		sql.append(" on m.conversations_id = c.id");
+		sql.append(" join users u on u.username = m.sender");
 		sql.append(" where c.id = ?");
 		sql.append(" order by created_at asc");
 		List<Message> listMessages = query(sql.toString(), new MessageMapper(), id);

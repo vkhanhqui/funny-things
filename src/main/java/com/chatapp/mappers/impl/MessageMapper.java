@@ -15,8 +15,11 @@ public class MessageMapper implements RowMapperInterface<Message> {
 			message.setUsername(resultSet.getString("sender").trim());
 			message.setMessage(resultSet.getString("message"));
 			message.setType(resultSet.getString("message_type").trim());
-			try {
+			if (resultSet.getString("receiver") != null) {
 				message.setReceiver(resultSet.getString("receiver").trim());
+			}
+			try {
+				message.setAvatar(resultSet.getString("avatar").trim());
 			} catch (SQLException ex) {
 				return message;
 			}

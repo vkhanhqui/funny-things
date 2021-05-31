@@ -12,6 +12,9 @@ public class ConversationDTO {
 	@JsonProperty("name")
 	private String name;
 
+	@JsonProperty("avatar")
+	private String avatar;
+
 	@JsonProperty("users")
 	private List<UserDTO> users;
 
@@ -20,9 +23,10 @@ public class ConversationDTO {
 
 	@JsonCreator
 	public ConversationDTO(@JsonProperty("id") Long id, @JsonProperty("name") String name,
-			@JsonProperty("users") List<UserDTO> users) {
+			@JsonProperty("avatar") String avatar, @JsonProperty("users") List<UserDTO> users) {
 		this.id = id;
 		this.name = name;
+		this.avatar = avatar;
 		this.users = users;
 	}
 
@@ -40,6 +44,14 @@ public class ConversationDTO {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getAvatar() {
+		return avatar;
+	}
+
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
 
 	public List<UserDTO> getUsers() {

@@ -5,10 +5,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.websocket.EncodeException;
 
+import com.chatapp.daos.UserDaoInterface;
+import com.chatapp.daos.impl.UserDao;
+import com.chatapp.models.User;
 import com.chatapp.models.dtos.FileDTO;
 import com.chatapp.models.dtos.MessageDTO;
 import com.chatapp.services.ChatServiceAbstract;
@@ -18,6 +24,8 @@ import com.chatapp.websockets.ChatWebsocket;
 public class ChatService extends ChatServiceAbstract {
 
 	private static ChatService chatService = null;
+
+	private UserDaoInterface userDaoInterface = UserDao.getInstace();
 
 	private ChatService() {
 	}
@@ -71,23 +79,47 @@ public class ChatService extends ChatServiceAbstract {
 			File uploadedFile = new File(destFile);
 			String sender = message.getUsername();
 			String receiver = message.getReceiver();
+			Long groupId = message.getGroupId();
 			String url = FileServiceAbstract.rootURL + sender + "/" + fileName;
 			try {
 				FileOutputStream fileOutputStream = new FileOutputStream(uploadedFile, false);
-				FileDTO newFileDTO = new FileDTO(fileName, message.getType(), fileOutputStream, sender, receiver, url);
+				FileDTO newFileDTO = new FileDTO(fileName, message.getType(), fileOutputStream, sender, receiver,
+						groupId, url);
 				fileDTOs.add(newFileDTO);
 			} catch (FileNotFoundException ex) {
 				ex.printStackTrace();
 			}
 		} else {
-			chatWebsockets.stream().filter(chatWebsocket -> chatWebsocket.getUsername().equals(message.getReceiver()))
-					.forEach(chatWebsocket -> {
-						try {
-							chatWebsocket.getSession().getBasicRemote().sendObject(message);
-						} catch (IOException | EncodeException e) {
-							e.printStackTrace();
-						}
-					});
+			if (message.getReceiver() != null) {
+				chatWebsockets.stream()
+						.filter(chatWebsocket -> chatWebsocket.getUsername().equals(message.getReceiver()))
+						.forEach(chatWebsocket -> {
+							try {
+								chatWebsocket.getSession().getBasicRemote().sendObject(message);
+							} catch (IOException | EncodeException e) {
+								e.printStackTrace();
+							}
+						});
+			} else {
+				List<User> usersGroup = userDaoInterface.findUsersByConversationId(message.getGroupId());
+
+				User sender = usersGroup.stream().filter(u -> u.getUsername().equals(message.getUsername()))
+						.collect(Collectors.toList()).get(0);
+				message.setAvatar(sender.getAvatar());
+
+				Set<String> usernamesGroup = usersGroup.stream().map(User::getUsername).collect(Collectors.toSet());
+
+				chatWebsockets.stream()
+						.filter(chatWebsocket -> usernamesGroup.contains(chatWebsocket.getUsername())
+								&& !chatWebsocket.getUsername().equals(message.getUsername()))
+						.forEach(chatWebsocket -> {
+							try {
+								chatWebsocket.getSession().getBasicRemote().sendObject(message);
+							} catch (IOException | EncodeException e) {
+								e.printStackTrace();
+							}
+						});
+			}
 		}
 	}
 
@@ -98,7 +130,13 @@ public class ChatService extends ChatServiceAbstract {
 				while (byteBuffer.hasRemaining()) {
 					fileDTOs.peek().getFileOutputStream().write(byteBuffer.get());
 				}
-			} else {
+			}
+			else {
+				if(byteBuffer.array().length > 0){
+					while (byteBuffer.hasRemaining()) {
+						fileDTOs.peek().getFileOutputStream().write(byteBuffer.get());
+					}
+				}
 				fileDTOs.peek().getFileOutputStream().flush();
 				fileDTOs.peek().getFileOutputStream().close();
 				System.out
@@ -119,7 +157,8 @@ public class ChatService extends ChatServiceAbstract {
 				String type = "text";
 				String username = fileDTOs.peek().getSender();
 				String receiver = fileDTOs.peek().getReceiver();
-				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver);
+				Long groupId = fileDTOs.peek().getGroupId();
+				MessageDTO messageResponse = new MessageDTO(username, message, type, receiver, groupId);
 				fileDTOs.remove();
 				sendMessageToOneUser(messageResponse, fileDTOs);
 			}
