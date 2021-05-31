@@ -363,6 +363,7 @@ img {
     display: block;
     margin-top: .5rem;
     font-weight: 700;
+    word-break: break-word;
 }
 
 .user-last-message {
