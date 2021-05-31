@@ -1,6 +1,6 @@
 drop database chatapp;
 
-create database chatapp;
+create database chatapp COLLATE Latin1_General_100_CI_AI_KS_WS_SC;
 
 use chatapp;
 
@@ -45,7 +45,7 @@ CREATE TABLE messages (
 	id int identity(1,1) primary key,
 	sender char(50) NOT NULL,
 	receiver char(50),
-	message text NOT NULL,
+	message nvarchar(max) NOT NULL,
 	message_type char(100) NOT NULL,
 	created_at datetime default current_timestamp,
 	conversations_id int,
@@ -76,10 +76,10 @@ insert into friends values('a4','a1','a1',0);
 --message
 --a1 vs a2
 insert into messages(sender, receiver, message, message_type) 
-	values('a1','a2','a1 hello a2','text');
+	values('a1','a2','a1 chào a2','text');
 --a2 vs a1
 insert into messages(sender, receiver, message, message_type) 
-	values('a2','a1','a2 hello a1','text');
+	values('a2','a1','a2 xin chào Võ Khánh Quí nà a1','text');
 insert into messages(sender, receiver, message, message_type) 
 	values('a2','a1','a2 hello a1 - lan 2','text');
 insert into messages(sender, receiver, message, message_type) 

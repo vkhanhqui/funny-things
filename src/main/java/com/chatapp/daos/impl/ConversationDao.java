@@ -98,10 +98,7 @@ public class ConversationDao extends GenericDao<Conversation> implements Convers
 		sql.append("delete from conversations_users");
 		sql.append(" where conversations_id = ?");
 		sql.append(" and username= ?;");
-
-		sql.append("delete messages");
-		sql.append(" where sender = ?;");
-		save(sql.toString(), conversationId, username, username);
+		save(sql.toString(), conversationId, username);
 	}
 
 	@Override
