@@ -55,6 +55,7 @@ public class ChatWebsocket {
 
 	@OnMessage
 	public void processUploading(ByteBuffer byteBuffer, boolean last, Session session) {
+		System.err.println(byteBuffer.array().length);
 		chatService.handleFileUpload(byteBuffer, last, fileDTOs);
 	}
 

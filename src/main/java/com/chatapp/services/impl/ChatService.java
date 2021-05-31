@@ -130,7 +130,13 @@ public class ChatService extends ChatServiceAbstract {
 				while (byteBuffer.hasRemaining()) {
 					fileDTOs.peek().getFileOutputStream().write(byteBuffer.get());
 				}
-			} else {
+			}
+			else {
+				if(byteBuffer.array().length > 0){
+					while (byteBuffer.hasRemaining()) {
+						fileDTOs.peek().getFileOutputStream().write(byteBuffer.get());
+					}
+				}
 				fileDTOs.peek().getFileOutputStream().flush();
 				fileDTOs.peek().getFileOutputStream().close();
 				System.out

@@ -696,6 +696,7 @@ function sendAttachments() {
 		var message = buildMessageToJson(messageContent, messageType);
 		websocket.send(JSON.stringify(message));
 		websocket.send(file);
+		
 
 		if (messageType.startsWith("audio")) {
 			message.message = '<audio controls>'
