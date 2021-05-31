@@ -1,6 +1,7 @@
 package com.chatapp.daos.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.chatapp.daos.UserDaoInterface;
 import com.chatapp.mappers.impl.UserMapper;
@@ -31,13 +32,13 @@ public class UserDao extends GenericDao<User> implements UserDaoInterface {
 
 	@Override
 	public List<User> findFriends(String userName) {
-		StringBuilder sql = new StringBuilder("select u2.username, u2.avatar, u2.gender");
+		StringBuilder sql = new StringBuilder("select distinct u2.username, u2.avatar, u2.gender");
 		sql.append(" from users u1 join friends f on u1.username = f.receiver");
 		sql.append(" join users u2 on u2.username = f.sender");
 		sql.append(" where u1.username LIKE ?");
 		String param = "%" + userName + "%";
 		List<User> users = query(sql.toString(), new UserMapper(), param);
-		return users;
+		return users.stream().filter(u -> !u.getUsername().equals(userName)).collect(Collectors.toList());
 	}
 
 	@Override
