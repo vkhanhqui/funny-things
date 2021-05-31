@@ -36,7 +36,6 @@ window.onload = function() {
 		};
 
 		websocket.onmessage = function(data) {
-			console.log(data);
 			setMessage(JSON.parse(data.data));
 		};
 

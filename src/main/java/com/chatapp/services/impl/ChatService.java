@@ -102,6 +102,11 @@ public class ChatService extends ChatServiceAbstract {
 						});
 			} else {
 				List<User> usersGroup = userDaoInterface.findUsersByConversationId(message.getGroupId());
+
+				User sender = usersGroup.stream().filter(u -> u.getUsername().equals(message.getUsername()))
+						.collect(Collectors.toList()).get(0);
+				message.setAvatar(sender.getAvatar());
+
 				Set<String> usernamesGroup = usersGroup.stream().map(User::getUsername).collect(Collectors.toSet());
 
 				chatWebsockets.stream()
