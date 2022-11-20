@@ -1,4 +1,4 @@
-# COPY in Dockerfile
+# Copy Command Dockerfile
 
 
 ### COPY has two forms:
