@@ -5,7 +5,7 @@
 - Stand for dictionary
 - Dictionaries are used to store data values in key:value pairs.
 - A dictionary is a collection which is changeable and cannot have two items with the same key.
-- There are many categories of dict in Python such as normal dict, defaultdict, OrderedDict, Counter, ChainMap, UserDict.
+- There are many categories of dict in Python such as <b>normal dict, defaultdict, OrderedDict, Counter, ChainMap, UserDict.</b>
 
 
 ## Dictionaries are written with curly brackets, and have keys and values:

@@ -7,7 +7,7 @@
 - Tuples are used to store multiple items in a single variable.
 
 
-## Are you sure that you tame it? Look at this
+## Are you sure that you tame it? Look at these example and try to infer which one is tuple
 ```python
 # 1
 a = (1, 2)
