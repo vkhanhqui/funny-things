@@ -1,0 +1,598 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --mainColor: #6169db;
+    --txtColor: #686ffd;
+    --txtBlack: #111111;
+    --txtColorSecond: #ffffff;
+    --btnColor: #474ed1;
+    --onlineStatus: #67cfff;
+    --offlineStatus: #ff6565;
+    --conversationBody: #b1b6ff;
+}
+
+html {
+    font-size: 10px;
+    font-family: 'Ubuntu', sans-serif;
+    background: var(--mainColor);
+    color: var(--txtColorSecond);
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    display: block;
+}
+
+.border {
+    border-radius: .5rem;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-title {
+    font-size: 3.5rem;
+    margin-bottom: 5rem;
+    text-align: center;
+}
+
+.form-container {
+    margin: auto;
+    width: 40rem;
+    max-width: 100%;
+    display: inline-block;
+}
+
+.txt-input, .btn {
+    padding: 1.5rem 1rem;
+    display: block;
+    margin-top: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    font-family: 'Ubuntu', sans-serif;
+    box-shadow: 0px .2rem .4rem rgba(1, 1, 1, 0.05);
+}
+
+.btn {
+    cursor: pointer;
+    background: var(--btnColor);
+    color: var(--txtColorSecond);
+    font-size: 1.8rem;
+}
+
+.tab-control {
+    text-align: left;
+    display: flex;
+}
+
+.tab-control h3 {
+    cursor: pointer;
+    color: var(--txtColorSecond);
+    font-size: 1.6rem;
+    padding-right: 1.5rem;
+    background: var(--btnColor);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-radius: .5rem .5rem 0rem 0rem;
+    flex-grow: 1;
+}
+
+.tab-control h3.active {
+    color: var(--txtColor);
+    background: var(--txtColorSecond);
+}
+
+.login-form, .register-form {
+    display: none;
+    padding: 2rem 1.5rem;
+    background: #ffffff;
+    border-radius: 0rem 0rem .5rem .5rem;
+}
+
+.login-form.active, .register-form.active {
+    display: block;
+}
+
+.image-profile {
+    width: 15rem;
+    height: 15rem;
+    border-radius: 50%;
+    margin-top: 1rem;
+}
+
+.image-profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.conversation-container {
+    box-shadow: 0rem .2rem .4rem rgba(1, 1, 1, 0.05);
+    display: flex;
+    flex-wrap: wrap;
+    height: 70rem;
+    overflow: hidden;
+}
+
+.conversation-container .left-side {
+    width: 30rem;
+    background: var(--btnColor);
+    padding: 2rem 1.5rem;
+    box-sizing: border-box;
+    border-radius: 1rem 0rem 0rem 1rem;
+    position: relative;
+}
+
+.conversation-container .right-side {
+    width: 70rem;
+    background: var(--conversationBody);
+    box-sizing: border-box;
+    border-radius: 0rem 1rem 1rem 0rem;
+    overflow: hidden;
+}
+
+.add-group {
+	position: absolute;
+	left: 2rem;
+	bottom: 2rem;
+	font-size: 1.8rem;
+	cursor: pointer;
+	display: none;
+	padding: 0.5rem 1rem;
+	background: var(--mainColor);
+	z-index: 9;
+}
+
+.add-group.active {
+	display: block;
+}
+
+.modal-box {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 30rem;
+	background: var(--txtColorSecond);
+	color: var(--txtBlack);
+	padding: 1rem;
+	box-sizing: border-box;
+	z-index: 999;
+	display: none;
+}
+
+.modal-box.active {
+	display: block;
+}
+
+.modal-box-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 1rem;
+	font-size: 1.4rem;
+	font-weight: 600;
+}
+
+.modal-box-body input {
+	background: #dbdbdb;
+}
+
+.modal-box-body .list-user {
+	max-height: 25rem;
+}
+
+.modal-box-body .list-user li:hover {
+	background: none;
+}
+
+.modal-box-close {
+	padding: 1rem;
+	cursor: pointer;
+}
+
+.user-select-dot {
+	width: 1.2rem;
+	height: 1.2rem;
+	border-radius: 50%;
+	border: 0.1rem solid var(--txtBlack);
+	position: relative;
+}
+
+.user-select-dot::before {
+	content: "";
+	position: absolute;
+	width: .8rem;
+	height: .8rem;
+	border-radius: 50%;
+	background: var(--mainColor);
+	left: calc(50% - 0.4rem);
+	top: calc(50% - 0.4rem);
+	z-index: 9999;
+	display: none;
+}
+
+.add-member-body li {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.add-member-body li:hover {
+	background: none !important;
+}
+
+.add-member-body label {
+	flex-grow: 1;
+}
+
+.add-member-body .list-user {
+	max-height: 25rem !important;
+}
+
+.add-member-body input[type="checkbox"] {
+	display: none;
+}
+
+.add-member-body input[type="checkbox"]:checked ~ .user-select-dot::before {
+	display: block;
+}
+
+.tab-control {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.tab-control i {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 1.5rem 0rem;
+    border-radius: .5rem;
+    box-sizing: border-box;
+}
+
+.tab-control i.active, .tab-control i:hover {
+    background: var(--mainColor);
+}
+
+.list-user {
+    margin-top: 2rem;
+    overflow-y: auto;
+    max-height: 50rem;
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.list-user li {
+	position: relative;
+}
+
+.list-user-search .txt-input {
+    background: var(--mainColor);
+    color: var(--txtColorSecond);
+    border-radius: .5rem;
+}
+
+.list-user-search .txt-input::placeholder {
+    color: var(--txtColorSecond);
+}
+
+.list-user li {
+    padding: 1rem;
+    border-radius: .5rem;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.list-user li:hover, .list-user li.active {
+    background: var(--mainColor);
+}
+
+.user-contain {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.group-delete {
+	position: absolute;
+	right: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 10;
+	padding: 1rem;
+	background: var(--txtBlack);
+}
+
+.user-img {
+    margin-right: 1rem;
+    border-radius: 50%;
+    padding: .2rem;
+    background: var(--txtColorSecond);
+    position: relative;
+}
+
+.user-img-dot {
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    z-index: 2;
+    background: var(--offlineStatus);
+    right: .2rem;
+    bottom: .2rem;
+    border: .3rem solid var(--txtColorSecond);
+}
+
+.user-img-dot.online {
+    background: var(--onlineStatus);
+}
+
+.user-img img {
+    border-radius: 50%;
+    width: 5rem;
+    height: 5rem;
+}
+
+.user-name {
+    font-size: 1.5rem;
+    display: block;
+    margin-top: .5rem;
+    font-weight: 700;
+    word-break: break-word;
+}
+
+.user-last-message {
+    font-size: 1.2rem;
+    display: block;
+    margin-top: .7rem;
+}
+
+.right-side .user-contact {
+    box-shadow: 0rem .2rem .4rem rgba(1, 1, 1, 0.05);
+    padding: 1.5rem;
+    color: var(--txtBlack);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    background: var(--txtColorSecond);
+}
+
+.back {
+    padding: 1rem;
+    font-size: 1.6rem;
+    cursor: pointer;
+    display: none;
+    padding-left: 0rem;
+}
+
+.user-contact .user-contain {
+    align-items: center;
+    flex-grow: 1;
+}
+
+.invite-user {
+    font-size: 1.3rem;
+    margin-right: 2rem;
+}
+
+.total-invite-user, .invite {
+    padding: 0rem 1rem;
+}
+
+.total-invite-user {
+    border-right: 0.1rem solid var(--txtBlack);
+}
+
+.setting, .invite, .add-member {
+    cursor: pointer;
+}
+
+.setting, .add-member {
+    font-size: 1.6rem;
+    padding: .8rem 1rem;
+    border-radius: .5rem;
+}
+
+.setting:hover, .add-member:hover {
+    background: var(--mainColor);
+    color: var(--txtColorSecond);
+}
+
+.list-messages-contain {
+    padding: 0rem 1.5rem;
+    height: 56rem;
+    overflow-y: auto;
+}
+
+.message {
+    display: flex;
+    align-items: flex-end;
+    /* overflow-y: auto; */
+    margin-top: 2rem;
+}
+
+.message.right {
+    justify-content: flex-end;
+}
+
+.message.right .message-img {
+    order: 2;
+}
+
+.message-img {
+    width: 3rem;
+    height: 3rem;
+    margin-right: .5rem;
+    position: relative;
+}
+
+.message-img .sender-name {
+	position: absolute;
+	left: 4rem;
+	bottom: -1.5rem;
+	color: var(--txtColor);
+	font-style: italic;
+	font-weight: 700;
+}
+
+.message.right .sender-name {
+	left: -2rem;
+}
+
+.message-img img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.message-text {
+    padding: .8rem;
+    background: var(--mainColor);
+    border-radius: .5rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    max-width: 20rem;
+    margin-right: .5rem;
+    word-break: break-word;
+}
+
+.message-text>* {
+    max-width: 100%;
+}
+
+.message.right .message-text {
+    background: var(--txtColorSecond);
+    color: var(--txtBlack);
+}
+
+.list-file {
+    width: 100%;
+    position: absolute;
+    background: var(--txtColorSecond);
+    left: 0;
+    bottom: 100%;
+    display: flex;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.list-file.active {
+    padding: 1rem;
+}
+
+.list-file img {
+    width: 7rem;
+    height: 7rem;
+    object-fit: cover;
+    margin: 0 .5rem;
+}
+
+.list-file li {
+    position: relative;
+}
+
+.file-input {
+    padding: 1.5rem;
+    color: var(--txtBlack);
+    box-shadow: 0rem .2rem .4rem rgba(1, 1, 1, 0.1);
+    margin-right: .5rem;
+    white-space: nowrap;
+}
+
+.delete-attach {
+    position: absolute;
+    right: -.2rem;
+    top: -.2rem;
+    color: var(--txtColorSecond);
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.4rem;
+    text-align: center;
+    line-height: 2rem;
+    background: var(--mainColor);
+    opacity: .5;
+    border-radius: 50%;
+}
+
+.form-send-message {
+    background: var(--txtColorSecond);
+    height: 5.6rem;
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+
+.form-send-message .txt-input {
+    margin: 0rem;
+    font-size: 1.3rem;
+    flex-grow: 1;
+}
+
+.form-send-message .btn {
+    background: transparent;
+    color: var(--btnColor);
+    width: auto;
+    margin: 0rem;
+}
+
+.form-send-message input[type="file"], .register-form input[type="file"] {
+    display: none;
+}
+
+@media only screen and (max-width: 1076px) {
+    .conversation-container {
+        flex-direction: row;
+        padding: 0rem 1.5rem;
+        position: relative;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .conversation-container .right-side, .conversation-container .left-side {
+        width: 45rem;
+        display: none;
+        border-radius: 1rem;
+    }
+
+    .conversation-container .right-side.active, .conversation-container .left-side.active {
+        display: block;
+    }
+
+    .back {
+        display: block;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .conversation-container .right-side, .conversation-container .left-side {
+        width: 30rem;
+        display: none;
+        border-radius: 1rem;
+    }
+}

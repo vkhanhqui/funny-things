@@ -1,0 +1,25 @@
+version: '3'
+services:
+  chat-web-app:
+    build: .
+    command: bash -c "chmod +x app_wait.sh && ./app_wait.sh"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./archive:/usr/local/tomcat/archive
+      - ./server.xml:/usr/local/tomcat/conf/server.xml
+    depends_on:
+      - sql-server
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=MyP@ssw0rd123
+    volumes:
+      - ./chatapp.sql:/chatapp.sql
+      - ./sql_wait.sh:/sql_wait.sh
+      - ./sql_job.sh:/sql_job.sh
+      - ./mssql:/var/opt/mssql
+    command: bash -c "chmod +x sql_job.sh sql_wait.sh && /bin/bash ./sql_job.sh"
