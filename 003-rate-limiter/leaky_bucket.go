@@ -51,11 +51,11 @@ func (lb *LeakyBucket) leakTokens() {
 }
 
 // func main() {
-// 	leakyBucket := NewLeakyBucket(10, 1, time.Second) // capacity 10 tokens, output rate of N token per time rate
+// 	lb := NewLeakyBucket(10, 1, time.Second) // capacity 10 tokens, output rate of N token per time rate
 
 // 	for i := 0; i < 20; i++ {
 // 		fmt.Printf("Request %d\n", i+1)
-// 		if leakyBucket.SendRequests(2) { // send 2 requests per time
+// 		if lb.SendRequests(2) { // send 2 requests per time
 // 			fmt.Printf("Success\n\n")
 // 		} else {
 // 			fmt.Printf("Limit Exceeded\n\n")

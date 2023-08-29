@@ -51,15 +51,13 @@ func (tb *TokenBucket) refillTokens() {
 }
 
 // func main() {
-// 	tokenBucket := NewTokenBucket(10, 1, time.Second) // capacity 10 tokens, refill rate of N tokens per time rate
-// 	isBucketEmpty := false
+// 	tb := NewTokenBucket(10, 1, time.Second) // capacity 10 tokens, refill rate of N tokens per time rate
 
-// 	for i := 0; i < 20 && !isBucketEmpty; i++ {
+// 	for i := 0; i < 20; i++ {
 // 		fmt.Printf("Request %d\n", i+1)
-// 		if tokenBucket.SendRequests(2) { // send 2 requests per time
+// 		if tb.SendRequests(2) { // send 2 requests per time
 // 			fmt.Printf("Success\n\n")
 // 		} else {
-// 			isBucketEmpty = true
 // 			fmt.Printf("Limit Exceeded\n\n")
 // 		}
 
