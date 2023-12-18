@@ -1,4 +1,4 @@
-package main
+package algo
 
 import (
 	"time"
@@ -20,33 +20,20 @@ func NewFixedWindow(maxRequestNum int, timeframe time.Duration) *FixedWindow {
 	}
 }
 
-func (fw *FixedWindow) SendRequests(reqNum int) bool {
-	fw.ResetWindow()
+func (fw *FixedWindow) SendRequest() bool {
+	fw.resetWindow()
 
 	if fw.CurReqNum < fw.MaxReqNum {
-		fw.CurReqNum += reqNum
+		fw.CurReqNum += 1
 		return true
 	}
 	return false
 }
 
-func (fw *FixedWindow) ResetWindow() {
+func (fw *FixedWindow) resetWindow() {
 	now := time.Now()
 	if now.After(fw.WindowEnd) {
 		fw.WindowEnd = now.Add(fw.TimeFrame)
 		fw.CurReqNum = 0
 	}
 }
-
-// func main() {
-// 	fw := NewFixedWindow(10, time.Minute) // Max N requests per timeframe
-
-// 	for i := 0; i < 10; i++ {
-// 		if fw.SendRequests(2) { // send 2 requests per time
-// 			fmt.Printf("Request %d: Success\n", i+1)
-// 		} else {
-// 			fmt.Printf("Request %d: Limit Exceeded\n", i+1)
-// 		}
-// 		time.Sleep(time.Second)
-// 	}
-// }

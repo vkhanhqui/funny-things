@@ -1,4 +1,4 @@
-package main
+package algo
 
 import (
 	"fmt"
@@ -23,12 +23,12 @@ func NewLeakyBucket(capacity int, leakRate int, leakRateUnit time.Duration) *Lea
 	}
 }
 
-func (lb *LeakyBucket) SendRequests(reqNum int) bool {
+func (lb *LeakyBucket) SendRequest() bool {
 	lb.leakTokens()
 
-	fmt.Printf("Has %d token(s) / %d capacity\n", lb.Current, lb.Capacity)
 	if lb.Current < lb.Capacity {
-		lb.Current += reqNum
+		fmt.Printf("Has %d token(s) / %d capacity\n", lb.Current, lb.Capacity)
+		lb.Current += 1
 		return true
 	}
 	return false
@@ -49,17 +49,3 @@ func (lb *LeakyBucket) leakTokens() {
 		}
 	}
 }
-
-// func main() {
-// 	lb := NewLeakyBucket(10, 1, time.Second) // capacity 10 tokens, output rate of N token per time rate
-
-// 	for i := 0; i < 20; i++ {
-// 		fmt.Printf("Request %d\n", i+1)
-// 		if lb.SendRequests(2) { // send 2 requests per time
-// 			fmt.Printf("Success\n\n")
-// 		} else {
-// 			fmt.Printf("Limit Exceeded\n\n")
-// 		}
-// 		time.Sleep(time.Second)
-// 	}
-// }

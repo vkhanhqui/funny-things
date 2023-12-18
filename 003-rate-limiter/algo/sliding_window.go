@@ -1,4 +1,4 @@
-package main
+package algo
 
 import (
 	"time"
@@ -10,7 +10,7 @@ type SlidingWindow struct {
 	Requests  []time.Time
 }
 
-func NewSlidingWindow(windowSize time.Duration, maxReqNum int) *SlidingWindow {
+func NewSlidingWindow(maxReqNum int, windowSize time.Duration) *SlidingWindow {
 	return &SlidingWindow{
 		Timeframe: windowSize,
 		MaxReqNum: maxReqNum,
@@ -25,7 +25,7 @@ func (sw *SlidingWindow) SlideWindow(time time.Time) {
 	}
 }
 
-func (sw *SlidingWindow) AllowRequest() bool {
+func (sw *SlidingWindow) SendRequest() bool {
 	now := time.Now()
 	sw.SlideWindow(now)
 
@@ -36,16 +36,3 @@ func (sw *SlidingWindow) AllowRequest() bool {
 	sw.Requests = append(sw.Requests, now)
 	return true
 }
-
-// func main() {
-// 	sw := NewSlidingWindow(time.Minute, 5) // Allow N requests per timeframe
-
-// 	for i := 0; i < 10; i++ {
-// 		if sw.AllowRequest() {
-// 			fmt.Printf("Request %d: Success\n", i+1)
-// 		} else {
-// 			fmt.Printf("Request %d: Limit Exceeded\n", i+1)
-// 		}
-// 		time.Sleep(time.Second)
-// 	}
-// }
