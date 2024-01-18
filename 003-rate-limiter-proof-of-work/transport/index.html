@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Proof of work</title>
+  <style>
+    body {
+      padding-top: 50px;
+      display: flex;
+      flex-flow: column wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body > * {
+      margin: 20px;
+      width: 600px;
+    }
+  </style>
+  <script>
+    var nonce = {};
+    function getNonce() {
+      fetch("/issues").then(async (res) => {
+        nonce = await res.json();
+        document.getElementById("nonce").innerHTML = nonce.nonce;
+        document.getElementById("checksum").innerHTML = nonce.checksum;
+        document.getElementById("difficulty").innerHTML = nonce.difficulty;
+      });
+    }
+
+    async function solveHash() {
+      if (!nonce.nonce) return;
+      nonce.counter = 1;
+      nonce.hash = "";
+      bin = "";
+      const t0 = Date.now();
+      while (!bin.startsWith("0".repeat(nonce.difficulty))) {
+        nonce.counter++;
+        document.getElementById("counter").innerHTML = nonce.counter;
+        nonce.hash = await sha256(nonce.counter + nonce.nonce);
+        var arr = [];
+        for (var i = 0; i < nonce.hash.length - 1; i += 2) {
+          arr.push(nonce.hash.slice(i, i + 2));
+        }
+        bin = arr.map((e) => hex2bin(e)).join("");
+        document.getElementById("hash").innerHTML = nonce.hash;
+      }
+      document.getElementById("taken").innerHTML = `took: ${
+        Date.now() - t0
+      }ms to solve`;
+
+      let res = await fetch("/issues", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(nonce),
+      });
+
+      document.getElementById("hashStatus").innerHTML = await res.text();
+    }
+
+    function hex2bin(hex) {
+      return parseInt(hex, 16).toString(2).padStart(8, "0");
+    }
+    var sha256 = async function sha256(ascii) {
+      enc = new TextEncoder();
+      let hash = await window.crypto.subtle.digest(
+        "SHA-256",
+        enc.encode(ascii)
+      );
+      return buf2hex(hash);
+    };
+    function buf2hex(buffer) {
+      // buffer is an ArrayBuffer
+      return Array.prototype.map
+        .call(new Uint8Array(buffer), (x) => ("00" + x.toString(16)).slice(-2))
+        .join("");
+    }
+  </script>
+</head>
+
+<body>
+  <div>
+    <button onclick="getNonce()">
+      click here to request a nonce and a nonce checksum
+    </button>
+  </div>
+  <div>
+    Nonce: <span id="nonce"></span>
+    <br />
+    checksum: <span id="checksum"></span>
+    <br />
+    difficulty: <span id="difficulty"></span>
+    <div>
+      difficulty is counted in the number of leading zero
+      <b>bits (not bytes)</b>
+    </div>
+  </div>
+  <div>
+    <button onclick="solveHash()">Solve the hash</button>
+  </div>
+  <div>
+    <div>Counter: <span id="counter"></span></div>
+    <div>Hash: <span id="hash"></span></div>
+    <div>Result: <span id="hashStatus"></span></div>
+    <div><span id="taken"></span></div>
+  </div>
+</body>
