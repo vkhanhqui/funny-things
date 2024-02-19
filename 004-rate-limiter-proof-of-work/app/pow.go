@@ -2,65 +2,74 @@ package app
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"errors"
-	"math/bits"
-	"proof-of-work/types"
+	"strconv"
 
 	"github.com/google/uuid"
 )
 
-func getNonce() []byte {
-	return []byte(uuid.NewString())
+const (
+	difficulty = 10
+)
+
+type PowService interface {
+	GetIssue() Issue
+	VerifyIssue(ctx context.Context, req VerifyIssueReq) (bool, error)
 }
 
-func getChecksum(nonce []byte, secret string) []byte {
-	merge := append(nonce, []byte(secret)...)
-	h := sha256.Sum256(merge)
-	return h[:]
+type powSvc struct {
 }
 
-func verify(pi types.ParsedIssue) (bool, error) {
-	pass := verifyDifficulty(pi.Hash, difficulty) // wrong algo, check later
-	if !pass {
-		return pass, errors.New("failed verify Difficulty")
+func NewPowSvc() PowService {
+	return &powSvc{}
+}
+
+func (p *powSvc) GetIssue() Issue {
+	return Issue{
+		Nonce:      string(p.getNonce()),
+		Difficulty: difficulty,
+	}
+}
+
+func (p *powSvc) VerifyIssue(ctx context.Context, req VerifyIssueReq) (bool, error) {
+	pass := false
+	hashBts, err := hex.DecodeString(req.Hash)
+	if err != nil {
+		return pass, errors.New("invalid hash")
 	}
 
-	pass = verifyNonce(pi.Nonce, pi.Checksum)
+	pass = p.verifyHash([]byte(req.Nonce), []byte(strconv.Itoa(req.Counter)), hashBts)
 	if !pass {
-		return pass, errors.New("failed verify Nonce")
-	}
-
-	pass = verifyHash(pi.Nonce, pi.Counter, pi.Hash)
-	if !pass {
-		return pass, errors.New("failed verify Hash")
+		return pass, errors.New("failed to verify")
 	}
 	return pass, nil
 }
 
-func verifyDifficulty(hash []byte, difficulty int) bool {
-	diff := difficulty
-	for _, b := range hash {
-		lead := bits.LeadingZeros8(uint8(b))
-		diff -= lead
-
-		if lead < 8 {
-			return diff <= 0
-		}
-
-		if diff <= 0 {
-			return true
-		}
-	}
-	return false
+func (p *powSvc) getNonce() []byte {
+	return []byte(uuid.NewString())
 }
 
-func verifyNonce(nonce, checksum []byte) bool {
-	h := getChecksum(nonce, secret)
-	return bytes.Equal(h, checksum)
-}
-
-func verifyHash(nonce, counter, hash []byte) bool {
-	h := getChecksum(counter, string(nonce))
+func (p *powSvc) verifyHash(nonce, counter, hash []byte) bool {
+	h := p.getChecksum(counter, nonce)
 	return bytes.Equal(h, hash)
+}
+
+func (p *powSvc) getChecksum(counter, nonce []byte) []byte {
+	merge := append(counter, nonce...)
+	h := sha256.Sum256(merge)
+	return h[:]
+}
+
+type Issue struct {
+	Nonce      string `json:"nonce"`
+	Difficulty int    `json:"difficulty"`
+}
+
+type VerifyIssueReq struct {
+	Nonce   string `json:"nonce"`
+	Counter int    `json:"counter"`
+	Hash    string `json:"hash"`
 }

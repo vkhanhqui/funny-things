@@ -3,7 +3,6 @@ package transport
 import (
 	"net/http"
 	"proof-of-work/app"
-	"proof-of-work/types"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +26,7 @@ func (r *powAPI) GetIssue(c *gin.Context) {
 }
 
 func (r *powAPI) VerifyIssue(c *gin.Context) {
-	var req types.VerifyIssueReq
+	var req app.VerifyIssueReq
 
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

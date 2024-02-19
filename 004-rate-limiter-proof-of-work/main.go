@@ -17,8 +17,12 @@ func main() {
 	}
 
 	issuesGroup := r.Group("/issues")
-	svc := app.NewPowSvc(cache)
+	svc := app.NewPowSvc()
+	svc = app.NewSvcWithCache(svc, cache)
 	trans.NewPowRouter(issuesGroup, svc)
 
-	r.Run("localhost:8000")
+	err = r.Run("localhost:8000")
+	if err != nil {
+		panic(err)
+	}
 }

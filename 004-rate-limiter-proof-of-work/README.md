@@ -1,7 +1,9 @@
 ### Rate Limiter Using Proof of Work
-An improvement of the medium article.
+Another version of the medium article.
 
-### From The Article
+![alt text](images/demo.png "Demo")
+
+### Context
 <b>So how do you rate limit an unauthenticated endpoint?</b><br>
 What we wanted was to be able to limit requests on site (i.e. baked into the application) without relying on services like Cloudflare, CAPTCHA, or an API gateway.
 
@@ -33,8 +35,8 @@ go run main.go
 
 [Jump to the demo](http://localhost:8000)
 
-### APIs
-![alt text](images/pow.drawio.png "APIs")
+### Workflow
+![alt text](images/pow.drawio.png "Workflow")
 
 ### Reference
 [The Curious Problem of Rate Limiting an Unauthenticated Endpoint](https://medium.com/@jycho1998/the-curious-problem-of-rate-limiting-an-unauthenticated-endpoint-9464e315fdaf)
