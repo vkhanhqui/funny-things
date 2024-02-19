@@ -9,6 +9,6 @@
 [003 Rate Limiter Implementation](https://github.com/vkhanhqui/youtube-code/tree/main/003-rate-limiter)
 
 [004 Rate Limiter Using Proof of Work](https://github.com/vkhanhqui/youtube-code/tree/main/004-rate-limiter-proof-of-work)<br>
-<img src="https://raw.githubusercontent.com/vkhanhqui/youtube-code/main/004-rate-limiter-proof-of-work/images/pow.drawio.png" width="500" height="250">
+<img src="https://raw.githubusercontent.com/vkhanhqui/youtube-code/main/004-rate-limiter-proof-of-work/images/pow.drawio.png" width="600" height="600">
 
 [005 Leetcode Solution](https://github.com/vkhanhqui/youtube-code/tree/main/005-leetcode)
