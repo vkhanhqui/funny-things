@@ -13,4 +13,6 @@
 
 [005 Leetcode Solution](https://github.com/vkhanhqui/youtube-code/tree/main/005-leetcode)
 
-[006 Python stuff](https://github.com/vkhanhqui/youtube-code/tree/main/006-python-stuffs)
+[006 Python stuffs](https://github.com/vkhanhqui/youtube-code/tree/main/006-python-stuffs)
+
+[007 Ingest data to Elasticsearch](https://github.com/vkhanhqui/youtube-code/tree/main/007-ingest-data-elasticsearch)
