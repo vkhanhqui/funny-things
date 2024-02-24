@@ -9,6 +9,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+const expTime = 5 * time.Minute
+
 type svcWithCache struct {
 	svc   PowService
 	cache *redis.Client
@@ -34,7 +36,7 @@ func (s *svcWithCache) VerifyIssue(ctx context.Context, req VerifyIssueReq) (boo
 		return pass, err
 	}
 
-	s.cache.Set(ctx, req.Nonce, 1, time.Minute)
+	s.cache.Set(ctx, req.Nonce, 1, expTime)
 	return pass, nil
 }
 

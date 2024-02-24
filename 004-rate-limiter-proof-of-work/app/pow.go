@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
-	"encoding/hex"
+	"encoding/base64"
 	"errors"
 	"strconv"
 
@@ -29,31 +29,47 @@ func NewPowSvc() PowService {
 
 func (p *powSvc) GetIssue() Issue {
 	return Issue{
-		Nonce:      string(p.getNonce()),
+		Nonce:      p.getNonce(),
 		Difficulty: difficulty,
 	}
 }
 
 func (p *powSvc) VerifyIssue(ctx context.Context, req VerifyIssueReq) (bool, error) {
 	pass := false
-	hashBts, err := hex.DecodeString(req.Hash)
+	parser, err := req.toParser()
 	if err != nil {
-		return pass, errors.New("invalid hash")
+		return false, err
 	}
 
-	pass = p.verifyHash([]byte(req.Nonce), []byte(strconv.Itoa(req.Counter)), hashBts)
+	pass = p.verifyHash(parser.Nonce, parser.Hash, parser.Counter)
 	if !pass {
-		return pass, errors.New("failed to verify")
+		return pass, errors.New("failed to verify hash")
+	}
+
+	pass = p.verifyDifficulty(parser.Bin, req.Difficulty)
+	if !pass {
+		return pass, errors.New("failed to verify difficulty")
 	}
 	return pass, nil
 }
 
-func (p *powSvc) getNonce() []byte {
-	return []byte(uuid.NewString())
+func (p *powSvc) verifyDifficulty(binBts []byte, difficulty int) bool {
+	bin := string(binBts)
+	for _, c := range bin[:difficulty] {
+		if c != '0' {
+			return false
+		}
+	}
+	return true
 }
 
-func (p *powSvc) verifyHash(nonce, counter, hash []byte) bool {
-	h := p.getChecksum(counter, nonce)
+func (p *powSvc) getNonce() string {
+	return base64.StdEncoding.EncodeToString([]byte(uuid.NewString()))
+}
+
+func (p *powSvc) verifyHash(nonce, hash []byte, counter int) bool {
+	counterBts := []byte(strconv.Itoa(counter))
+	h := p.getChecksum(counterBts, nonce)
 	return bytes.Equal(h, hash)
 }
 
@@ -61,15 +77,4 @@ func (p *powSvc) getChecksum(counter, nonce []byte) []byte {
 	merge := append(counter, nonce...)
 	h := sha256.Sum256(merge)
 	return h[:]
-}
-
-type Issue struct {
-	Nonce      string `json:"nonce"`
-	Difficulty int    `json:"difficulty"`
-}
-
-type VerifyIssueReq struct {
-	Nonce   string `json:"nonce"`
-	Counter int    `json:"counter"`
-	Hash    string `json:"hash"`
 }

@@ -29,6 +29,7 @@
 
     async function solveHash() {
       if (!nonce.nonce) return;
+      nonce.nonce = atob(nonce.nonce)
       nonce.counter = 1;
       nonce.hash = "";
       bin = "";
@@ -45,10 +46,12 @@
 
         bin = arr.map((e) => hex2bin(e)).join("");
 
-        document.getElementById("counter").innerHTML = nonce.counter;
-        document.getElementById("hash").innerHTML = nonce.hash;
       }
-      console.log(bin);
+      nonce.hash = nonce.hash + "#" + btoa(bin);
+      nonce.nonce = btoa(nonce.nonce)
+
+      document.getElementById("counter").innerHTML = nonce.counter;
+      document.getElementById("hash").innerHTML = nonce.hash;
       document.getElementById("taken").innerHTML = `${Date.now() - startTime}ms to solve`;
 
       let res = await fetch("/issues", {
@@ -93,7 +96,6 @@
   <div>
     <div>Nonce: <span id="nonce"></span></div>
     <div>Difficulty: <span id="difficulty"></span></div>
-    <div>Difficulty is counted in the number of leading zero <b>bits (not bytes)</b></div>
   </div>
 
   <div>
