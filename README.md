@@ -12,3 +12,5 @@
 <img src="https://raw.githubusercontent.com/vkhanhqui/youtube-code/main/004-rate-limiter-proof-of-work/images/pow.drawio.png" width="600" height="600">
 
 [005 Leetcode Solution](https://github.com/vkhanhqui/youtube-code/tree/main/005-leetcode)
+
+[006 Python stuff](https://github.com/vkhanhqui/youtube-code/tree/main/006-python-stuffs)
