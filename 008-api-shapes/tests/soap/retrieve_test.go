@@ -1,10 +1,10 @@
-package rest
+package soap
 
 import (
 	"api-shapes/pkg/client"
 	"api-shapes/tests"
 	"api-shapes/transport"
-	"encoding/json"
+	"encoding/xml"
 	"net/http"
 	"testing"
 
@@ -21,7 +21,7 @@ func TestUserAPI_Retrieve(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 
 	var res transport.UserRes
-	err = json.Unmarshal(bts, &res)
+	err = xml.Unmarshal(bts, &res)
 	assert.Nil(t, err)
 	assert.Equal(t, createRes, res)
 }

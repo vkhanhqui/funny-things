@@ -1,11 +1,11 @@
-package rest
+package soap
 
 import (
 	"api-shapes/pkg/client"
 	"api-shapes/tests"
 	"api-shapes/transport"
 	"bytes"
-	"encoding/json"
+	"encoding/xml"
 	"net/http"
 	"testing"
 
@@ -13,8 +13,8 @@ import (
 )
 
 func TestUserAPI_Create(t *testing.T) {
-	bts, _ := json.Marshal(transport.UserReq{Name: "mock"})
-	req, err := http.NewRequest(http.MethodPost, tests.URL+"/v2/users", bytes.NewReader(bts))
+	bts, _ := xml.Marshal(transport.UserReq{Name: "mock"})
+	req, err := http.NewRequest(http.MethodPost, tests.URL+"/v1/users", bytes.NewReader(bts))
 	assert.Nil(t, err)
 
 	status, _, err := client.Request(req)
@@ -23,8 +23,8 @@ func TestUserAPI_Create(t *testing.T) {
 }
 
 func seedUser(t *testing.T) transport.UserRes {
-	bts, _ := json.Marshal(transport.UserReq{Name: "mock"})
-	req, err := http.NewRequest(http.MethodPost, tests.URL+"/v2/users", bytes.NewReader(bts))
+	bts, _ := xml.Marshal(transport.UserReq{Name: "mock"})
+	req, err := http.NewRequest(http.MethodPost, tests.URL+"/v1/users", bytes.NewReader(bts))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func seedUser(t *testing.T) transport.UserRes {
 	}
 
 	var createRes transport.UserRes
-	err = json.Unmarshal(bts, &createRes)
+	err = xml.Unmarshal(bts, &createRes)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,27 +1,27 @@
-package rest
+package soap
 
 import (
 	"api-shapes/pkg/client"
 	"api-shapes/tests"
 	"api-shapes/transport"
-	"encoding/json"
+	"encoding/xml"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserAPI_Retrieve(t *testing.T) {
+func TestUserAPI_List(t *testing.T) {
 	createRes := seedUser(t)
-	req, err := http.NewRequest(http.MethodGet, tests.URL+"/v2/users/"+createRes.ID, nil)
+	req, err := http.NewRequest(http.MethodGet, tests.URL+"/v1/users", nil)
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, status)
 
-	var res transport.UserRes
-	err = json.Unmarshal(bts, &res)
+	var res []transport.UserRes
+	err = xml.Unmarshal(bts, &res)
 	assert.Nil(t, err)
-	assert.Equal(t, createRes, res)
+	assert.Equal(t, createRes, res[len(res)-1])
 }

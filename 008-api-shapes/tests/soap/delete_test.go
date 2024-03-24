@@ -1,4 +1,4 @@
-package rest
+package soap
 
 import (
 	"api-shapes/pkg/client"
@@ -11,7 +11,7 @@ import (
 
 func TestUserAPI_Delete(t *testing.T) {
 	u := seedUser(t)
-	req, err := http.NewRequest(http.MethodDelete, tests.URL+"/v2/users/"+u.ID, nil)
+	req, err := http.NewRequest(http.MethodDelete, tests.URL+"/v1/users/"+u.ID, nil)
 	assert.Nil(t, err)
 
 	status, _, err := client.Request(req)

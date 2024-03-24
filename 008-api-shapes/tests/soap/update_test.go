@@ -1,11 +1,11 @@
-package rest
+package soap
 
 import (
 	"api-shapes/pkg/client"
 	"api-shapes/tests"
 	"api-shapes/transport"
 	"bytes"
-	"encoding/json"
+	"encoding/xml"
 	"net/http"
 	"testing"
 
@@ -14,8 +14,8 @@ import (
 
 func TestUserAPI_Update(t *testing.T) {
 	u := seedUser(t)
-	bts, _ := json.Marshal(transport.UserReq{Name: "new"})
-	req, err := http.NewRequest(http.MethodPut, tests.URL+"/v2/users/"+u.ID, bytes.NewReader(bts))
+	bts, _ := xml.Marshal(transport.UserReq{Name: "new"})
+	req, err := http.NewRequest(http.MethodPut, tests.URL+"/v1/users/"+u.ID, bytes.NewReader(bts))
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)
@@ -23,7 +23,7 @@ func TestUserAPI_Update(t *testing.T) {
 	assert.Equal(t, http.StatusOK, status)
 
 	var res transport.UserRes
-	err = json.Unmarshal(bts, &res)
+	err = xml.Unmarshal(bts, &res)
 
 	assert.Nil(t, err)
 	assert.Equal(t, u.ID, res.ID)

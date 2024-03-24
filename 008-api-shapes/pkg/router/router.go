@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"log"
 	"net/http"
 )
@@ -13,6 +14,16 @@ func JsonResponse(w http.ResponseWriter, v any, status int) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func XMLResponse(w http.ResponseWriter, v any, status int) {
+	w.Header().Set("Content-Type", "application/xml")
+	w.WriteHeader(status)
+	res, err := xml.MarshalIndent(v, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	w.Write(res)
 }
 
 func ErrorHandler(next http.Handler) http.Handler {

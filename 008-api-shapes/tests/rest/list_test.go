@@ -1,7 +1,8 @@
-package tests
+package rest
 
 import (
 	"api-shapes/pkg/client"
+	"api-shapes/tests"
 	"api-shapes/transport"
 	"encoding/json"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 
 func TestUserAPI_List(t *testing.T) {
 	createRes := seedUser(t)
-	req, err := http.NewRequest(http.MethodGet, url+"/users", nil)
+	req, err := http.NewRequest(http.MethodGet, tests.URL+"/v2/users", nil)
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)
