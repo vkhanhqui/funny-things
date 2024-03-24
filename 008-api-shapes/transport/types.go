@@ -3,12 +3,12 @@ package transport
 import "api-shapes/store"
 
 type UserReq struct {
-	Name string `json:"name"`
+	Name string `xml:"name" json:"name"`
 }
 
 type UserRes struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID   string `xml:"id" json:"id"`
+	Name string `xml:"name" json:"name"`
 }
 
 func (u *UserRes) Bind(user store.User) {

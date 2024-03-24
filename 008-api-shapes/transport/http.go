@@ -2,13 +2,13 @@ package transport
 
 import "net/http"
 
-func NewRouter(pattern string, mux *http.ServeMux) {
+func NewRouter(pattern string, mux *http.ServeMux, userAPI UserAPI) {
 	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			List(w, r)
+			userAPI.List(w, r)
 		case http.MethodPost:
-			Create(w, r)
+			userAPI.Create(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -17,11 +17,11 @@ func NewRouter(pattern string, mux *http.ServeMux) {
 	mux.HandleFunc(pattern+"/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			Retrieve(w, r)
+			userAPI.Retrieve(w, r)
 		case http.MethodPut:
-			Update(w, r)
+			userAPI.Update(w, r)
 		case http.MethodDelete:
-			Delete(w, r)
+			userAPI.Delete(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}

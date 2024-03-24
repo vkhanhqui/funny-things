@@ -1,8 +1,9 @@
-package transport
+package rest
 
 import (
 	"api-shapes/pkg/router"
 	"api-shapes/store"
+	"api-shapes/transport"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -10,11 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
-func List(w http.ResponseWriter, r *http.Request) {
-	var res []UserRes
+type userAPI struct{}
+
+func NewUserAPI() transport.UserAPI {
+	return &userAPI{}
+}
+
+func (u *userAPI) List(w http.ResponseWriter, r *http.Request) {
+	var res []transport.UserRes
 	l := store.List()
 	for _, u := range l {
-		var ur UserRes
+		var ur transport.UserRes
 		ur.Bind(u)
 		res = append(res, ur)
 	}
@@ -22,34 +29,34 @@ func List(w http.ResponseWriter, r *http.Request) {
 	router.JsonResponse(w, res, http.StatusOK)
 }
 
-func Retrieve(w http.ResponseWriter, r *http.Request) {
+func (u *userAPI) Retrieve(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/users/")
-	u := store.Retrieve(id)
+	e := store.Retrieve(id)
 
-	var res UserRes
-	res.Bind(u)
+	var res transport.UserRes
+	res.Bind(e)
 
 	router.JsonResponse(w, res, http.StatusOK)
 }
 
-func Create(w http.ResponseWriter, r *http.Request) {
-	var req UserReq
+func (u *userAPI) Create(w http.ResponseWriter, r *http.Request) {
+	var req transport.UserReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	u := store.Create(store.User{ID: uuid.NewString(), Name: req.Name})
+	e := store.Create(store.User{ID: uuid.NewString(), Name: req.Name})
 
-	var res UserRes
-	res.Bind(u)
+	var res transport.UserRes
+	res.Bind(e)
 
 	router.JsonResponse(w, res, http.StatusCreated)
 }
 
-func Update(w http.ResponseWriter, r *http.Request) {
-	var req UserReq
+func (u *userAPI) Update(w http.ResponseWriter, r *http.Request) {
+	var req transport.UserReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -58,17 +65,17 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	id := strings.TrimPrefix(r.URL.Path, "/users/")
 
-	u := store.Retrieve(id)
-	u.Name = req.Name
-	u = store.Update(u)
+	e := store.Retrieve(id)
+	e.Name = req.Name
+	e = store.Update(e)
 
-	var res UserRes
-	res.Bind(u)
+	var res transport.UserRes
+	res.Bind(e)
 
 	router.JsonResponse(w, res, http.StatusOK)
 }
 
-func Delete(w http.ResponseWriter, r *http.Request) {
+func (u *userAPI) Delete(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/users/")
 	store.Delete(id)
 
