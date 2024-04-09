@@ -6,6 +6,10 @@ type UserReq struct {
 	Name string `xml:"name" json:"name"`
 }
 
+type ListRes struct {
+	Users []UserRes `xml:"users" json:"users"`
+}
+
 type UserRes struct {
 	ID   string `xml:"id" json:"id"`
 	Name string `xml:"name" json:"name"`

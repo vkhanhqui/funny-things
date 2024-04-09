@@ -14,7 +14,7 @@ import (
 
 func TestUserAPI_Create(t *testing.T) {
 	bts, _ := xml.Marshal(transport.UserReq{Name: "mock"})
-	req, err := http.NewRequest(http.MethodPost, tests.URL+"/v1/users", bytes.NewReader(bts))
+	req, err := http.NewRequest(http.MethodPost, tests.URL+"/soap/users", bytes.NewReader(bts))
 	assert.Nil(t, err)
 
 	status, _, err := client.Request(req)
@@ -24,7 +24,7 @@ func TestUserAPI_Create(t *testing.T) {
 
 func seedUser(t *testing.T) transport.UserRes {
 	bts, _ := xml.Marshal(transport.UserReq{Name: "mock"})
-	req, err := http.NewRequest(http.MethodPost, tests.URL+"/v1/users", bytes.NewReader(bts))
+	req, err := http.NewRequest(http.MethodPost, tests.URL+"/soap/users", bytes.NewReader(bts))
 	if err != nil {
 		t.Fatal(err)
 	}

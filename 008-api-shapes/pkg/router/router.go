@@ -23,7 +23,11 @@ func XMLResponse(w http.ResponseWriter, v any, status int) {
 	if err != nil {
 		panic(err)
 	}
-	w.Write(res)
+
+	_, err = w.Write(res)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func ErrorHandler(next http.Handler) http.Handler {

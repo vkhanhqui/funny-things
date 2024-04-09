@@ -15,7 +15,7 @@ import (
 func TestUserAPI_Update(t *testing.T) {
 	u := seedUser(t)
 	bts, _ := xml.Marshal(transport.UserReq{Name: "new"})
-	req, err := http.NewRequest(http.MethodPut, tests.URL+"/v1/users/"+u.ID, bytes.NewReader(bts))
+	req, err := http.NewRequest(http.MethodPut, tests.URL+"/soap/users/"+u.ID, bytes.NewReader(bts))
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)

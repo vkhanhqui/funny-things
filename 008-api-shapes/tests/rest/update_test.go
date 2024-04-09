@@ -15,7 +15,7 @@ import (
 func TestUserAPI_Update(t *testing.T) {
 	u := seedUser(t)
 	bts, _ := json.Marshal(transport.UserReq{Name: "new"})
-	req, err := http.NewRequest(http.MethodPut, tests.URL+"/v2/users/"+u.ID, bytes.NewReader(bts))
+	req, err := http.NewRequest(http.MethodPut, tests.URL+"/rest/users/"+u.ID, bytes.NewReader(bts))
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)

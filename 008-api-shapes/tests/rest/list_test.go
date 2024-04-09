@@ -13,15 +13,15 @@ import (
 
 func TestUserAPI_List(t *testing.T) {
 	createRes := seedUser(t)
-	req, err := http.NewRequest(http.MethodGet, tests.URL+"/v2/users", nil)
+	req, err := http.NewRequest(http.MethodGet, tests.URL+"/rest/users", nil)
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, status)
 
-	var res []transport.UserRes
+	var res transport.ListRes
 	err = json.Unmarshal(bts, &res)
 	assert.Nil(t, err)
-	assert.Equal(t, createRes, res[len(res)-1])
+	assert.Equal(t, createRes, res.Users[len(res.Users)-1])
 }

@@ -14,10 +14,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	soapUserAPI := soap.NewUserAPI()
-	transport.NewRouter("/v1/users", mux, soapUserAPI)
+	transport.NewRouter("/soap/users", mux, soapUserAPI)
 
 	restUserAPI := rest.NewUserAPI()
-	transport.NewRouter("/v2/users", mux, restUserAPI)
+	transport.NewRouter("/rest/users", mux, restUserAPI)
 
 	fmt.Println("Server listening on port 8080...")
 	log.Fatal(http.ListenAndServe(":8080", router.ErrorHandler(mux)))

@@ -13,7 +13,7 @@ import (
 
 func TestUserAPI_Retrieve(t *testing.T) {
 	createRes := seedUser(t)
-	req, err := http.NewRequest(http.MethodGet, tests.URL+"/v2/users/"+createRes.ID, nil)
+	req, err := http.NewRequest(http.MethodGet, tests.URL+"/soap/users/"+createRes.ID, nil)
 	assert.Nil(t, err)
 
 	status, bts, err := client.Request(req)

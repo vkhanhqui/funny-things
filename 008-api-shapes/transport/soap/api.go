@@ -19,19 +19,19 @@ func NewUserAPI() transport.UserAPI {
 }
 
 func (u *userAPI) List(w http.ResponseWriter, r *http.Request) {
-	var res []transport.UserRes
+	var res transport.ListRes
 	l := store.List()
 	for _, u := range l {
 		var ur transport.UserRes
 		ur.Bind(u)
-		res = append(res, ur)
+		res.Users = append(res.Users, ur)
 	}
 
 	router.XMLResponse(w, res, http.StatusOK)
 }
 
 func (u *userAPI) Retrieve(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/users/")
+	id := strings.Split(r.URL.Path, "/")[3]
 	e := store.Retrieve(id)
 
 	var res transport.UserRes
@@ -76,7 +76,7 @@ func (u *userAPI) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := strings.TrimPrefix(r.URL.Path, "/users/")
+	id := strings.Split(r.URL.Path, "/")[3]
 
 	e := store.Retrieve(id)
 	e.Name = req.Name
