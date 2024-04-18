@@ -17,3 +17,5 @@
 [7 Ingest data to Elasticsearch](https://github.com/vkhanhqui/youtube-code/tree/main/007-ingest-data-elasticsearch)
 
 [8 Practice rest, graphql, rpc, soap, etc..](https://github.com/vkhanhqui/youtube-code/tree/main/008-api-shapes)
+
+[9 Practice worker pattern](https://github.com/vkhanhqui/youtube-code/tree/main/009-worker-pattern)
