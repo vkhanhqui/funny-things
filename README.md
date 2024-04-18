@@ -2,11 +2,11 @@
 
 🚀 Current projects:
 
-[1 Chat Web App Using Java WebSocket | Server & Multiple clients](https://youtu.be/a0PPWwhw3OE)
+[1 Chat Web App Using Java WebSocket | Server & Multiple clients](https://github.com/vkhanhqui/funny-things/tree/main/001-chat-web-app)
 
-[2 Chat Web App Using Java WebSocket & Docker | Server & Multiple clients](https://youtu.be/WLcfW4uaoGE) 
+[2 Chat Web App Using Java WebSocket & Docker | Server & Multiple clients](https://github.com/vkhanhqui/funny-things/tree/main/002-chat-web-app-docker) 
 
-[3 Rate Limiter Implementation](https://github.com/vkhanhqui/youtube-code/tree/main/003-rate-limiter)
+[3 Rate Limiting Algorithms](https://github.com/vkhanhqui/youtube-code/tree/main/003-rate-limiter)
 
 [4 Rate Limiter Using Proof of Work](https://github.com/vkhanhqui/youtube-code/tree/main/004-rate-limiter-proof-of-work)
 
