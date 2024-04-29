@@ -2,7 +2,7 @@
 
 ### Project structure:
 ```
-├── main.go # Trigger point
+├── cmd # Starting points
 ├── pkg # Internal libraries
 ├── store # Simulate database connection
 ├── tests # Integration tests
