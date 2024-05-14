@@ -23,10 +23,11 @@ func main() {
 
 	for i := 0; i < totalTask; i++ {
 		side := i
-		wp.AddTask(func() {
+		wp.AddTask(func() error {
 			log.Printf("Calculate square with side: %d", side)
 			squareC <- square{side, side * side}
 			time.Sleep(5 * time.Second)
+			return nil
 		})
 	}
 
