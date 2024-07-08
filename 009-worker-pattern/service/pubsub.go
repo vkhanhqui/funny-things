@@ -9,6 +9,7 @@ type PubSub interface {
 	Pub(n int)
 	Sub(id string)
 	Stop(subNum int)
+	GetTotal() int
 }
 
 type pubSub struct {
@@ -46,7 +47,7 @@ func (ps *pubSub) Sub(id string) {
 		select {
 		case n := <-ps.numbers:
 			ps.inc(id, n)
-			fmt.Println(id, "total", ps.getTotal())
+			fmt.Println(id, "total", ps.GetTotal())
 		case <-ps.quit:
 			fmt.Println("quit")
 			ps.wg.Done()
@@ -62,7 +63,7 @@ func (ps *pubSub) Stop(subNum int) {
 	ps.wg.Wait()
 }
 
-func (ps *pubSub) getTotal() int {
+func (ps *pubSub) GetTotal() int {
 	ps.mux.Lock()
 	defer ps.mux.Unlock()
 	return ps.total
