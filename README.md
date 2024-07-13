@@ -19,3 +19,5 @@
 [8 Practice rest, graphql, rpc, soap, etc..](https://github.com/vkhanhqui/youtube-code/tree/main/008-api-shapes)
 
 [9 Practice worker pattern](https://github.com/vkhanhqui/youtube-code/tree/main/009-worker-pattern)
+
+[10 Bleve search engine](https://github.com/vkhanhqui/youtube-code/tree/main/010-bleve-search)

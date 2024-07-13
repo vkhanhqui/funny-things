@@ -1,0 +1,562 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "description": "Retrieves a list of all index partitions.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Get partitions",
+                "responses": {
+                    "200": {
+                        "description": "Partitions retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/bulk": {
+            "post": {
+                "description": "### Bulk Document\n\n- **Request Body:** (example)\n  ```json\n    {\"id\": \"1\", \"name\": \"John Doe\", \"age\": 30, \"title\":\"some title1\", \"content\":\"some content1\"}\n    {\"id\": \"2\", \"name\": \"Jane Doe\", \"age\": 25, \"title\":\"some title2\", \"content\":\"some content2\"}\n    {\"name\": \"Jake Smith\", \"age\": 40, \"title\":\"some title3\", \"content\":\"some content3\"}\n  ```\n\n*Note: If the request does not include an `id` field, a universally unique identifier (UUID) will be automatically generated for identification purposes.*\n",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Bulk load documents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "List of documents to be loaded",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bulk documents loaded successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/check": {
+            "get": {
+                "description": "Checks the contents of the specified index partition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Check index contents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Index contents retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/count": {
+            "get": {
+                "description": "Retrieves the count of documents in the specified index partition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Get document count",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Document count retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/create": {
+            "post": {
+                "description": "### Create Index\n\n- **Request Body:** (example)\n```json\n{\n    \"analysis\": {\n        \"token_filters\": {\n            \"to_lower\": {\n                \"type\": \"to_lower\"\n            }\n        }\n    },\n    \"default_mapping\": {\n        \"dynamic\": true,\n        \"enabled\": true,\n        \"properties\": {\n            \"defaultField\": {\n                \"dynamic\": true,\n                \"enabled\": true,\n                \"fields\": [\n                    {\n                        \"name\": \"defaultField\",\n                        \"type\": \"text\"\n                    }\n                ]\n            }\n        }\n    },\n    \"types\": {\n        \"product\": {\n            \"properties\": {\n                \"name\": {\n                    \"fields\": [\n                        {\n                            \"name\": \"name\",\n                            \"type\": \"text\"\n                        }\n                    ]\n                }\n            }\n        }\n    },\n    \"docvalues_dynamic\": false,\n    \"index_dynamic\": true,\n    \"store_dynamic\": true,\n    \"type_field\": \"_type\",\n    \"default_type\": \"_default\",\n    \"default_analyzer\": \"standard\",\n    \"default_datetime_parser\": \"dateTimeOptional\",\n    \"default_field\": \"defaultField\"\n}\n  ```\n### Explanation of Fields:\n- **`analysis`**: Optional section for defining custom analyzers.\n  - **`char_filters`**: Defines character filters to preprocess the text  before tokenization. \n  - **`tokenizers`**: Defines how the text is split into tokens (words or   terms).\n  - **`token_maps`**: Defines maps of tokens, such as stop words.\n  - **`token_filters`**: Defines filters to apply to tokens after tokenization.\n    - List token filters availables:\n        - apostrophe\n        - camelCase\n        - dict_compound\n        - edge_ngram\n        - elision\n        - hierarchy\n        - keyword_marker\n        - length\n        - ngram\n        - normalize_unicode\n        - possessive_en\n        - reverse\n        - shingle\n        - stemmer_en_plural\n        - stemmer_en_snowball\n        - stemmer_porter\n        - stop_en\n        - stop_tokens\n        - to_lower\n        - truncate_token\n        - unique\n\n\n  - **`analyzers`**: Defines custom analyzers that specify a tokenizer and  a sequence of token filters.\n  - **`date_time_parsers`**: Defines custom date-time parsers for handling  different date-time formats.\n\n- **`default_mapping`**: Specifies default mappings for fields not explicitly mapped under specific types.\n  - **`enabled`**: Indicates whether the document mapping is enabled. If set to false, the document type will not be indexed.\n  - **`dynamic`**: Determines whether the document type allows dynamic addition of new fields that are not explicitly defined in the mapping.\n  - **`properties`**: A map of field names to their respective DocumentMapping objects, allowing for nested fields within the document. Each field can have its own mapping configuration.\n  - **`fields`**: A list of field mappings that specify how individual fields within the document are indexed and analyzed.\n  - **`defaultAnalyzer`**: Specifies the default analyzer to use for fields in this document type, unless overridden by individual field settings.\n  - **`structTagKey`**: Overrides the default struct tag key (\"json\") used when looking for field names in struct tags. This is useful when you want to use a different tag key for field names.\n\n- **`types`**: Defines mappings for specific document types. Each type can have its own set of properties (`product`, `user`, etc.).\n  - **`defaultAnalyzer`**: Specifies the default analyzer to use for fields in this   document type, unless overridden by individual field settings.\n  - **`structTagKey`**: Overrides the default struct tag key (\"json\") used when looking   for field names in struct tags. This is useful when you want to use a different tag key   for field names.\n  - **`properties`**: A map of field names to their respective `DocumentMapping` objects,   allowing for nested fields within the document. Each field can have its own mapping   configuration.\n  - **`enabled`**: Indicates whether the document mapping is enabled. If set to `false`, the document type will not be indexed.\n  - **`dynamic`**: Determines whether the document type allows dynamic addition of new  fields that are not explicitly defined in the mapping.\n  - **`fields`**: A list of field mappings that specify how individual fields within the  document are indexed and analyzed.\n    - **`name`**: The name of the field.\n    - **`type`**: The data type of the field (e.g., text, numeric).\n    - **`analyzer`**: Specifies the name of the analyzer to use for this field. If empty, it will use the first non-empty DefaultAnalyzer found in the DocumentMapping tree or the IndexMapping.DefaultAnalyzer.\n    - **`store`**: Indicates whether to store field values in the index. Stored values can be retrieved from search results using SearchRequest.Fields.\n    - **`index`**: Indicates whether the field should be indexed.\n    - **`include_term_vectors`**: If true, term occurrences are recorded for this field, including term positions and offsets in the source document field. Required for phrase queries or terms highlighting in source documents.\n    - **`include_in_all`**: Indicates whether the field should be included in the _all field.\n    - **`date_format`**: Specifies the date format for date fields.\n    - **`docvalues`**: If true, enables the index to support uninverting for this field. Useful for faceting and sorting queries.\n    - **`skip_freq_norm`**: If true, avoids indexing frequency and norm values of the tokens for this field. Useful for saving processing when default score-based relevancy isn't needed.\n    - **`dims`**: Specifies the dimensionality of the vector.\n    - **`similarity`**: The similarity algorithm used for scoring vector fields. See index.DefaultSimilarityMetric and index.SupportedSimilarityMetrics.\n    - **`vector_index_optimized_for`**: Optimization setting for vector fields.\n\n- **`docvalues_dynamic`**: Controls dynamic mapping behavior for doc values (`true` or `false`).\n- **`index_dynamic`**: Controls dynamic mapping behavior for indexing fields (`true` or `false`).\n- **`store_dynamic`**: Controls dynamic mapping behavior for storing fields (`true` or `false`).\n- **`type_field`**: Defines the field in documents that determines their type (`_type` by default).\n- **`default_type`**: Specifies the default type for documents that don't specify a type (`_default` by default).\n- **`default_analyzer`**: Specifies the default analyzer to use for text fields (`standard` analyzer by default).\n- **`default_datetime_parser`**: Specifies the default date-time parser for date fields (`dateTimeOptional` by default).\n- **`default_field`**: Specifies the default field to use if not explicitly defined (`defaultField` by default).\n",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Create a new index",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Index Mapping JSON",
+                        "name": "indexMapping",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Index created successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON format",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/delete": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Delete an index",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Index deleted successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Index not found",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/dictionary": {
+            "get": {
+                "description": "Prints the term dictionary for a specified field in the index partition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Print term dictionary",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field Name",
+                        "name": "field",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Term dictionary retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Field parameter is required",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/dump": {
+            "get": {
+                "description": "Dumps the contents of the specified index partition with pagination.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Dump index contents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page number, defaults to 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Page size, defaults to 1000",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Index contents retrieved successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid page number or page size",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Index not found",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/fields": {
+            "get": {
+                "description": "Lists all fields in the specified index partition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "List index fields",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Fields listed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Index not found",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/index": {
+            "post": {
+                "description": "### Index Document\n\n- **Request Body Example:**\n```json\n{\n  \"title\": \"hello world\",\n  \"content\": \"There are 4 people in my family\"\n}\n```\n\n*Note: If the request does not include an `id` field, a universally unique identifier (UUID) will be automatically generated for identification purposes.*",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Index a document",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Document JSON",
+                        "name": "doc",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Document indexed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid JSON",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/mapping": {
+            "get": {
+                "description": "Prints the mapping for the specified index partition.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Print index mapping",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mapping printed successfully",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/{partition}/search": {
+            "get": {
+                "description": "### Search Document\n\n- **Bleve Query Types and Usage**:\n  #### 1. `query_string`\n\n  - **Description:** Executes a query string query.\n  - **Parameters:** \n    - `query`: The query string to execute.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"query_string\",\n      \"query\": \"search term\"\n    }]\n  ```\n    This executes a query string search for \"search term\".\n\n  #### 2. `bool_field`\n\n  - **Description:** Matches documents based on a boolean field value.\n  - **Parameters:** \n    - `value`: Boolean value (`true` or `false`).\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"bool_field\",\n      \"value\": true\n    }]\n  ```\n    Matches documents where the boolean field is `true`.\n\n  #### 3. `boolean`\n\n  - **Description:** Executes a boolean combination of queries (must,   should, must_not).\n  - **Parameters:** \n    - `must`: Array of queries that must match.\n    - `should`: Array of queries that should match.\n    - `must_not`: Array of queries that must not match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"boolean\",\n      \"must\": [\n        [{\n          \"type\": \"term\",\n          \"term\": \"keyword\"\n        }]\n      ],\n      \"should\": [\n        [{\n          \"type\": \"match_phrase\",\n          \"match_phrase\": \"exact phrase\"\n        }]\n      ],\n      \"must_not\": []\n    }]\n  ```\n    Executes a boolean query with a must clause for term \"keyword\" and a should clause for exact phrase \"exact phrase\".\n\n  #### 4. `conjunction`\n\n  - **Description:** Executes a conjunction (AND) of queries.\n  - **Parameters:** \n    - `conjuncts`: Array of queries to combine with AND.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"conjunction\",\n      \"conjuncts\": [\n        [{\n          \"type\": \"term\",\n          \"term\": \"keyword1\"\n        }],\n        [{\n          \"type\": \"term\",\n          \"term\": \"keyword2\"\n        }]\n      ]\n    }]\n  ```\n    Executes a conjunction query combining \"keyword1\" AND \"keyword2\".\n\n  #### 5. `date_range`\n\n  - **Description:** Matches documents within a specified date range.\n  - **Parameters:** \n    - `start`: Start date in RFC3339 format.\n    - `end`: End date in RFC3339 format.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"date_range\",\n      \"start\": \"2023-01-01T00:00:00Z\",\n      \"end\": \"2023-12-31T23:59:59Z\"\n    }]\n  ```\n    Matches documents within the year 2023.\n\n  #### 6. `disjunction`\n\n  - **Description:** Executes a disjunction (OR) of queries.\n  - **Parameters:** \n    - `disjuncts`: Array of queries to combine with OR.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"disjunction\",\n      \"disjuncts\": [\n        [{\n          \"type\": \"term\",\n          \"term\": \"keyword1\"\n        }],\n        [{\n          \"type\": \"term\",\n          \"term\": \"keyword2\"\n        }]\n      ]\n    }]\n  ```\n    Executes a disjunction query combining \"keyword1\" OR \"keyword2\".\n\n  #### 7. `doc_id`\n\n  - **Description:** Matches documents by specific document IDs.\n  - **Parameters:** \n    - `ids`: Array of document IDs to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"doc_id\",\n      \"ids\": [\"doc1\", \"doc2\"]\n    }]\n  ```\n    Matches documents with IDs \"doc1\" or \"doc2\".\n\n  #### 8. `fuzzy`\n\n  - **Description:** Executes a fuzzy query for approximate matching.\n  - **Parameters:** \n    - `term`: Term to match approximately.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"fuzzy\",\n      \"term\": \"approximate\"\n    }]\n  ```\n    Matches documents with terms similar to \"approximate\".\n\n  #### 9. `match`\n\n  - **Description:** Executes a full-text match query.\n  - **Parameters:** \n    - `match`: Text to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"match\",\n      \"match\": \"full text query\"\n    }]\n  ```\n    Matches documents containing \"full text query\".\n\n  #### 10. `match_all`\n\n  - **Description:** Matches all documents.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"match_all\"\n    }]\n  ```\n    Matches all documents in the index.\n\n  #### 11. `match_none`\n\n  - **Description:** Matches no documents.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"match_none\"\n    }]\n  ```\n    Does not match any documents.\n\n  #### 12. `match_phrase`\n\n  - **Description:** Executes a phrase query for exact matching of phrases.\n  - **Parameters:** \n    - `match_phrase`: Exact phrase to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"match_phrase\",\n      \"match_phrase\": \"exact phrase\"\n    }]\n  ```\n    Matches documents with the exact phrase \"exact phrase\".\n\n  #### 13. `numeric_range`\n\n  - **Description:** Matches documents within a specified numeric range.\n  - **Parameters:** \n    - `min`: Minimum value (optional).\n    - `max`: Maximum value (optional).\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"numeric_range\",\n      \"min\": 100,\n      \"max\": 200\n    }]\n  ```\n    Matches numeric values between 100 and 200.\n\n  #### 14. `phrase`\n\n  - **Description:** Executes a phrase query for matching exact phrases.\n  - **Parameters:** \n    - `terms`: Array of terms in the exact phrase.\n    - `field`: Field in which to search for the phrase.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"phrase\",\n      \"terms\": [\"exact\", \"phrase\"],\n      \"field\": \"content\"\n    }]\n  ```\n    Matches documents with the exact phrase \"exact phrase\" in the \"content\" field.\n\n  #### 15. `prefix`\n\n  - **Description:** Matches documents with terms starting with a   specified prefix.\n  - **Parameters:** \n    - `prefix`: Prefix to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"prefix\",\n      \"prefix\": \"pre\"\n    }]\n  ```\n    Matches documents with terms starting with \"pre\".\n\n  #### 16. `regexp`\n\n  - **Description:** Executes a regular expression query.\n  - **Parameters:** \n    - `regexp`: Regular expression pattern to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"regexp\",\n      \"regexp\": \"^prefix.*\"\n    }]\n  ```\n    Matches documents with terms matching the regular expression \"^prefix.*\".\n\n  #### 17. `term`\n\n  - **Description:** Executes a term query for exact matching.\n  - **Parameters:** \n    - `term`: Term to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"term\",\n      \"term\": \"exact_term\"\n    }]\n  ```\n    Matches documents with the exact term \"exact_term\".\n\n  #### 18. `wildcard`\n\n  - **Description:** Executes a wildcard query for matching terms using   wildcards.\n  - **Parameters:** \n    - `wildcard`: Wildcard pattern to match.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"wildcard\",\n      \"wildcard\": \"term*\"\n    }]\n  ```\n    Matches documents with terms matching the wildcard pattern \"term*\".\n\n  #### 19. `geo_bounding_box`\n\n  - **Description:** Matches documents within a specified geographic  bounding box.\n  - **Parameters:** \n    - `top_left_lon`: Longitude of the top-left corner.\n    - `top_left_lat`: Latitude of the top-left corner.\n    - `bottom_right_lon`: Longitude of the bottom-right corner.\n    - `bottom_right_lat`: Latitude of the bottom-right corner.\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"geo_bounding_box\",\n      \"top_left_lon\": -74.04728500751165,\n      \"top_left_lat\": 40.88221709544296,\n      \"bottom_right_lon\": -73.90757083892822,\n      \"bottom_right_lat\": 40.68228753441558\n    }]\n  ```\n    Matches documents within the specified geographic bounding box.\n\n  #### 20. `geo_distance`\n\n  - **Description:** Matches documents within a specified distance from a   geographic point.\n  - **Parameters:** \n    - `lon`: Longitude of the reference point.\n    - `lat`: Latitude of the reference point.\n    - `distance`: Distance from the reference point (e.g., \"10km\").\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"geo_distance\",\n      \"lon\": -73.9851303100586,\n      \"lat\": 40.748817610874455,\n      \"distance\": \"10km\"\n    }]\n  ```\n    Matches documents within 10 kilometers from the specified geographic point.\n\n  #### 21. `ip_range`\n\n  - **Description:** Matches documents within a specified IP address range.\n  - **Parameters:** \n    - `cidr`: CIDR notation IP address range (e.g., \"192.168.1.0/24\").\n  - **Example:**\n  ```json\n   [{\n      \"type\": \"ip_range\",\n      \"cidr\": \"192.168.1.0/24\"\n    }]\n  ```\n    Matches documents within the specified IP address range.\n\n  #### 22. `geo_shape`\n\n  - **Description:** Matches documents with a specified geographic shape.\n  - **Parameters:** \n    - `coordinates`: Array of coordinates defining the shape.\n    - `type`: Type of the shape (e.g., \"polygon\", \"circle\").\n    - `relation`: Spatial relation to the shape (e.g., \"within\", \"intersects\").\n  - **Example:**\n  ```json\n    [{\n      \"type\": \"geo_shape\",\n      \"coordinates\": [[[-73.99756, 40.73083], [-73.99756, 40.741404], [-73.988135, 40.741404], [-73.988135, 40.73083], [-73.99756, 40.73083]]],\n      \"type\": \"polygon\",\n      \"relation\": \"within\"\n    }]\n  ```\n    Matches documents within the specified polygon shape.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Bleve"
+                ],
+                "summary": "Search documents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Partition Name",
+                        "name": "partition",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Query string",
+                        "name": "q",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Search results",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "error": {},
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}
