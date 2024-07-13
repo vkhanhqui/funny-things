@@ -1,3 +1,32 @@
+# Bleve Search
+
+## Purpose
+
+This project provides a REST API for managing search indexes using Bleve, a modern text indexing library for Go. The API allows users to create and delete indexes, index documents, search for documents, and perform various other operations related to index management. The primary goal is to offer a robust and efficient search solution that can be easily integrated into other applications.
+
+---
+
+## Structure
+The project is structured as follows:
+
+```csharp
+├───cmd
+│   └───server
+│       └───docs
+├───integration
+└───internal
+    ├───controllers
+    ├───repositories
+    ├───routes
+    └───utils
+```
+- cmd/server/: Contains the main server code and the .env file for environment configuration.
+  - cmd/server/docs/: Contains the generated Swagger documentation files.
+- integration/: Contains integration tests and related resources.
+- internal/controllers/: Contains the controllers that handle the API requests.
+- internal/repositories/: Contains the code for data access and manipulation.
+- internal/routes/: Contains the routing logic for the API endpoints.
+- internal/utils/: Contains utility functions and helpers used throughout the project.
 
 ---
 ## Environment
