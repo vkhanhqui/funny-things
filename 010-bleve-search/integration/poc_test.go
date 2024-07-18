@@ -92,8 +92,12 @@ func (m *MockIndexRepository) Indexes() map[string]bleve.Index {
 }
 
 func (m *MockIndexRepository) GetPartitions() []string {
-	fmt.Println("Mock: Getting indexes")
+	fmt.Println("Mock: Getting partitions")
 	return nil
+}
+
+func (m *MockIndexRepository) Close() {
+	fmt.Println("Mock: Closing indexes")
 }
 
 func setupAppWithMockRepo() *fiber.App {
