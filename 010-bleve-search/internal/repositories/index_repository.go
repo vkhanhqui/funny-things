@@ -1,12 +1,13 @@
 package repositories
 
 import (
+	queryfunc "bleve-proj/internal/blevefunc"
 	"bleve-proj/internal/utils"
+	"bleve-proj/pkg/log"
 	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -29,10 +30,12 @@ type IndexRepository interface {
 	ListIndexFields(partition string) ([]string, error)
 	PrintIndexMapping(partition string) (map[string]interface{}, error)
 	GetPartitions() []string
+	Close()
 	Indexes() map[string]bleve.Index
 }
 
 type indexRepository struct {
+	logger   log.ILogger
 	indexes  map[string]bleve.Index
 	mutex    *sync.RWMutex
 	indexDir string
@@ -41,19 +44,20 @@ type indexRepository struct {
 var (
 	IndexRepo        IndexRepository
 	ErrIndexNotFound = errors.New("index not found")
-	ErrIndexExisted  = errors.New("index already exists")
 	ErrInvalidPage   = errors.New("invalid page")
 	ErrInvalidSize   = errors.New("invalid size")
 )
 
 func NewIndexRepository(indexDir string) IndexRepository {
+	logger := log.NewLogger()
 	repo := &indexRepository{
+		logger:   logger,
 		indexes:  make(map[string]bleve.Index),
 		indexDir: indexDir,
 		mutex:    &sync.RWMutex{},
 	}
 	if err := repo.LoadIndexes(); err != nil {
-		log.Fatalf("Failed to load indexes: %v", err)
+		logger.Fatalf("Failed to load indexes: %v", err)
 	}
 	return repo
 }
@@ -61,29 +65,36 @@ func NewIndexRepository(indexDir string) IndexRepository {
 func (ir *indexRepository) CreateIndex(partition string, indexMappingJSON map[string]interface{}) (bleve.Index, error) {
 	ir.mutex.Lock()
 	defer ir.mutex.Unlock()
+
 	// Convert map to JSON byte array
 	jsonData, err := json.Marshal(indexMappingJSON)
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("CreateIndex", "failed to marshal index mapping JSON", "error", err)
+		return nil, fmt.Errorf("failed to marshal index mapping JSON")
 	}
+
 	// Initialize Bleve index mapping
 	indexMapping := bleve.NewIndexMapping()
 	if err := indexMapping.UnmarshalJSON(jsonData); err != nil {
-		return nil, err
+		ir.logger.Errorw("CreateIndex", "failed to unmarshal index mapping JSON", "error", err)
+		return nil, fmt.Errorf("failed to unmarshal index mapping JSON")
 	}
+
 	if _, exists := ir.indexes[partition]; exists {
-		return nil, ErrIndexExisted
+		ir.logger.Errorw("CreateIndex", "index for partition already exists", partition)
+		return nil, fmt.Errorf("index for partition %s already exists", partition)
 	}
+
 	indexPath := filepath.Join(ir.indexDir, partition)
 	newIndex, err := bleve.New(indexPath, indexMapping)
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("CreateIndex", "failed to create new Bleve index", "error", err)
+		return nil, fmt.Errorf("failed to create new Bleve index: %s", partition)
 	}
 
 	ir.indexes[partition] = newIndex
 	return newIndex, nil
 }
-
 func (ir *indexRepository) OpenIndex(partition string) (bleve.Index, error) {
 	ir.mutex.RLock()
 	defer ir.mutex.RUnlock()
@@ -106,12 +117,14 @@ func (ir *indexRepository) DeleteIndex(partition string) error {
 	}
 
 	if err := index.Close(); err != nil {
-		return fmt.Errorf("failed to close index: %w", err)
+		ir.logger.Errorw("DeleteIndex", "failed to close index", err)
+		return fmt.Errorf("failed to close index")
 	}
 
 	indexPath := filepath.Join(ir.indexDir, partition)
 	if err := os.RemoveAll(indexPath); err != nil {
-		return fmt.Errorf("failed to delete index files: %w", err)
+		ir.logger.Errorw("DeleteIndex", "failed to delete index files", err)
+		return fmt.Errorf("failed to delete index files")
 	}
 
 	delete(ir.indexes, partition)
@@ -126,22 +139,25 @@ func (ir *indexRepository) IndexDocument(partition, docId string, document inter
 	if !exists {
 		return ErrIndexNotFound
 	}
-	return index.Index(docId, document)
+	if err := index.Index(docId, document); err != nil {
+		ir.logger.Errorw("IndexDocument", "failed to index document", document, "err", err)
+		return fmt.Errorf("failed to index document")
+	}
+	return nil
 }
 
-// Search performs a search on the specified partition with the given query
 func (ir *indexRepository) Search(partition string, queryString string) (*bleve.SearchResult, error) {
 	ir.mutex.RLock()
 	defer ir.mutex.RUnlock()
 
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("Search", "index not found", partition)
 		return nil, ErrIndexNotFound
 	}
 
 	// Handle empty queryString
 	if queryString == "" {
-		// Create an empty search result indicating no hits
 		return &bleve.SearchResult{
 			Status: &bleve.SearchStatus{
 				Total:      0,
@@ -158,45 +174,34 @@ func (ir *indexRepository) Search(partition string, queryString string) (*bleve.
 
 	var queries []map[string]interface{}
 	if err := json.Unmarshal([]byte(queryString), &queries); err != nil {
-		return nil, err
+		ir.logger.Errorw("Search", "failed to unmarshal query string", err)
+		return nil, fmt.Errorf("failed to unmarshal query string")
 	}
-
 	searchRequest := bleve.NewSearchRequest(nil)
-
 	// Extract and prepare search components
-	err := extractQueries(searchRequest, queries)
-	if err != nil {
-		return nil, err
+	if err := queryfunc.ExtractQueries(searchRequest, queries); err != nil {
+		ir.logger.Errorw("Search", "failed to extract queries", err)
+		return nil, fmt.Errorf("failed to extract queries")
 	}
 
-	err = extractFields(searchRequest, queries)
-	if err != nil {
-		return nil, err
+	if err := queryfunc.ExtractFacets(searchRequest, queries); err != nil {
+		ir.logger.Errorw("Search", "failed to extract facets", err)
+		return nil, fmt.Errorf("failed to extract facets")
 	}
 
-	err = extractPagination(searchRequest, queries)
-	if err != nil {
-		return nil, err
+	if err := queryfunc.ExtractSortOrders(searchRequest, queries); err != nil {
+		ir.logger.Errorw("Search", "failed to extract sort orders", err)
+		return nil, fmt.Errorf("failed to extract sort orders")
 	}
 
-	err = extractMiscellaneous(searchRequest, queries)
-	if err != nil {
-		return nil, err
-	}
-
-	err = extractFacets(searchRequest, queries)
-	if err != nil {
-		return nil, err
-	}
-
-	err = extractSortOrders(searchRequest, queries)
-	if err != nil {
-		return nil, err
-	}
+	queryfunc.ExtractFields(searchRequest, queries)
+	queryfunc.ExtractPagination(searchRequest, queries)
+	queryfunc.ExtractMiscellaneous(searchRequest, queries)
 
 	result, err := index.Search(searchRequest)
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("Search", "failed to perform search on index", err)
+		return nil, fmt.Errorf("failed to perform search on index")
 	}
 
 	return result, nil
@@ -205,9 +210,9 @@ func (ir *indexRepository) Search(partition string, queryString string) (*bleve.
 func (ir *indexRepository) GetDocumentCount(partition string) (uint64, error) {
 	ir.mutex.RLock()
 	defer ir.mutex.RUnlock()
-
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("GetDocumentCount", "index not found", partition)
 		return 0, ErrIndexNotFound
 	}
 
@@ -221,7 +226,8 @@ func (ir *indexRepository) LoadIndexes() error {
 
 	indexDirEntries, err := os.ReadDir(ir.indexDir)
 	if err != nil {
-		return fmt.Errorf("error reading index directory: %w", err)
+		ir.logger.Errorw("LoadIndexes", "error reading index directory", err)
+		return fmt.Errorf("error reading index directory")
 	}
 	for _, entry := range indexDirEntries {
 		if entry.IsDir() {
@@ -229,7 +235,6 @@ func (ir *indexRepository) LoadIndexes() error {
 			indexPath := filepath.Join(ir.indexDir, indexName)
 			index, err := bleve.Open(indexPath)
 			if err != nil {
-				log.Printf("Failed to open index '%s': %v", indexName, err)
 				continue
 			}
 			ir.mutex.Lock()
@@ -253,6 +258,7 @@ func (ir *indexRepository) BulkLoadDocuments(partition string, scanner *bufio.Sc
 
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("BulkLoadDocuments", "index not found", partition)
 		return ErrIndexNotFound
 	}
 
@@ -260,8 +266,8 @@ func (ir *indexRepository) BulkLoadDocuments(partition string, scanner *bufio.Sc
 	for scanner.Scan() {
 		var doc map[string]interface{}
 		if err := json.Unmarshal(scanner.Bytes(), &doc); err != nil {
-			fmt.Printf("scanner.Bytes(): %v\n", string(scanner.Bytes()))
-			return err
+			ir.logger.Errorw("BulkLoadDocuments", "failed to unmarshal bytes", string(scanner.Bytes()), "err", err)
+			continue
 		}
 
 		docID := doc["id"]
@@ -274,10 +280,14 @@ func (ir *indexRepository) BulkLoadDocuments(partition string, scanner *bufio.Sc
 	}
 
 	if err := scanner.Err(); err != nil {
-		return err
+		ir.logger.Errorw("BulkLoadDocuments", "got error from scanner", err)
+		return fmt.Errorf("got error from scanner")
 	}
-
-	return index.Batch(batch)
+	if err := index.Batch(batch); err != nil {
+		ir.logger.Errorw("BulkLoadDocuments", "failed to batch data", err)
+		return fmt.Errorf("failed to batch data")
+	}
+	return nil
 }
 
 func (ir *indexRepository) CheckIndexContents(partition string) (map[string]interface{}, error) {
@@ -286,18 +296,21 @@ func (ir *indexRepository) CheckIndexContents(partition string) (map[string]inte
 
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("CheckIndexContents", "index not found", partition)
 		return nil, ErrIndexNotFound
 	}
 	fields, err := index.Fields()
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("CheckIndexContents", "can not extract fields from index", partition, "err", err)
+		return nil, fmt.Errorf("can not extract fields from index")
 	}
 
 	result := make(map[string]interface{})
 	for _, field := range fields {
 		dict, err := index.FieldDict(field)
 		if err != nil {
-			return nil, err
+			ir.logger.Errorw("CheckIndexContents", "can not extract fields dict from index", partition, "field", field, "err", err)
+			return nil, fmt.Errorf("can not extract fields dict from index")
 		}
 		defer dict.Close()
 
@@ -320,20 +333,23 @@ func (ir *indexRepository) PrintTermDictionary(partition, field string) (map[str
 
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("PrintTermDictionary", "index not found", partition)
 		return nil, ErrIndexNotFound
 	}
 
 	termDict := make(map[string]uint64)
 	dict, err := index.FieldDict(field)
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("PrintTermDictionary", "can not extract fields dict from index", partition, "field", field, "err", err)
+		return nil, fmt.Errorf("can not extract fields dict from index")
 	}
 	defer dict.Close()
 
 	for {
 		entry, err := dict.Next()
 		if err != nil {
-			return nil, err
+			ir.logger.Errorw("PrintTermDictionary", "can not extract the next dict", err)
+			return nil, fmt.Errorf("can not extract the next dict")
 		}
 		if entry == nil {
 			break
@@ -349,15 +365,18 @@ func (ir *indexRepository) DumpIndexContentsWithLimit(partition string, page, si
 	defer ir.mutex.RUnlock()
 	// Calculate offset and limit
 	if page <= 0 {
+		ir.logger.Errorw("DumpIndexContentsWithLimit", "invalid page", page)
 		return nil, ErrInvalidPage
 	}
 	if size <= 0 {
+		ir.logger.Errorw("DumpIndexContentsWithLimit", "invalid size", size)
 		return nil, ErrInvalidSize
 	}
 	offset := (page - 1) * size
 	limit := size
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("DumpIndexContentsWithLimit", "index not found", partition)
 		return nil, ErrIndexNotFound
 	}
 
@@ -369,7 +388,8 @@ func (ir *indexRepository) DumpIndexContentsWithLimit(partition string, page, si
 	searchRequest.Size = limit
 	searchResult, err := index.Search(searchRequest)
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("DumpIndexContentsWithLimit", "failed to search data to dump", err)
+		return nil, fmt.Errorf("failed to search data to dump")
 	}
 
 	// Collect documents from search result
@@ -387,10 +407,15 @@ func (ir *indexRepository) ListIndexFields(partition string) ([]string, error) {
 
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("ListIndexFields", "index not found", partition)
 		return nil, ErrIndexNotFound
 	}
-
-	return index.Fields()
+	fields, err := index.Fields()
+	if err != nil {
+		ir.logger.Errorw("ListIndexFields", "failed to extract index fields", partition, "err", err)
+		return nil, fmt.Errorf("failed to extract index fields")
+	}
+	return fields, nil
 }
 
 func (ir *indexRepository) PrintIndexMapping(partition string) (map[string]interface{}, error) {
@@ -399,18 +424,21 @@ func (ir *indexRepository) PrintIndexMapping(partition string) (map[string]inter
 
 	index, exists := ir.indexes[partition]
 	if !exists {
+		ir.logger.Errorw("PrintIndexMapping", "index not found", partition)
 		return nil, ErrIndexNotFound
 	}
 
 	mapping := index.Mapping()
 	mappingJSON, err := json.Marshal(mapping)
 	if err != nil {
-		return nil, err
+		ir.logger.Errorw("PrintIndexMapping", "failed to marshal index mapping", partition, "err", err)
+		return nil, fmt.Errorf("failed to marshal index mapping")
 	}
 
 	var result map[string]interface{}
 	if err := json.Unmarshal(mappingJSON, &result); err != nil {
-		return nil, err
+		ir.logger.Errorw("PrintIndexMapping", "failed to unmarshal index mapping", partition, "err", err)
+		return nil, fmt.Errorf("failed to unmarshal index mapping")
 	}
 
 	return result, nil
@@ -422,4 +450,14 @@ func (ir *indexRepository) GetPartitions() []string {
 		result = append(result, key)
 	}
 	return result
+}
+
+func (ir *indexRepository) Close() {
+	indexes := []string{}
+	for i := range ir.indexes {
+		ir.indexes[i].Close()
+		indexes = append(indexes, i)
+	}
+	ir.logger.Infow("Close", "close all index", indexes)
+
 }
