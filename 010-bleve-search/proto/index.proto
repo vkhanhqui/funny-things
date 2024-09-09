@@ -1,0 +1,162 @@
+syntax = "proto3";
+
+package index;
+
+option go_package = ".";
+
+service IndexService {
+  rpc CreateIndex (CreateIndexRequest) returns (CreateIndexResponse);
+  rpc DeleteIndex (DeleteIndexRequest) returns (DeleteIndexResponse);
+  rpc IndexDocument(IndexDocumentRequest) returns (IndexDocumentResponse);
+  rpc Search (SearchRequest) returns (SearchResult);
+  rpc GetDocumentCount(GetDocumentCountRequest) returns (GetDocumentCountResponse); 
+  rpc BulkLoadDocuments(BulkLoadDocumentsRequest) returns (BulkLoadDocumentsResponse);
+  rpc CheckIndexContents(CheckIndexContentsRequest) returns (CheckIndexContentsResponse);
+  rpc PrintTermDictionary(PrintTermDictionaryRequest) returns (PrintTermDictionaryResponse);
+  rpc DumpIndexContentsWithLimit(DumpIndexContentsWithLimitRequest) returns (DumpIndexContentsWithLimitResponse);
+  rpc ListIndexFields(ListIndexFieldsRequest) returns (ListIndexFieldsResponse);
+  rpc GetPartitions(GetPartitionsRequest) returns (GetPartitionsResponse);
+}
+import "google/protobuf/struct.proto";
+
+message CreateIndexRequest {
+  string partition = 1;
+  google.protobuf.Struct indexMapping = 2;
+}
+
+message CreateIndexResponse {
+  string message = 1;
+}
+
+message DeleteIndexRequest {
+  string partition = 1;
+}
+
+message DeleteIndexResponse {
+  string message = 1;
+}
+
+message IndexDocumentRequest {
+  string partition = 1;
+  string doc_id = 2;
+  google.protobuf.Struct document = 3;
+}
+
+message IndexDocumentResponse {
+  string message = 1;
+}
+
+message SearchRequest {
+  string partition = 1;
+  string query = 2;
+}
+
+message SearchResult {
+  SearchStatus status = 1;
+  repeated SearchHit hits = 2;
+  uint64 total_hits = 3; 
+  uint64 cost = 4;
+  double max_score = 5;
+  int32 took = 6; // Assuming milliseconds
+  map<string, FacetResult> facets = 7; 
+}
+
+message SearchStatus {
+  int32 total = 1;
+  int32 failed = 2;
+  int32 successful = 3;
+}
+
+message SearchHit {
+  string index = 1;
+  string id = 2;
+  double score = 3;
+  repeated string sort = 4; 
+  map<string, string> fields = 5; 
+}
+
+message FacetResult {
+  string field = 1;
+  int32 total = 2;
+  int32 missing = 3;
+  int32 other = 4;
+  repeated TermFacet terms = 5; 
+  // ... Add other facet types like NumericRangeFacets 
+  // if you are using them.
+}
+
+message TermFacet {
+  string term = 1;
+  int32 count = 2;
+}
+
+message GetDocumentCountRequest {
+  string partition = 1;
+}
+
+message GetDocumentCountResponse {
+  uint64 count = 1;
+}
+
+message BulkLoadDocumentsRequest {
+  string partition = 1;
+  bytes documents = 2; // Represents the newline-delimited JSON data
+}
+
+message BulkLoadDocumentsResponse {
+  string message = 1;
+}
+
+message CheckIndexContentsRequest {
+  string partition = 1;
+}
+
+message FieldInfo {
+  uint64 termCount = 1;
+}
+
+message CheckIndexContentsResponse {
+  map<string, FieldInfo> fields = 1; 
+}
+
+message PrintTermDictionaryRequest {
+  string partition = 1;
+  string field = 2; 
+}
+
+message PrintTermDictionaryResponse {
+  map<string, uint64> termCounts = 1;
+}
+
+message DumpIndexContentsWithLimitRequest {
+  string partition = 1;
+  int32 page = 2;
+  int32 size = 3;
+}
+
+message DumpIndexContentsWithLimitResponse {
+  repeated google.protobuf.Struct documents = 1;
+}
+
+message ListIndexFieldsRequest {
+  string partition = 1;
+}
+
+message ListIndexFieldsResponse {
+  repeated string fields = 1;
+}
+
+message PrintIndexMappingRequest {
+  string partition = 1;
+}
+
+message PrintIndexMappingResponse {
+  google.protobuf.Struct mapping = 1;
+}
+
+
+message GetPartitionsRequest {} // No specific fields needed
+
+message GetPartitionsResponse {
+  repeated string partitions = 1;
+}
