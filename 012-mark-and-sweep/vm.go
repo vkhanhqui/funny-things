@@ -31,6 +31,7 @@ func newObject(v *VM, val int) *Object {
 	return obj
 }
 
+// VM contains a stack and a linked list of objects
 type VM struct {
 	// init
 	Stack      []*Object
@@ -44,7 +45,6 @@ type VM struct {
 	NumObjects int
 }
 
-// VM is just a stack of objects under the hood
 func NewVM() *VM {
 	vm := &VM{Stack: make([]*Object, STACK_MAX), MaxObjects: 8}
 	return vm
