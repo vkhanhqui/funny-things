@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/pion/webrtc/v4"
+	"github.com/pion/webrtc/v4/pkg/media"
 )
 
 func NewWorker() *Worker {
@@ -31,43 +32,38 @@ func (w *Worker) onDataChannel(p *PeerConnState) {
 	closeSignal := make(chan bool)
 	cmdCh := make(chan string)
 	gameStateCh := make(chan *game.Snake, 1)
+	pixelCh := make(chan []byte)
+	encodedFrameCh := make(chan []byte)
 	senders := p.PeerConnection().GetSenders()
 
 	pc := p.PeerConnection()
 	pc.OnDataChannel(func(dataCh *webrtc.DataChannel) {
 		gameLoop := game.NewSnakeLoop(&game.SnakeLoopInit{CommandChannel: cmdCh, SnakeChannel: gameStateCh, CloseSignal: closeSignal})
 		go gameLoop.Start()
+		go game.StartFrameRenderer(gameStateCh, pixelCh)
 
-		go func() {
-			for {
-				gameState, ok := <-gameStateCh
-				if !ok {
-					break
-				}
-
-				log.Println(gameState)
-				for range senders {
-					log.Println("sending")
-					time.Sleep(time.Second)
-				}
-			}
-		}()
+		go w.startEncoder(pixelCh, encodedFrameCh)
+		go w.startStreaming(encodedFrameCh, senders)
+		go w.closeConnection(closeSignal, dataCh, p, gameStateCh, cmdCh, pixelCh, encodedFrameCh)
 
 		w.onMessage(dataCh, cmdCh)
-		dataCh.OnError(func(err error) {
-			if err != nil {
-				log.Println(err)
-				closeSignal <- true
-			}
-		})
-		go w.closeConnection(dataCh, p, gameStateCh, cmdCh, closeSignal)
+		w.onError(dataCh, closeSignal)
 	})
 }
 
-func (w *Worker) closeConnection(dataCh *webrtc.DataChannel, peerConn *PeerConnState,
-	gameStateCh chan *game.Snake, cmdCh chan string, closeSignal chan bool) {
+func (w *Worker) onError(dataCh *webrtc.DataChannel, closeSignal chan bool) {
+	dataCh.OnError(func(err error) {
+		if err != nil {
+			log.Println(err)
+			closeSignal <- true
+		}
+	})
+}
+
+func (w *Worker) closeConnection(closeSignal chan bool, dataCh *webrtc.DataChannel,
+	peerConn *PeerConnState, gameStateCh chan *game.Snake, cmdCh chan string,
+	pixelCh, encodedFrameCh chan []byte) {
 	<-closeSignal
-	log.Println("Closing peer connection")
 
 	err := dataCh.Close()
 	if err != nil {
@@ -81,6 +77,8 @@ func (w *Worker) closeConnection(dataCh *webrtc.DataChannel, peerConn *PeerConnS
 
 	close(gameStateCh)
 	close(cmdCh)
+	close(pixelCh)
+	close(encodedFrameCh)
 }
 
 func (w *Worker) onMessage(dataCh *webrtc.DataChannel, cmdCh chan string) {
@@ -91,7 +89,23 @@ func (w *Worker) onMessage(dataCh *webrtc.DataChannel, cmdCh chan string) {
 			log.Fatal(err)
 		}
 
-		log.Println("Received: ", message.Value)
 		cmdCh <- message.Value
 	})
+}
+
+func (w *Worker) startStreaming(encodedFrameCh chan []byte, senders []*webrtc.RTPSender) {
+	for {
+		encodedFrame, ok := <-encodedFrameCh
+		if !ok {
+			break
+		}
+
+		for _, s := range senders {
+			track := s.Track().(*webrtc.TrackLocalStaticSample)
+			err := track.WriteSample(media.Sample{Data: encodedFrame, Duration: time.Second / game.FPS, Timestamp: time.Now()})
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
 }
