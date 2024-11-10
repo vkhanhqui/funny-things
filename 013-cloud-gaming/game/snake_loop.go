@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"time"
 )
 
@@ -58,15 +59,18 @@ func (gl *SnakeLoop) handleCommand(command string) {
 }
 
 func (gl *SnakeLoop) updateSnake(command *string) {
+	defer func() {
+		if x := recover(); x != nil {
+			log.Printf("run time panic: %v", x)
+		}
+	}()
+
 	gameOver := !gl.state.HandleCommand(command)
 	if gameOver {
 		gl.closeSignal <- true
 	}
+
 	if command == nil {
-		select {
-		case gl.stateCh <- gl.state:
-		default:
-			return
-		}
+		gl.stateCh <- gl.state
 	}
 }
