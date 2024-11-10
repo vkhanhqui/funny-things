@@ -63,6 +63,10 @@ func (gl *SnakeLoop) updateSnake(command *string) {
 		gl.closeSignal <- true
 	}
 	if command == nil {
-		gl.stateCh <- gl.state
+		select {
+		case gl.stateCh <- gl.state:
+		default:
+			return
+		}
 	}
 }

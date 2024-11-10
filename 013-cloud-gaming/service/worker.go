@@ -40,7 +40,11 @@ func (w *Worker) onDataChannel(p *PeerConnState) {
 
 		go func() {
 			for {
-				gameState := <-gameStateCh
+				gameState, ok := <-gameStateCh
+				if !ok {
+					break
+				}
+
 				log.Println(gameState)
 				for range senders {
 					log.Println("sending")
@@ -49,9 +53,14 @@ func (w *Worker) onDataChannel(p *PeerConnState) {
 			}
 		}()
 
-		go w.closeConnection(dataCh, p, gameStateCh, cmdCh, closeSignal)
-
 		w.onMessage(dataCh, cmdCh)
+		dataCh.OnError(func(err error) {
+			if err != nil {
+				log.Println(err)
+				closeSignal <- true
+			}
+		})
+		go w.closeConnection(dataCh, p, gameStateCh, cmdCh, closeSignal)
 	})
 }
 

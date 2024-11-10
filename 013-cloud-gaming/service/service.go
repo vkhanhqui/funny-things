@@ -29,7 +29,7 @@ func (s *Service) HandleMessage(p *PeerConnState) {
 
 	for {
 		msg, err := p.ReadMessage()
-		if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure) {
+		if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseAbnormalClosure, websocket.CloseGoingAway) {
 			log.Printf("Websocket closed: %v", err)
 			break
 		} else if err != nil {
