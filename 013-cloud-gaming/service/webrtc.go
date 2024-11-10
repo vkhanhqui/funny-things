@@ -46,7 +46,17 @@ func (p *PeerConnState) ReadMessage() (Message, error) {
 }
 
 func (p *PeerConnState) CreateOffer(offer string) error {
-	err := p.peerConnection.SetRemoteDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeOffer, SDP: offer})
+	track, err := webrtc.NewTrackLocalStaticSample(webrtc.RTPCodecCapability{MimeType: webrtc.MimeTypeH264}, "video", "game")
+	if err != nil {
+		return err
+	}
+
+	_, err = p.peerConnection.AddTrack(track)
+	if err != nil {
+		return err
+	}
+
+	err = p.peerConnection.SetRemoteDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeOffer, SDP: offer})
 	if err != nil {
 		return err
 	}

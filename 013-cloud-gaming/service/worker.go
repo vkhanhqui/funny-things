@@ -4,6 +4,7 @@ import (
 	"cloud-gaming/game"
 	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/pion/webrtc/v4"
 )
@@ -30,11 +31,23 @@ func (w *Worker) onDataChannel(p *PeerConnState) {
 	closeSignal := make(chan bool)
 	cmdCh := make(chan string)
 	gameStateCh := make(chan *game.Snake, 1)
+	senders := p.PeerConnection().GetSenders()
 
 	pc := p.PeerConnection()
 	pc.OnDataChannel(func(dataCh *webrtc.DataChannel) {
 		gameLoop := game.NewSnakeLoop(&game.SnakeLoopInit{CommandChannel: cmdCh, SnakeChannel: gameStateCh, CloseSignal: closeSignal})
 		go gameLoop.Start()
+
+		go func() {
+			for {
+				gameState := <-gameStateCh
+				log.Println(gameState)
+				for range senders {
+					log.Println("sending")
+					time.Sleep(time.Second)
+				}
+			}
+		}()
 
 		go w.closeConnection(dataCh, p, gameStateCh, cmdCh, closeSignal)
 
@@ -70,5 +83,6 @@ func (w *Worker) onMessage(dataCh *webrtc.DataChannel, cmdCh chan string) {
 		}
 
 		log.Println("Received: ", message.Value)
+		cmdCh <- message.Value
 	})
 }
