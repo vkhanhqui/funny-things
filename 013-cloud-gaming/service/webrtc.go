@@ -10,15 +10,16 @@ import (
 type MessageType string
 
 const (
-	OFFER  MessageType = "offer"
-	ICE    MessageType = "ice"
-	ANSWER MessageType = "answer"
-	ERROR  MessageType = "error"
+	OFFER   MessageType = "offer"
+	ICE     MessageType = "ice"
+	ANSWER  MessageType = "answer"
+	COMMAND MessageType = "command"
+	ERROR   MessageType = "error"
 )
 
 type Message struct {
 	Type  MessageType `json:"type"`
-	Value any         `json:"value"`
+	Value string      `json:"value"`
 }
 
 type PeerConnState struct {
@@ -34,8 +35,8 @@ func (p *PeerConnState) PeerConnection() *webrtc.PeerConnection {
 	return p.peerConnection
 }
 
-func (p *PeerConnState) WS() *threadSafeWriter {
-	return p.ws
+func (p *PeerConnState) Close() error {
+	return p.peerConnection.Close()
 }
 
 func (p *PeerConnState) ReadMessage() (Message, error) {
@@ -45,22 +46,22 @@ func (p *PeerConnState) ReadMessage() (Message, error) {
 }
 
 func (p *PeerConnState) CreateOffer(offer string) error {
-	err := p.PeerConnection().SetRemoteDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeOffer, SDP: offer})
+	err := p.peerConnection.SetRemoteDescription(webrtc.SessionDescription{Type: webrtc.SDPTypeOffer, SDP: offer})
 	if err != nil {
 		return err
 	}
 
-	answer, err := p.PeerConnection().CreateAnswer(nil)
+	answer, err := p.peerConnection.CreateAnswer(nil)
 	if err != nil {
 		return err
 	}
 
-	err = p.PeerConnection().SetLocalDescription(answer)
+	err = p.peerConnection.SetLocalDescription(answer)
 	if err != nil {
 		return err
 	}
 
-	err = p.WS().WriteJSON(ANSWER, answer.SDP)
+	err = p.ws.WriteJSON(ANSWER, answer.SDP)
 	return err
 }
 

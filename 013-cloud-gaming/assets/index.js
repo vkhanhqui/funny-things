@@ -1,11 +1,14 @@
 let peerConn;
 let signalCh;
+let dataCh;
 let videoE;
+let startBtn;
 
 window.onload = async function () {
-  const startBtn = document.getElementById("snake_game_btn");
+  startBtn = document.getElementById("snake_game_btn");
   startBtn.addEventListener("click", start);
   videoE = document.getElementById("video");
+  keyBindings();
 };
 
 async function start() {
@@ -18,6 +21,7 @@ async function start() {
 
 const onOpen = async () => {
   peerConn = new RTCPeerConnection();
+  createDataChannel();
   peerConn.onicecandidate = handleIceCandidateEvent;
 
   const offer = await peerConn.createOffer({
@@ -65,3 +69,35 @@ const handleAnswerMessage = async (answerValue) => {
   });
   await peerConn.setRemoteDescription(remoteDescription);
 };
+
+function createDataChannel() {
+  dataCh = peerConn.createDataChannel("commandsChannel");
+
+  dataCh.onerror = (error) => {
+    console.log("Error on data channel:", error);
+  };
+
+  dataCh.onclose = () => {
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  };
+}
+
+function keyBindings() {
+  var sendCommand = function (command) {
+    dataCh.send(JSON.stringify({ type: "command", value: command }));
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+      sendCommand("UP");
+    } else if (event.key === "ArrowDown") {
+      sendCommand("DOWN");
+    } else if (event.key === "ArrowLeft") {
+      sendCommand("LEFT");
+    } else if (event.key === "ArrowRight") {
+      sendCommand("RIGHT");
+    }
+  });
+}

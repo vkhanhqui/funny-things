@@ -39,7 +39,7 @@ func (s *Service) HandleMessage(p *PeerConnState) {
 
 		switch msg.Type {
 		case OFFER:
-			offer := msg.Value.(string)
+			offer := msg.Value
 			err = p.CreateOffer(offer)
 			if err != nil {
 				log.Printf("Error when creating offer: %v", err)
@@ -47,7 +47,7 @@ func (s *Service) HandleMessage(p *PeerConnState) {
 			}
 
 		case ICE:
-			ice := msg.Value.(string)
+			ice := msg.Value
 			err = p.AddICECandidate(ice)
 			if err != nil {
 				log.Printf("Error when adding ICE: %v", err)
