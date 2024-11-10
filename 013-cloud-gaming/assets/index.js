@@ -23,6 +23,7 @@ const onOpen = async () => {
   peerConn = new RTCPeerConnection();
   createDataChannel();
   peerConn.onicecandidate = handleIceCandidateEvent;
+  peerConn.ontrack = handleTrackEvent;
 
   const offer = await peerConn.createOffer({
     offerToReceiveVideo: true,
@@ -101,3 +102,12 @@ function keyBindings() {
     }
   });
 }
+
+const handleTrackEvent = (event) => {
+  if (event.track.kind === "video") {
+    videoE.style.display = "block";
+    startBtn.style.display = "none";
+
+    videoE.srcObject = event.streams[0];
+  }
+};
