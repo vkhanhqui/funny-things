@@ -1,8 +1,11 @@
 package game
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 type Direction string
+type PositionValue int
 
 type Position struct {
 	X int
@@ -18,26 +21,31 @@ const (
 	DOWN  Direction = "DOWN"
 	LEFT  Direction = "LEFT"
 	RIGHT Direction = "RIGHT"
+
+	EMPTY PositionValue = 0
+	HEAD  PositionValue = 1
+	BODY  PositionValue = 2
+	FOOD  PositionValue = 3
 )
 
 type Snake struct {
 	snakeDirection Direction
 	snakeSize      int
 	snake          []Position
-	matrix         [][]int
+	matrix         [][]PositionValue
 	rows           int
 	cols           int
 	foodPosition   Position
 }
 
 func NewSnake(rows, cols int) *Snake {
-	matrix := make([][]int, rows)
+	matrix := make([][]PositionValue, rows)
 	for i := range matrix {
-		matrix[i] = make([]int, cols)
+		matrix[i] = make([]PositionValue, cols)
 	}
+
 	headPos := Position{X: cols / 2, Y: rows / 2}
 	snake := []Position{headPos}
-
 	state := &Snake{
 		snakeDirection: RIGHT,
 		snakeSize:      3,
@@ -47,27 +55,26 @@ func NewSnake(rows, cols int) *Snake {
 	}
 
 	state.generateFood()
-
 	for i := 1; i < state.snakeSize; i++ {
 		bodyPos := Position{Y: headPos.Y, X: headPos.X - i}
 		snake = append(snake, bodyPos)
-		state.setAt(bodyPos, 2)
+		state.setAt(bodyPos, BODY)
 	}
-	state.snake = snake
-	state.setAt(headPos, 1)
 
+	state.snake = snake
+	state.setAt(headPos, HEAD)
 	return state
 }
 
-func (g *Snake) GetMatrix() [][]int {
+func (g *Snake) GetMatrix() [][]PositionValue {
 	return g.matrix
 }
 
-func (g *Snake) setAt(pos Position, value int) {
+func (g *Snake) setAt(pos Position, value PositionValue) {
 	g.matrix[pos.Y][pos.X] = value
 }
 
-func (g *Snake) at(pos Position) int {
+func (g *Snake) at(pos Position) PositionValue {
 	return g.matrix[pos.Y][pos.X]
 }
 
@@ -94,14 +101,14 @@ func (g *Snake) IsHeadingRight() bool {
 func (g *Snake) generateFood() {
 	randomX := rand.Intn(g.cols)
 	randomY := rand.Intn(g.rows)
-	position := Position{X: randomX, Y: randomY}
-	if g.at(position) != 0 {
+
+	foodP := Position{X: randomX, Y: randomY}
+	if g.at(foodP) != EMPTY {
 		g.generateFood()
-		return
 	}
 
-	g.foodPosition = position
-	g.setAt(g.foodPosition, 3)
+	g.foodPosition = foodP
+	g.setAt(g.foodPosition, FOOD)
 }
 
 func (g *Snake) HandleCommand(command *string) bool {
@@ -135,7 +142,8 @@ func (g *Snake) validateNewDirection(newDirection Direction) bool {
 
 func (g *Snake) move() bool {
 	headPos := g.snake[0]
-	g.setAt(headPos, 2)
+	g.setAt(headPos, BODY)
+
 	switch g.snakeDirection {
 	case UP:
 		headPos.Y = (headPos.Y - 1 + g.rows) % g.rows
@@ -145,11 +153,9 @@ func (g *Snake) move() bool {
 		headPos.X = (headPos.X - 1 + g.cols) % g.cols
 	case RIGHT:
 		headPos.X = (headPos.X + 1) % g.cols
-	default:
-		return true
 	}
 
-	if g.at(headPos) == 2 {
+	if g.at(headPos) == BODY {
 		return true
 	}
 
@@ -158,9 +164,8 @@ func (g *Snake) move() bool {
 		g.generateFood()
 	}
 
-	g.setAt(headPos, 1)
-	g.setAt(g.LastSnakePart(), 0)
+	g.setAt(headPos, HEAD)
+	g.setAt(g.LastSnakePart(), EMPTY)
 	g.snake = append([]Position{headPos}, g.snake[:g.snakeSize-1]...)
-
 	return false
 }
