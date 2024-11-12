@@ -7,13 +7,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/pion/webrtc/v4/pkg/media/h264reader"
 )
 
 const ffmpegCommand = "ffmpeg -hide_banner -loglevel error -f rawvideo -pixel_format rgb24 -video_size %dx%d -framerate %d -i pipe:0 -c:v libx264 -preset ultrafast -tune zerolatency -f h264 pipe:1"
 
-func (w *Worker) startEncoder(pixelCh chan []byte, encodedFrameCh chan []byte) {
+func (w *Worker) startEncoder(canvasCh chan *game.Canvas, encodedFrameCh chan *Streamable) {
 	defer func() {
 		if x := recover(); x != nil {
 			log.Printf("run time panic: %v", x)
@@ -21,7 +22,8 @@ func (w *Worker) startEncoder(pixelCh chan []byte, encodedFrameCh chan []byte) {
 	}()
 
 	for {
-		rawRGBDataFrame, ok := <-pixelCh
+		start := time.Now()
+		rawRGBDataFrame, ok := <-canvasCh
 		if !ok {
 			break
 		}
@@ -44,7 +46,7 @@ func (w *Worker) startEncoder(pixelCh chan []byte, encodedFrameCh chan []byte) {
 			log.Fatal(err)
 		}
 
-		_, err = inPipe.Write(rawRGBDataFrame)
+		_, err = inPipe.Write(rawRGBDataFrame.Data)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -61,7 +63,8 @@ func (w *Worker) startEncoder(pixelCh chan []byte, encodedFrameCh chan []byte) {
 			log.Fatal(err)
 		}
 
-		encodedFrameCh <- encodedData
+		encodedFrameCh <- &Streamable{Data: encodedData, Timestamp: time.Now()}
+		log.Println("startEncoder", time.Since(start))
 	}
 }
 

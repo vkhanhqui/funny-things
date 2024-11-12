@@ -14,8 +14,7 @@ func NewWorker() *Worker {
 	return &Worker{}
 }
 
-type Worker struct {
-}
+type Worker struct{}
 
 func (w *Worker) Run() {
 	go func() {
@@ -32,19 +31,19 @@ func (w *Worker) onDataChannel(p *PeerConnState) {
 	closeSignal := make(chan bool)
 	cmdCh := make(chan string)
 	gameStateCh := make(chan *game.Snake, 1)
-	pixelCh := make(chan []byte)
-	encodedFrameCh := make(chan []byte)
+	canvasCh := make(chan *game.Canvas)
+	encodedFrameCh := make(chan *Streamable)
 	senders := p.PeerConnection().GetSenders()
 
 	pc := p.PeerConnection()
 	pc.OnDataChannel(func(dataCh *webrtc.DataChannel) {
 		gameLoop := game.NewSnakeLoop(&game.SnakeLoopInit{CommandChannel: cmdCh, SnakeChannel: gameStateCh, CloseSignal: closeSignal})
 		go gameLoop.Start()
-		go game.StartFrameRenderer(gameStateCh, pixelCh)
+		go game.StartFrameRenderer(gameStateCh, canvasCh)
 
-		go w.startEncoder(pixelCh, encodedFrameCh)
+		go w.startEncoder(canvasCh, encodedFrameCh)
 		go w.startStreaming(encodedFrameCh, senders)
-		go w.closeConnection(closeSignal, dataCh, p, gameStateCh, cmdCh, pixelCh, encodedFrameCh)
+		go w.closeConnection(closeSignal, dataCh, p, gameStateCh, cmdCh, canvasCh, encodedFrameCh)
 
 		w.onMessage(dataCh, cmdCh)
 		w.onError(dataCh, closeSignal)
@@ -62,7 +61,7 @@ func (w *Worker) onError(dataCh *webrtc.DataChannel, closeSignal chan bool) {
 
 func (w *Worker) closeConnection(closeSignal chan bool, dataCh *webrtc.DataChannel,
 	peerConn *PeerConnState, gameStateCh chan *game.Snake, cmdCh chan string,
-	pixelCh, encodedFrameCh chan []byte) {
+	canvasCh chan *game.Canvas, encodedFrameCh chan *Streamable) {
 	<-closeSignal
 
 	err := dataCh.Close()
@@ -77,7 +76,7 @@ func (w *Worker) closeConnection(closeSignal chan bool, dataCh *webrtc.DataChann
 
 	close(gameStateCh)
 	close(cmdCh)
-	close(pixelCh)
+	close(canvasCh)
 	close(encodedFrameCh)
 }
 
@@ -93,8 +92,9 @@ func (w *Worker) onMessage(dataCh *webrtc.DataChannel, cmdCh chan string) {
 	})
 }
 
-func (w *Worker) startStreaming(encodedFrameCh chan []byte, senders []*webrtc.RTPSender) {
+func (w *Worker) startStreaming(encodedFrameCh chan *Streamable, senders []*webrtc.RTPSender) {
 	for {
+		start := time.Now()
 		encodedFrame, ok := <-encodedFrameCh
 		if !ok {
 			break
@@ -102,10 +102,11 @@ func (w *Worker) startStreaming(encodedFrameCh chan []byte, senders []*webrtc.RT
 
 		for _, s := range senders {
 			track := s.Track().(*webrtc.TrackLocalStaticSample)
-			err := track.WriteSample(media.Sample{Data: encodedFrame, Duration: time.Second / game.FPS, Timestamp: time.Now()})
+			err := track.WriteSample(media.Sample{Data: encodedFrame.Data, Duration: time.Second / game.FPS, Timestamp: encodedFrame.Timestamp})
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
+		log.Println("startStreaming", time.Since(start))
 	}
 }

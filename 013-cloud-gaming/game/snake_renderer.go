@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"time"
 )
 
 var (
@@ -14,7 +15,7 @@ var (
 
 const bytesPerPixel = 3 // RGB: 3 bytes per pixel
 
-func StartFrameRenderer(gameStateCh chan *Snake, pixelCh chan []byte) {
+func StartFrameRenderer(gameStateCh chan *Snake, canvasCh chan *Canvas) {
 	defer func() {
 		if x := recover(); x != nil {
 			log.Printf("run time panic: %v", x)
@@ -22,6 +23,7 @@ func StartFrameRenderer(gameStateCh chan *Snake, pixelCh chan []byte) {
 	}()
 
 	for {
+		start := time.Now()
 		gameState, ok := <-gameStateCh
 		if !ok {
 			break
@@ -45,7 +47,8 @@ func StartFrameRenderer(gameStateCh chan *Snake, pixelCh chan []byte) {
 			}
 		}
 
-		pixelCh <- convertRGBAtoRGB(img)
+		canvasCh <- &Canvas{Data: convertRGBAtoRGB(img), Timestamp: time.Now()}
+		log.Println("StartFrameRenderer", time.Since(start))
 	}
 }
 
@@ -73,4 +76,9 @@ func convertRGBAtoRGB(img *image.RGBA) []byte {
 	}
 
 	return rawRGBData
+}
+
+type Canvas struct {
+	Data      []byte
+	Timestamp time.Time
 }

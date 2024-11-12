@@ -8,7 +8,7 @@ import (
 const (
 	SHOULD_RENDER_FRAME = true
 	SHOULD_STREAM_FRAME = true
-	FPS                 = 10
+	FPS                 = 60
 	FRAME_WIDTH         = 1024
 	FRAME_HEIGHT        = 768
 	CHUNK_SIZE          = 48
@@ -36,7 +36,7 @@ func NewSnakeLoop(options *SnakeLoopInit) *SnakeLoop {
 		commandChannel: options.CommandChannel,
 		stateCh:        options.SnakeChannel,
 		closeSignal:    options.CloseSignal,
-		frameTicker:    time.NewTicker(2 * time.Second / FPS),
+		frameTicker:    time.NewTicker(2 * time.Millisecond / FPS),
 	}
 }
 
