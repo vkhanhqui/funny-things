@@ -1,12 +1,10 @@
 🍀<img src="https://user-images.githubusercontent.com/5679180/79618120-0daffb80-80be-11ea-819e-d2b0fa904d07.gif" width="27px">You have funny projects want to share? Feel free to create a pull request. I really appreciate it!
 
-Completed projects: 12
 
-The latest project: [12 Mark and Sweep algorithm](https://github.com/vkhanhqui/funny-things/tree/main/012-mark-and-sweep)
+In progress: 
+- [13 Cloud Gaming](https://github.com/vkhanhqui/funny-things/tree/main/013-cloud-gaming)
 
-In progress: [13 Cloud gaming](https://github.com/vkhanhqui/funny-things/tree/main/013-cloud-gaming)
-
-List of projects:
+Completed:
 - [1 Chat Web App Using Java WebSocket | Server & Multiple clients](https://github.com/vkhanhqui/funny-things/tree/main/001-chat-web-app)
 
 - [2 Chat Web App Using Java WebSocket & Docker | Server & Multiple clients](https://github.com/vkhanhqui/funny-things/tree/main/002-chat-web-app-docker) 
