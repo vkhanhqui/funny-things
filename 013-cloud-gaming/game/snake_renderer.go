@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"sync"
 	"time"
 )
 
@@ -13,7 +14,10 @@ var (
 	foodColor      = color.RGBA{R: 0, G: 255, B: 0, A: 255}
 )
 
-const bytesPerPixel = 3 // RGB: 3 bytes per pixel
+const (
+	numWorkers    = 4
+	bytesPerPixel = 3 // RGB: 3 bytes per pixel
+)
 
 func StartFrameRenderer(gameStateCh chan *Snake, canvasCh chan *Canvas) {
 	defer func() {
@@ -22,33 +26,44 @@ func StartFrameRenderer(gameStateCh chan *Snake, canvasCh chan *Canvas) {
 		}
 	}()
 
-	for {
-		start := time.Now()
-		gameState, ok := <-gameStateCh
-		if !ok {
-			break
-		}
+	var wg sync.WaitGroup
+	workerCh := make(chan *Snake)
 
-		img := image.NewRGBA(image.Rect(0, 0, FRAME_WIDTH, FRAME_HEIGHT))
-		matrix := gameState.GetMatrix()
-
-		for y := 0; y < len(matrix); y++ {
-			for x := 0; x < len(matrix[0]); x++ {
-				rectMin := image.Point{X: x * CHUNK_SIZE, Y: y * CHUNK_SIZE}
-				rectMax := image.Point{X: rectMin.X + CHUNK_SIZE, Y: rectMin.Y + CHUNK_SIZE}
-				switch matrix[y][x] {
-				case HEAD:
-					drawRectangle(img, rectMin, rectMax, snakeHeadColor)
-				case BODY:
-					drawRectangle(img, rectMin, rectMax, snakeBodyColor)
-				case FOOD:
-					drawRectangle(img, rectMin, rectMax, foodColor)
+	for i := 0; i < numWorkers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				gameState, ok := <-workerCh
+				if !ok {
+					return
 				}
-			}
-		}
 
-		canvasCh <- &Canvas{Data: convertRGBAtoRGB(img), Timestamp: time.Now()}
-		log.Println("StartFrameRenderer", time.Since(start))
+				img := image.NewRGBA(image.Rect(0, 0, FRAME_WIDTH, FRAME_HEIGHT))
+				matrix := gameState.GetMatrix()
+
+				for y := 0; y < len(matrix); y++ {
+					for x := 0; x < len(matrix[0]); x++ {
+						rectMin := image.Point{X: x * CHUNK_SIZE, Y: y * CHUNK_SIZE}
+						rectMax := image.Point{X: rectMin.X + CHUNK_SIZE, Y: rectMin.Y + CHUNK_SIZE}
+						switch matrix[y][x] {
+						case HEAD:
+							drawRectangle(img, rectMin, rectMax, snakeHeadColor)
+						case BODY:
+							drawRectangle(img, rectMin, rectMax, snakeBodyColor)
+						case FOOD:
+							drawRectangle(img, rectMin, rectMax, foodColor)
+						}
+					}
+				}
+
+				canvasCh <- &Canvas{Data: convertRGBAtoRGB(img), Timestamp: time.Now()}
+			}
+		}()
+	}
+
+	for gameState := range gameStateCh {
+		workerCh <- gameState
 	}
 }
 

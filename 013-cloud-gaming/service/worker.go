@@ -41,7 +41,14 @@ func (w *Worker) onDataChannel(p *PeerConnState) {
 		go gameLoop.Start()
 		go game.StartFrameRenderer(gameStateCh, canvasCh)
 
-		go w.startEncoder(canvasCh, encodedFrameCh)
+		encoder := NewEncoder(&EncoderOptions{
+			EncodedFrameChannel: encodedFrameCh,
+			CanvasChannel:       canvasCh,
+			WindowWidth:         game.FRAME_WIDTH,
+			WindowHeight:        game.FRAME_HEIGHT,
+		})
+		encoder.Start()
+
 		go w.startStreaming(encodedFrameCh, senders)
 		go w.closeConnection(closeSignal, dataCh, p, gameStateCh, cmdCh, canvasCh, encodedFrameCh)
 
