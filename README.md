@@ -21,7 +21,7 @@ Completed:
 
 - [8 Practice rest, graphql, rpc, soap, etc..](https://github.com/vkhanhqui/funny-things/tree/main/008-api-shapes)
 
-- [9 Practice worker pattern](https://github.com/vkhanhqui/funny-things/tree/main/009-worker-pattern)
+- [9 Practice Goroutines](https://github.com/vkhanhqui/funny-things/tree/main/009-goroutines)
 
 - [10 Bleve search engine](https://github.com/vkhanhqui/funny-things/tree/main/010-bleve-search)
 
