@@ -5,12 +5,10 @@ import "interpreter/token"
 type Lexer struct {
 	input           string
 	currentPosition int // current position in input (points to current char)
-	nextPosition    int // next position in input (after current char)
 }
 
 func New(input string) *Lexer {
 	l := &Lexer{input: input}
-	l.next()
 	return l
 }
 
@@ -95,16 +93,15 @@ func (l *Lexer) current() byte {
 }
 
 func (l *Lexer) next() byte {
-	l.currentPosition = l.nextPosition
-	l.nextPosition += 1
+	l.currentPosition += 1
 	return l.current()
 }
 
 func (l *Lexer) previewNext() byte {
-	if l.nextPosition >= len(l.input) {
+	if l.currentPosition+1 >= len(l.input) {
 		return 0
 	}
-	return l.input[l.nextPosition]
+	return l.input[l.currentPosition+1]
 }
 
 func (l *Lexer) readIdentifier() string {
