@@ -71,11 +71,11 @@ trie.insert("hello")
 trie.insert("he")
 trie.insert("ha")
 
-console.log(trie.search("hello")); // true
-console.log(trie.search("he")); // true
-console.log(trie.search("ha")); // true
+console.assert(trie.search("hello") === true);
+console.assert(trie.search("he") === true);
+console.assert(trie.search("ha") === true);
 
-console.log(trie.search("helloo")); // false
-console.log(trie.search("hee")); // false
-console.log(trie.search("haa")); // false
-console.log(trie.search("b")); // false
+console.assert(trie.search("helloo") === false);
+console.assert(trie.search("hee") === false);
+console.assert(trie.search("haa") === false);
+console.assert(trie.search("b") === false);
