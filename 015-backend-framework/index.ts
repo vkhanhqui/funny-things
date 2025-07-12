@@ -23,18 +23,32 @@ class Trie {
         this.root = new TrieNode();
     }
 
-    insert(word: string, node: TrieNode = this.root) {
+    insertWithRecursion(word: string, node: TrieNode = this.root) {
         if (word.length == 0) return;
 
         const foundNode = node.children.get(word[0]);
         if (foundNode) {
-            this.insert(word.slice(1), foundNode);
+            this.insertWithRecursion(word.slice(1), foundNode);
             return;
         }
 
         const newNode = node.add(word[0], word.length == 1);
-        this.insert(word.slice(1), newNode);
+        this.insertWithRecursion(word.slice(1), newNode);
         return;
+    }
+
+    insert(word: string) {
+        if (word.length == 0) return;
+
+        let cur = this.root;
+        for(let i=0; i < word.length; i++) {
+            const curWord = word[i];
+            if (!cur.children.has(curWord)) {
+                cur.children.set(curWord, new TrieNode());
+            }
+            cur = cur.children.get(curWord)!;
+        }
+        cur.isEOW = true;
     }
 }
 
