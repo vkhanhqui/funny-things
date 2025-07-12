@@ -50,10 +50,32 @@ class Trie {
         }
         cur.isEOW = true;
     }
+
+    search(word: string) {
+        if (word.length == 0) return false;
+
+        let curNode = this.root;
+        let i = 0;
+
+        while(curNode.children.has(word[i])) {
+            curNode = curNode.children.get(word[i])!
+            i += 1;
+        }
+
+        return curNode.isEOW && i == word.length;
+    }
 }
 
 const trie = new Trie()
 trie.insert("hello")
 trie.insert("he")
 trie.insert("ha")
-console.log(trie);
+
+console.log(trie.search("hello")); // true
+console.log(trie.search("he")); // true
+console.log(trie.search("ha")); // true
+
+console.log(trie.search("helloo")); // false
+console.log(trie.search("hee")); // false
+console.log(trie.search("haa")); // false
+console.log(trie.search("b")); // false
