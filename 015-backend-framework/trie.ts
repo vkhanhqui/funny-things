@@ -42,11 +42,11 @@ class Trie {
 
         let cur = this.root;
         for(let i=0; i < word.length; i++) {
-            const curWord = word[i];
-            if (!cur.children.has(curWord)) {
-                cur.children.set(curWord, new TrieNode());
+            const curLetter = word[i];
+            if (!cur.children.has(curLetter)) {
+                cur.children.set(curLetter, new TrieNode());
             }
-            cur = cur.children.get(curWord)!;
+            cur = cur.children.get(curLetter)!;
         }
         cur.isEOW = true;
     }
