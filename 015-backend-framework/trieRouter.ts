@@ -1,3 +1,5 @@
+import { createServer, IncomingMessage, ServerResponse } from "http";
+
 const HTTP_METHODS = {
   GET: "GET",
   POST: "POST",
@@ -72,6 +74,7 @@ class Route {
     const params = new Map();
     let handler: Function | undefined = undefined;
     if (path.length == 0) return { params, handler };
+    if (path == "/") return { params, handler: this.root.handler.get(method) };
 
     const words = path.split("/").filter(Boolean);
     let curNode = this.root;
@@ -84,7 +87,8 @@ class Route {
       if (children.has(segment)) {
         curNode = children.get(segment)!;
         handler = curNode.handler.get(method);
-      } else if (children.has(":")) { // dynamic
+      } else if (children.has(":")) {
+        // dynamic
         curNode = children.get(":")!;
         handler = curNode.handler.get(method);
         segments.push(segment);
@@ -145,13 +149,25 @@ class Route {
   }
 }
 
-const trieRouter = new Route();
-trieRouter.get("/users/:id/hello/there/:some/:hello", function get1() {});
-trieRouter.post("/users/:some/hello/there/:id/none", function post1() {});
-trieRouter.printTree();
+function run(router: Route, port: number) {
+  createServer((req: IncomingMessage, res: ServerResponse) => {
+    const route = router.findRoute(req.url || "/", req.method || "GET");
+    if (route.handler) {
+      route.handler(req, res);
+    } else {
+      res.writeHead(404, { "Content-Type": "text/plain" });
+      res.end("Not Found");
+    }
+  }).listen(port, () => {
+    console.log(`Server listening at http://localhost:${port}`);
+  });
+}
 
-console.log("Finding Handlers:");
-console.log(trieRouter.findRoute("/users/e/hello/there/2/3", HTTP_METHODS.GET));
-console.log(trieRouter.findRoute("/users/1/hello/there/2/none", HTTP_METHODS.GET));
-console.log(trieRouter.findRoute("/users", HTTP_METHODS.PUT));
-console.log(trieRouter.findRoute("/users", HTTP_METHODS.TRACE));
+const router = new Route();
+router.get("/", (req: IncomingMessage, res: ServerResponse) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Hello from the root endpoint");
+});
+router.printTree();
+
+run(router, 3000);
