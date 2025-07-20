@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:17.5-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: appdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./build/init-appdb.sql:/docker-entrypoint-initdb.d/init-appdb.sql
+
+  wait-for-infra:
+    image: alpine
+    volumes:
+      - ./build/wait-for.sh:/wait-for.sh:z
+    entrypoint: /bin/sh -c
+    command: >
+      "
+        /wait-for.sh postgres:5432
+      "
+
+volumes:
+  pgdata:
+
+networks:
+  default:
+    name: backend-network
