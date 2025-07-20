@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - '3000:3000'
+
+  wait-for-svc:
+    image: alpine
+    volumes:
+      - ./build/wait-for.sh:/wait-for.sh:z
+    entrypoint: /bin/sh -c
+    command: >
+      "
+        /wait-for.sh api:3000
+      "
+
+networks:
+  default:
+    name: backend-network
