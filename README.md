@@ -2,31 +2,31 @@
 
 
 In progress:
-- [14 Interpreter](https://github.com/vkhanhqui/funny-things/tree/main/014-interpreter)
+- [13 Interpreter](./interpreter)
+
+- [14 Build a backend web framework from scratch](./backend-framework)
 
 Completed:
-- [1 Chat Web App Using Java WebSocket | Server & Multiple clients](https://github.com/vkhanhqui/funny-things/tree/main/001-chat-web-app)
+- [1 Chat Web App Using Java WebSocket | Server & Multiple clients](./chat-web-app)
 
-- [2 Chat Web App Using Java WebSocket & Docker | Server & Multiple clients](https://github.com/vkhanhqui/funny-things/tree/main/002-chat-web-app-docker)
+- [2 Chat Web App Using Java WebSocket & Docker | Server & Multiple clients](./chat-web-app-docker)
 
-- [3 Rate Limiting Algorithms](https://github.com/vkhanhqui/funny-things/tree/main/003-rate-limiter)
+- [3 Rate Limiter - Algorithms](./rate-limiter)
 
-- [4 Rate Limiter Using Proof of Work](https://github.com/vkhanhqui/funny-things/tree/main/004-rate-limiter-proof-of-work)
+- [4 Rate Limiter - Proof of Work](./rate-limiter-proof-of-work)
 
-- [5 Leetcode Solution](https://github.com/vkhanhqui/funny-things/tree/main/005-leetcode)
+- [5 Rate Limiter - Token Bucket](./rate-limiter-token-bucket)
 
-- [6 Dict, List, and Tuple in a funny way](https://github.com/vkhanhqui/funny-things/tree/main/006-python-stuffs)
+- [6 Practice rest, graphql, rpc, soap, etc..](./api-shapes)
 
-- [7 Ingest data to Elasticsearch](https://github.com/vkhanhqui/funny-things/tree/main/007-ingest-data-elasticsearch)
+- [7 Practice Goroutines](./goroutines)
 
-- [8 Practice rest, graphql, rpc, soap, etc..](https://github.com/vkhanhqui/funny-things/tree/main/008-api-shapes)
+- [8 Bleve search engine](./bleve-search)
 
-- [9 Practice Goroutines](https://github.com/vkhanhqui/funny-things/tree/main/009-goroutines)
+- [9 jsonb in Postgres](./jsonb-postgresql)
 
-- [10 Bleve search engine](https://github.com/vkhanhqui/funny-things/tree/main/010-bleve-search)
+- [10 Mark and Sweep algorithm](./mark-and-sweep)
 
-- [11 jsonb in Postgres](https://github.com/vkhanhqui/funny-things/tree/main/011-jsonb-postgresql)
+- [11 Cloud Gaming](./cloud-gaming)
 
-- [12 Mark and Sweep algorithm](https://github.com/vkhanhqui/funny-things/tree/main/012-mark-and-sweep)
-
-- [13 Cloud Gaming](https://github.com/vkhanhqui/funny-things/tree/main/013-cloud-gaming)
+- [12 Build nested comments using stack](./nested-comments)
