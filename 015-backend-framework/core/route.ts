@@ -1,4 +1,4 @@
-import { createServer, IncomingMessage, ServerResponse } from "http";
+import { IncomingMessage, ServerResponse } from "http";
 
 const HTTP_METHODS = {
   GET: "GET",
@@ -12,9 +12,15 @@ const HTTP_METHODS = {
   TRACE: "TRACE",
 };
 
+export type Fn = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  next: () => void
+) => void | Promise<void>;
+
 class RouteNode {
   children: Map<string, RouteNode>;
-  handler: Map<string, Function>;
+  handler: Map<string, Fn[]>;
   params: string[];
 
   constructor() {
@@ -22,59 +28,63 @@ class RouteNode {
     this.handler = new Map();
     this.params = [];
   }
+
+  get(method: string) {
+    return this.handler.get(method) || []
+  }
 }
 
-class Route {
-  root: RouteNode;
+export class Route {
+  private root: RouteNode;
 
   constructor() {
     this.root = new RouteNode();
   }
 
-  get(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.GET, handler);
+  get(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.GET, ...handler);
   }
 
-  post(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.POST, handler);
+  post(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.POST, ...handler);
   }
 
-  put(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.PUT, handler);
+  put(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.PUT, ...handler);
   }
 
-  delete(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.DELETE, handler);
+  delete(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.DELETE, ...handler);
   }
 
-  patch(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.PATCH, handler);
+  patch(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.PATCH, ...handler);
   }
 
-  head(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.HEAD, handler);
+  head(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.HEAD, ...handler);
   }
 
-  options(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.OPTIONS, handler);
+  options(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.OPTIONS, ...handler);
   }
 
-  connect(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.CONNECT, handler);
+  connect(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.CONNECT, ...handler);
   }
 
-  trace(path: string, handler: Function) {
-    return this.addRoute(path, HTTP_METHODS.TRACE, handler);
+  trace(path: string, ...handler: Fn[]) {
+    return this.addRoute(path, HTTP_METHODS.TRACE, ...handler);
   }
 
   findRoute(
-    path: string,
-    method: string
-  ): { params: Map<string, string>; handler: Function | undefined } {
+    path: string = "/",
+    method: string = HTTP_METHODS.GET
+  ): { params: Map<string, string>; handler: Fn[] } {
     const params = new Map();
-    let handler: Function | undefined = undefined;
+    let handler = new Array<Fn>();
     if (path.length == 0) return { params, handler };
-    if (path == "/") return { params, handler: this.root.handler.get(method) };
+    if (path == "/") return { params, handler: this.root.get(method) };
 
     const words = path.split("/").filter(Boolean);
     let curNode = this.root;
@@ -86,11 +96,11 @@ class Route {
 
       if (children.has(segment)) {
         curNode = children.get(segment)!;
-        handler = curNode.handler.get(method);
+        handler = curNode.get(method);
       } else if (children.has(":")) {
         // dynamic
         curNode = children.get(":")!;
-        handler = curNode.handler.get(method);
+        handler = curNode.get(method);
         segments.push(segment);
       } else {
         return { params, handler };
@@ -112,7 +122,7 @@ class Route {
     });
   }
 
-  private addRoute(path: string, method: string, handler: Function) {
+  private addRoute(path: string, method: string, ...handler: Fn[]) {
     this.verifyParams(path, method);
 
     let cur = this.root;
@@ -148,26 +158,3 @@ class Route {
     }
   }
 }
-
-function run(router: Route, port: number) {
-  createServer((req: IncomingMessage, res: ServerResponse) => {
-    const route = router.findRoute(req.url || "/", req.method || "GET");
-    if (route.handler) {
-      route.handler(req, res);
-    } else {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("Not Found");
-    }
-  }).listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-  });
-}
-
-const router = new Route();
-router.get("/", (req: IncomingMessage, res: ServerResponse) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("Hello from the root endpoint");
-});
-router.printTree();
-
-run(router, 3000);
