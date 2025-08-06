@@ -15,7 +15,7 @@ const HTTP_METHODS = {
 export type Fn = (
   req: IncomingMessage,
   res: ServerResponse,
-  next: () => void
+  next: (err?: any) => void
 ) => void | Promise<void>;
 
 class RouteNode {

@@ -19,17 +19,40 @@ export class App {
       const handlers = [...this.middlewares, ...route.handler];
 
       let i = 0;
-      const next = () => {
+      const next = (err?: any) => {
+        if (err) {
+          this.handleError(req, res, err)
+          return;
+        }
+
         if (i >= handlers.length) {
           return;
         }
+
         const handler = handlers[i++];
-        handler(req, res, next);
+        try {
+          const v = handler(req, res, next);
+          if (v && typeof v.then === "function") {
+            Promise.resolve(v).catch(next);
+          }
+        } catch (error) {
+          next(error);
+        }
       };
 
       next();
     }).listen(port, () => {
-      console.log(`Server running at http://localhost:${port}`);
+      console.log(`Server running at port ${port}`);
     });
+  }
+
+  private handleError(req: IncomingMessage, res: ServerResponse, err: any) {
+    if (res.writableEnded) return;
+
+    const statusCode = err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    res.writeHead(statusCode, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: message }));
   }
 }

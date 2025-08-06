@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 export const logging = (
   req: IncomingMessage,
   res: ServerResponse,
-  next: () => void
+  next: (err?: any) => void
 ) => {
   const start = process.hrtime.bigint();
   const requestId = randomUUID();

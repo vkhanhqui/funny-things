@@ -5,12 +5,12 @@
 - Dynamic routes
 - Middleware
 - Logging
-
-### In progress
 - Error handling
 
-### TODO
+### In progress
 - Allow grouping routes
+
+### TODO
 - Body parsing
 - Request context
 - Query params
