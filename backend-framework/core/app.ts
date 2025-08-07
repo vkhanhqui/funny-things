@@ -1,7 +1,9 @@
-import { createServer, IncomingMessage, ServerResponse } from "http";
+import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { Fn, Route } from "./route";
+import { HttpError } from "../internal/error";
 
 export class App {
+  private server: Server;
   private router: Route;
   private middlewares: Fn[] = [];
 
@@ -13,15 +15,36 @@ export class App {
     this.middlewares.push(middleware);
   }
 
-  listen(port: number) {
-    createServer((req: IncomingMessage, res: ServerResponse) => {
+  async listen(port: number = 0): Promise<Server> {
+    this.server = this.createServer();
+    return new Promise((resolve, reject) => {
+      this.server.listen(port, () => {
+        console.log(`Server running at port ${port}`);
+        resolve(this.server!);
+      });
+
+      this.server.on("error", reject);
+    });
+  }
+
+  getServer() {
+    return this.server;
+  }
+
+  private createServer() {
+    return createServer((req: IncomingMessage, res: ServerResponse) => {
       const route = this.router.findRoute(req.url, req.method);
-      const handlers = [...this.middlewares, ...route.handler];
+      const handlers = [...this.middlewares, ...this.router.middlewares(), ...route.handler];
 
       let i = 0;
       const next = (err?: any) => {
         if (err) {
-          this.handleError(req, res, err)
+          this.handleError(req, res, err);
+          return;
+        }
+
+        if (route.handler.length == 0) {
+          next(HttpError.NotFound("Not Found"));
           return;
         }
 
@@ -41,8 +64,6 @@ export class App {
       };
 
       next();
-    }).listen(port, () => {
-      console.log(`Server running at port ${port}`);
     });
   }
 

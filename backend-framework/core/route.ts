@@ -21,6 +21,7 @@ export type Fn = (
 class RouteNode {
   children: Map<string, RouteNode>;
   handler: Map<string, Fn[]>;
+  middlewares: Fn[] = [];
   params: string[];
 
   constructor() {
@@ -30,7 +31,7 @@ class RouteNode {
   }
 
   get(method: string) {
-    return this.handler.get(method) || []
+    return this.handler.get(method) || [];
   }
 }
 
@@ -39,6 +40,10 @@ export class Route {
 
   constructor() {
     this.root = new RouteNode();
+  }
+
+  middlewares() {
+    return this.root.middlewares;
   }
 
   get(path: string, ...handler: Fn[]) {
@@ -75,6 +80,17 @@ export class Route {
 
   trace(path: string, ...handler: Fn[]) {
     return this.addRoute(path, HTTP_METHODS.TRACE, ...handler);
+  }
+
+  use(...args: [path: string, router: Route] | Fn[]) {
+    if (typeof args[0] === "string" && args[1] instanceof Route) {
+      const [path, router] = args as [string, Route];
+      this.mountRouter(path, router);
+      return;
+    }
+
+    const middlewares = args as Fn[];
+    this.root.middlewares.push(...middlewares);
   }
 
   findRoute(
@@ -155,6 +171,47 @@ export class Route {
 
     if (!HTTP_METHODS[method]) {
       throw new Error("Invalid HTTP method");
+    }
+  }
+
+  private mountRouter(path: string, router: Route) {
+    const segments = path.split("/").filter(Boolean);
+    let current = this.root;
+
+    for (const segment of segments) {
+      const key = segment.startsWith(":") ? ":" : segment;
+      if (!current.children.has(key)) {
+        current.children.set(key, new RouteNode());
+      }
+      current = current.children.get(key)!;
+      if (segment.startsWith(":")) {
+        current.params.push(segment.slice(1));
+      }
+    }
+
+    const stack: { from: RouteNode; to: RouteNode }[] = [
+      { from: router.root, to: current },
+    ];
+
+    while (stack.length > 0) {
+      const { from, to } = stack.pop()!;
+
+      to.middlewares.push(...from.middlewares);
+
+      from.handler.forEach((handlers, method) => {
+        if (!to.handler.has(method)) to.handler.set(method, []);
+        to.handler.get(method)!.push(...handlers);
+      });
+
+      from.children.forEach((childFrom, key) => {
+        if (!to.children.has(key)) {
+          to.children.set(key, new RouteNode());
+        }
+        const childTo = to.children.get(key)!;
+        stack.push({ from: childFrom, to: childTo });
+      });
+
+      to.params = from.params.slice();
     }
   }
 }

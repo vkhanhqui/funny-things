@@ -6,12 +6,12 @@
 - Middleware
 - Logging
 - Error handling
+- Route group
 
 ### In progress
-- Allow grouping routes
+- Body parsing
 
 ### TODO
-- Body parsing
 - Request context
 - Query params
 - Request compression

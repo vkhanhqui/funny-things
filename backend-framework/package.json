@@ -1,5 +1,13 @@
 {
+  "scripts": {
+    "test": "vitest"
+  },
   "dependencies": {
     "@types/node": "^24.0.14"
+  },
+  "devDependencies": {
+    "@types/supertest": "^6.0.3",
+    "supertest": "^7.1.4",
+    "vitest": "^3.2.4"
   }
 }
