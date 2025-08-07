@@ -1,13 +1,12 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, beforeAll } from "vitest";
 import request from "supertest";
 import { App } from "./app";
 import { Route } from "./route";
 import { Server } from "http";
 import { HttpError } from "../internal/error";
-import { logging } from "../internal/middleware";
 
 describe("App", () => {
-  let app: App;
+  let server: Server;
 
   beforeAll(async () => {
     const router = new Route();
@@ -35,12 +34,16 @@ describe("App", () => {
     });
     router.use("/users", userRouter);
 
-    app = new App(router);
-    await app.listen();
+    const app = new App(router);
+    const onListening = new Promise<Server>((resolve) => {
+      const onListeningResolve = () => resolve(app.getServer());
+      app.listen(0, onListeningResolve);
+    });
+    server = await onListening;
   });
 
   it("GET /200 should return 200 OK", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/200")
       .expect(200)
       .expect("Content-Type", /text\/plain/)
@@ -48,7 +51,7 @@ describe("App", () => {
   });
 
   it("GET /404 should return 404 Not Found", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/404")
       .expect(404)
       .expect("Content-Type", /json/)
@@ -56,7 +59,7 @@ describe("App", () => {
   });
 
   it("GET /400 should return 400 Bad Request", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/400")
       .expect(400)
       .expect("Content-Type", /json/)
@@ -64,7 +67,7 @@ describe("App", () => {
   });
 
   it("GET /500 should return 500 Internal Server Error", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/500")
       .expect(500)
       .expect("Content-Type", /json/)
@@ -72,7 +75,7 @@ describe("App", () => {
   });
 
   it("GET /500/async should return 500 Internal Server Error", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/500/async")
       .expect(500)
       .expect("Content-Type", /json/)
@@ -80,7 +83,7 @@ describe("App", () => {
   });
 
   it("GET /users/400 should return 400 Bad Request", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/users/400")
       .expect(400)
       .expect("Content-Type", /json/)
@@ -88,7 +91,7 @@ describe("App", () => {
   });
 
   it("GET /users/404 should return 404 Not Found", async () => {
-    await request(app.getServer())
+    await request(server)
       .get("/users/404")
       .expect(404)
       .expect("Content-Type", /json/)

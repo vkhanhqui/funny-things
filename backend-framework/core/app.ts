@@ -15,15 +15,11 @@ export class App {
     this.middlewares.push(middleware);
   }
 
-  async listen(port: number = 0): Promise<Server> {
+  listen(port: number = 0, onListening?: () => void) {
     this.server = this.createServer();
-    return new Promise((resolve, reject) => {
-      this.server.listen(port, () => {
-        console.log(`Server running at port ${port}`);
-        resolve(this.server!);
-      });
-
-      this.server.on("error", reject);
+    this.server.listen(port, () => {
+      console.log(`Server running at port ${port}`);
+      onListening?.();
     });
   }
 
