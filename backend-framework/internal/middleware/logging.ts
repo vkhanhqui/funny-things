@@ -1,10 +1,10 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { Req, Res } from "../http";
 import { logger } from "../logger";
 import { randomUUID } from "crypto";
 
 export const logging = (
-  req: IncomingMessage,
-  res: ServerResponse,
+  req: Req,
+  res: Res,
   next: (err?: any) => void
 ) => {
   const start = process.hrtime.bigint();

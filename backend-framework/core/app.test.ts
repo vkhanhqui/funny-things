@@ -4,6 +4,7 @@ import { App } from "./app";
 import { Route } from "./route";
 import { Server } from "http";
 import { HttpError } from "../internal/error";
+import { jsonParser, logging } from "../internal/middleware";
 
 describe("App", () => {
   let server: Server;
@@ -28,6 +29,12 @@ describe("App", () => {
       throw new Error("Unexpected error");
     });
 
+    router.post("/json", (req, res, next) => {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(req.body);
+      next();
+    });
+
     const userRouter = new Route();
     userRouter.get("/400", (req, res, next) => {
       next(HttpError.BadRequest("Bad request"));
@@ -35,6 +42,9 @@ describe("App", () => {
     router.use("/users", userRouter);
 
     const app = new App(router);
+    app.use(logging);
+    app.use(jsonParser());
+
     const onListening = new Promise<Server>((resolve) => {
       const onListeningResolve = () => resolve(app.getServer());
       app.listen(0, onListeningResolve);
@@ -96,5 +106,16 @@ describe("App", () => {
       .expect(404)
       .expect("Content-Type", /json/)
       .expect({ error: "Not Found" });
+  });
+
+  it("POST /json should return the same JSON body", async () => {
+    const payload = { message: "Hello from test" };
+    await request(server)
+      .post("/json")
+      .send(payload)
+      .set("Content-Type", "application/json")
+      .expect(200)
+      .expect("Content-Type", /json/)
+      .expect(payload);
   });
 });

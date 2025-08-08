@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { Req, Res } from "../internal/http"
 
 const HTTP_METHODS = {
   GET: "GET",
@@ -13,8 +13,8 @@ const HTTP_METHODS = {
 };
 
 export type Fn = (
-  req: IncomingMessage,
-  res: ServerResponse,
+  req: Req,
+  res: Res,
   next: (err?: any) => void
 ) => void | Promise<void>;
 
