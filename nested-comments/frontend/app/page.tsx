@@ -1,5 +1,5 @@
-import CommentPage from "@/components/CommentPage";
+import CommentsPage from "../components/CommentsPage";
 
-export default function Home() {
-  return (<CommentPage />);
+export default function HomePage() {
+  return <CommentsPage />;
 }
