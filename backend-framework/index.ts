@@ -3,6 +3,13 @@ import { logging, jsonParser } from "./internal/middleware";
 import { HttpError } from "./internal/error";
 
 const router = new Route();
+
+router.get("/params/:id/:name", (req, res, next) => {
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify(req.params));
+  next();
+});
+
 router.get("/200", (req, res, next) => {
   res.writeHead(200, { "Content-Type": "text/plain" });
   res.end("Hello from the root endpoint");
@@ -30,7 +37,6 @@ const userRouter = new Route();
 userRouter.get("/400", (req, res, next) => {
   next(HttpError.BadRequest("Bad request"));
 });
-// router.use(logging);
 router.use("/users", userRouter);
 
 const app = new App(router);

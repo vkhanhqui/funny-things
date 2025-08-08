@@ -35,6 +35,12 @@ describe("App", () => {
       next();
     });
 
+    router.get("/params/:id/:name", (req, res, next) => {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(req.params));
+      next();
+    });
+
     const userRouter = new Route();
     userRouter.get("/400", (req, res, next) => {
       next(HttpError.BadRequest("Bad request"));
@@ -117,5 +123,14 @@ describe("App", () => {
       .expect(200)
       .expect("Content-Type", /json/)
       .expect(payload);
+  });
+
+  it("GET /params should return the same params", async () => {
+    await request(server)
+      .get("/params/123/quivo")
+      .set("Content-Type", "application/json")
+      .expect(200)
+      .expect("Content-Type", /json/)
+      .expect({"id": "123", "name": "quivo"});
   });
 });

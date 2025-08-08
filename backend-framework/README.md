@@ -10,11 +10,14 @@
 - Body parsing (json for now)
 
 ### In progress
-- Request context
+- Path variable + Query params
 
 ### TODO
-- Query params
-- Request compression
+- Request/response compression
+- ETags for HTTP responses
+- Caching
+- Accepts in requests
+- Request/response validation
 
 ### References
 - [Learn nodejs the hard way](https://github.com/ishtms/learn-nodejs-hard-way)

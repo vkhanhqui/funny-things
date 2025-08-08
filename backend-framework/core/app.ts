@@ -1,6 +1,7 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
 import { Fn, Route } from "./route";
 import { HttpError } from "../internal/error";
+import { Req, Res } from "../internal/http";
 
 export class App {
   private server: Server;
@@ -28,9 +29,15 @@ export class App {
   }
 
   private createServer() {
-    return createServer((req: IncomingMessage, res: ServerResponse) => {
+    return createServer((req: Req, res: Res) => {
       const route = this.router.findRoute(req.url, req.method);
-      const handlers = [...this.middlewares, ...this.router.middlewares(), ...route.handler];
+      const handlers = [
+        ...this.middlewares,
+        ...this.router.middlewares(),
+        ...route.handler,
+      ];
+
+      req.params = { ...route.params };
 
       let i = 0;
       const next = (err?: any) => {

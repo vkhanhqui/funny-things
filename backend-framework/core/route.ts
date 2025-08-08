@@ -96,8 +96,8 @@ export class Route {
   findRoute(
     path: string = "/",
     method: string = HTTP_METHODS.GET
-  ): { params: Map<string, string>; handler: Fn[] } {
-    const params = new Map();
+  ): { params: Record<string, string>; handler: Fn[] } {
+    let params: Record<string, string> = {};
     let handler = new Array<Fn>();
     if (path.length == 0) return { params, handler };
     if (path == "/") return { params, handler: this.root.get(method) };
@@ -124,7 +124,7 @@ export class Route {
     }
 
     for (let i = 0; i < segments.length; i++) {
-      params.set(curNode.params[i], segments[i]);
+      params[curNode.params[i]] = segments[i];
     }
 
     return { params, handler };
