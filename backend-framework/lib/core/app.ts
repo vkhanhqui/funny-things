@@ -1,7 +1,7 @@
 import { createServer, IncomingMessage, Server, ServerResponse } from "http";
-import { Fn, Route } from "./route";
-import { HttpError } from "../internal/error";
-import { Req, Res } from "../internal/http";
+import { Route } from "./route";
+import { HttpError } from "../error";
+import { Req, Res, Fn } from "./http";
 
 export class App {
   private server: Server;

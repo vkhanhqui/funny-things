@@ -1,6 +1,6 @@
-import { Route, App } from "./core";
-import { logging, jsonParser } from "./internal/middleware";
-import { HttpError } from "./internal/error";
+import { Route, App } from "./lib";
+import { logging, jsonParser } from "./lib/middleware";
+import { HttpError } from "./lib/error";
 
 const router = new Route();
 

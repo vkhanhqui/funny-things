@@ -1,5 +1,5 @@
 import { HttpError } from "../error";
-import { Req, Res } from "../http";
+import { Req, Res, Fn } from "../core/http";
 
 export function jsonParser() {
   return async (

@@ -3,8 +3,8 @@ import request from "supertest";
 import { App } from "./app";
 import { Route } from "./route";
 import { Server } from "http";
-import { HttpError } from "../internal/error";
-import { jsonParser, logging } from "../internal/middleware";
+import { HttpError } from "../error";
+import { jsonParser, logging } from "../middleware";
 
 describe("App", () => {
   let server: Server;

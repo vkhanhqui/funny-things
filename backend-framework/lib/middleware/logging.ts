@@ -1,5 +1,5 @@
-import { Req, Res } from "../http";
-import { logger } from "../logger";
+import { Req, Res } from "../core/http";
+import { logger } from "../utils";
 import { randomUUID } from "crypto";
 
 export const logging = (
