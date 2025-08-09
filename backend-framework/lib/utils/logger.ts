@@ -2,7 +2,7 @@ enum LogLevel {
   INFO = "INFO",
   WARN = "WARN",
   ERROR = "ERROR",
-  DEBUG = "DEBUG"
+  DEBUG = "DEBUG",
 }
 
 class Logger {
@@ -12,7 +12,7 @@ class Logger {
       level,
       timestamp,
       message,
-      ...(meta || {})
+      ...(meta || {}),
     };
 
     return JSON.stringify(logObj);

@@ -1,3 +1,4 @@
+import { parseQuery } from "../utils/query-parser";
 import { Fn, HTTP_METHODS } from "./http";
 
 class RouteNode {
@@ -78,13 +79,24 @@ export class Route {
   findRoute(
     path: string = "/",
     method: string = HTTP_METHODS.GET
-  ): { params: Record<string, string>; handler: Fn[] } {
+  ): {
+    params: Record<string, string>;
+    query: Record<string, string | string[]>;
+    handler: Fn[];
+  } {
     let params: Record<string, string> = {};
+    let query: Record<string, string | string[]> = {};
     let handler = new Array<Fn>();
-    if (path.length == 0) return { params, handler };
-    if (path == "/") return { params, handler: this.root.get(method) };
 
-    const words = path.split("/").filter(Boolean);
+    if (path.length == 0) return { params, query, handler };
+    if (path == "/") return { params, query, handler: this.root.get(method) };
+
+    let endPathIdx = path.length;
+    if (path.indexOf("?") !== -1) {
+      endPathIdx = path.indexOf("?");
+    }
+
+    const words = path.substring(0, endPathIdx).split("/").filter(Boolean);
     let curNode = this.root;
     let segments: string[] = [];
 
@@ -101,7 +113,7 @@ export class Route {
         handler = curNode.get(method);
         segments.push(segment);
       } else {
-        return { params, handler };
+        return { params, query, handler };
       }
     }
 
@@ -109,7 +121,8 @@ export class Route {
       params[curNode.params[i]] = segments[i];
     }
 
-    return { params, handler };
+    query = parseQuery(path);
+    return { params, query, handler };
   }
 
   printTree(node = this.root, indentation = 0) {

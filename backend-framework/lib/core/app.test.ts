@@ -41,6 +41,12 @@ describe("App", () => {
       next();
     });
 
+    router.get("/query", (req, res, next) => {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(req.query));
+      next();
+    });
+
     const userRouter = new Route();
     userRouter.get("/400", (req, res, next) => {
       next(HttpError.BadRequest("Bad request"));
@@ -131,6 +137,15 @@ describe("App", () => {
       .set("Content-Type", "application/json")
       .expect(200)
       .expect("Content-Type", /json/)
-      .expect({"id": "123", "name": "quivo"});
+      .expect({ id: "123", name: "quivo" });
+  });
+
+  it("GET /query should return the same query", async () => {
+    await request(server)
+      .get("/query?name=John&age=25")
+      .set("Content-Type", "application/json")
+      .expect(200)
+      .expect("Content-Type", /json/)
+      .expect({ name: "John", age: "25" });
   });
 });

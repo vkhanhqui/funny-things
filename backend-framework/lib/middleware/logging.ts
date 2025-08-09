@@ -2,11 +2,7 @@ import { Req, Res } from "../core/http";
 import { logger } from "../utils";
 import { randomUUID } from "crypto";
 
-export const logging = (
-  req: Req,
-  res: Res,
-  next: (err?: any) => void
-) => {
+export const logging = (req: Req, res: Res, next: (err?: any) => void) => {
   const start = process.hrtime.bigint();
   const requestId = randomUUID();
 
@@ -14,9 +10,9 @@ export const logging = (
   const userAgent = req.headers["user-agent"];
 
   logger.info("Request", {
-    "type": "request",
-    "request_id": requestId,
-    "user_agent": userAgent,
+    type: "request",
+    request_id: requestId,
+    user_agent: userAgent,
     method: req.method,
     url: req.url,
     ip,
@@ -28,11 +24,11 @@ export const logging = (
     const durationMs = Number(durationNs) / 1_000_000;
 
     logger.info("Response", {
-      "type": "response",
-      "request_id": requestId,
-      "status_code": res.statusCode,
-      "response_time": durationMs.toFixed(2),
-      "user_agent": userAgent,
+      type: "response",
+      request_id: requestId,
+      status_code: res.statusCode,
+      response_time: durationMs.toFixed(2),
+      user_agent: userAgent,
       method: req.method,
       url: req.url,
       ip,

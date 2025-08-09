@@ -1,12 +1,8 @@
 import { HttpError } from "../error";
-import { Req, Res, Fn } from "../core/http";
+import { Req, Res } from "../core/http";
 
 export function jsonParser() {
-  return async (
-    req: Req,
-    res: Res,
-    next: (err?: any) => void
-  ) => {
+  return async (req: Req, res: Res, next: (err?: any) => void) => {
     if (
       req.method === "GET" ||
       req.method === "HEAD" ||

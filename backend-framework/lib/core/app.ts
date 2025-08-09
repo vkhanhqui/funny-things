@@ -38,6 +38,7 @@ export class App {
       ];
 
       req.params = { ...route.params };
+      req.query = { ...route.query };
 
       let i = 0;
       const next = (err?: any) => {

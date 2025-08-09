@@ -8,12 +8,12 @@
 - Error handling
 - Route group
 - Body parsing (json for now)
-
-### In progress
 - Path variable + Query params
 
+### In progress
+- HTTP compression
+
 ### TODO
-- Request/response compression
 - ETags for HTTP responses
 - Caching
 - Accepts in requests
