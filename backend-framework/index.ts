@@ -1,5 +1,5 @@
 import { Route, App } from "./lib";
-import { logging, jsonParser } from "./lib/middleware";
+import { logging, jsonParser, compression } from "./lib/middleware";
 import { HttpError } from "./lib/error";
 
 const router = new Route();
@@ -12,6 +12,7 @@ router.get("/params/:id/:name", (req, res, next) => {
 
 router.get("/200", (req, res, next) => {
   res.writeHead(200, { "Content-Type": "text/plain" });
+  res.write("First line\n");
   res.end("Hello from the root endpoint");
   next();
 });
@@ -42,4 +43,5 @@ router.use("/users", userRouter);
 const app = new App(router);
 app.use(logging);
 app.use(jsonParser());
+app.use(compression());
 app.listen(3000);

@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { IncomingMessage, ServerResponse, OutgoingHttpHeaders } from "http";
 
 export const HTTP_METHODS = {
   GET: "GET",

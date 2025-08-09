@@ -9,12 +9,12 @@
 - Route group
 - Body parsing (json for now)
 - Path variable + Query params
-
-### In progress
 - HTTP compression
 
-### TODO
+### In progress
 - ETags for HTTP responses
+
+### TODO
 - Caching
 - Accepts in requests
 - Request/response validation

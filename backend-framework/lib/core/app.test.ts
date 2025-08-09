@@ -4,7 +4,7 @@ import { App } from "./app";
 import { Route } from "./route";
 import { Server } from "http";
 import { HttpError } from "../error";
-import { jsonParser, logging } from "../middleware";
+import { jsonParser, logging, compression } from "../middleware";
 
 describe("App", () => {
   let server: Server;
@@ -56,6 +56,7 @@ describe("App", () => {
     const app = new App(router);
     app.use(logging);
     app.use(jsonParser());
+    app.use(compression(0));
 
     const onListening = new Promise<Server>((resolve) => {
       const onListeningResolve = () => resolve(app.getServer());
