@@ -6,7 +6,7 @@ enum LogLevel {
 }
 
 class Logger {
-  private format(level: LogLevel, message: string, meta?: Record<string, any>) {
+  private format(level: LogLevel, message: any, meta?: Record<string, any>) {
     const timestamp = new Date().toISOString();
     const logObj = {
       level,
@@ -18,19 +18,27 @@ class Logger {
     return JSON.stringify(logObj);
   }
 
-  info(message: string, meta?: Record<string, any>) {
+  info(message: any, meta?: Record<string, any>) {
     console.log(this.format(LogLevel.INFO, message, meta));
   }
 
-  warn(message: string, meta?: Record<string, any>) {
-    console.warn(this.format(LogLevel.WARN, message, meta));
+  warn(message: any, meta?: Record<string, any>) {
+    const yellow = "\x1b[33m";
+    const reset = "\x1b[0m";
+    console.warn(
+      `${yellow}${this.format(LogLevel.WARN, message, meta)}${reset}`
+    );
   }
 
-  error(message: string, meta?: Record<string, any>) {
-    console.error(this.format(LogLevel.ERROR, message, meta));
+  error(message: any, meta?: Record<string, any>) {
+    const red = "\x1b[31m";
+    const reset = "\x1b[0m";
+    console.error(
+      `${red}${this.format(LogLevel.ERROR, message, meta)}${reset}`
+    );
   }
 
-  debug(message: string, meta?: Record<string, any>) {
+  debug(message: any, meta?: Record<string, any>) {
     console.debug(this.format(LogLevel.DEBUG, message, meta));
   }
 }
