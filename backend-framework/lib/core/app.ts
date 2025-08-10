@@ -1,10 +1,11 @@
-import { createServer, IncomingMessage, Server, ServerResponse } from "http";
+import { createServer, Server } from "http";
 import { Route } from "./route";
 import { HttpError } from "../error";
 import { Req, Res, Fn } from "./http";
+import { logger } from "../utils";
 
 export class App {
-  private server: Server;
+  private server: Server<typeof Req, typeof Res>;
   private router: Route;
   private middlewares: Fn[] = [];
 
@@ -29,54 +30,63 @@ export class App {
   }
 
   private createServer() {
-    return createServer((req: Req, res: Res) => {
-      const route = this.router.findRoute(req.url, req.method);
-      const handlers = [
-        ...this.middlewares,
-        ...this.router.middlewares(),
-        ...route.handler,
-      ];
+    return createServer(
+      {
+        IncomingMessage: Req,
+        ServerResponse: Res,
+      },
+      (req: Req, res: Res) => {
+        const route = this.router.findRoute(req.url, req.method);
+        const handlers = [
+          ...this.middlewares,
+          ...this.router.middlewares(),
+          ...route.handler,
+        ];
 
-      req.params = { ...route.params };
-      req.query = { ...route.query };
+        req.params = { ...route.params };
+        req.query = { ...route.query };
 
-      let i = 0;
-      const next = (err?: any) => {
-        if (err) {
-          this.handleError(req, res, err);
-          return;
-        }
-
-        if (route.handler.length == 0) {
-          next(HttpError.NotFound("Not Found"));
-          return;
-        }
-
-        if (i >= handlers.length) {
-          return;
-        }
-
-        const handler = handlers[i++];
-        try {
-          const v = handler(req, res, next);
-          if (v && typeof v.then === "function") {
-            Promise.resolve(v).catch(next);
+        let i = 0;
+        const next = (err?: any) => {
+          if (err) {
+            this.handleError(req, res, err);
+            return;
           }
-        } catch (error) {
-          next(error);
-        }
-      };
 
-      next();
-    });
+          if (route.handler.length == 0) {
+            next(HttpError.NotFound("Not Found"));
+            return;
+          }
+
+          if (i >= handlers.length) {
+            return;
+          }
+
+          const handler = handlers[i++];
+          try {
+            const v = handler(req, res, next);
+            if (v && typeof v.then === "function") {
+              Promise.resolve(v).catch(next);
+            }
+          } catch (error) {
+            next(error);
+          }
+        };
+
+        next();
+      }
+    );
   }
 
-  private handleError(req: IncomingMessage, res: ServerResponse, err: any) {
+  private handleError(req: Req, res: Res, err: any) {
     if (res.writableEnded) return;
 
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    if (statusCode === 500 && err instanceof Error) {
+      logger.error(err.stack);
+    }
     res.writeHead(statusCode, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: message }));
   }

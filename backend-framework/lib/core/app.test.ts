@@ -5,16 +5,15 @@ import { Route } from "./route";
 import { Server } from "http";
 import { HttpError } from "../error";
 import { jsonParser, logging, compression } from "../middleware";
+import { Req, Res } from "./http";
 
 describe("App", () => {
-  let server: Server;
+  let server: Server<typeof Req, typeof Res>;
 
   beforeAll(async () => {
     const router = new Route();
     router.get("/200", (req, res, next) => {
-      res.writeHead(200, { "Content-Type": "text/plain" });
-      res.end("Hello from the root endpoint");
-      next();
+      res.send(200, "Hello from the root endpoint");
     });
 
     router.get("/400", (req, res, next) => {
@@ -30,21 +29,15 @@ describe("App", () => {
     });
 
     router.post("/json", (req, res, next) => {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(req.body);
-      next();
+      res.json(200, req.body);
     });
 
     router.get("/params/:id/:name", (req, res, next) => {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(req.params));
-      next();
+      res.json(200, req.params);
     });
 
     router.get("/query", (req, res, next) => {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(req.query));
-      next();
+      res.json(200, req.query);
     });
 
     const userRouter = new Route();
@@ -56,12 +49,14 @@ describe("App", () => {
     const app = new App(router);
     app.use(logging);
     app.use(jsonParser());
-    app.use(compression(0));
+    // app.use(compression(0));
 
-    const onListening = new Promise<Server>((resolve) => {
-      const onListeningResolve = () => resolve(app.getServer());
-      app.listen(0, onListeningResolve);
-    });
+    const onListening = new Promise<Server<typeof Req, typeof Res>>(
+      (resolve) => {
+        const onListeningResolve = () => resolve(app.getServer());
+        app.listen(0, onListeningResolve);
+      }
+    );
     server = await onListening;
   });
 
@@ -69,7 +64,7 @@ describe("App", () => {
     await request(server)
       .get("/200")
       .expect(200)
-      .expect("Content-Type", /text\/plain/)
+      .expect("Content-Type", /text\/html/)
       .expect("Hello from the root endpoint");
   });
 
@@ -148,5 +143,21 @@ describe("App", () => {
       .expect(200)
       .expect("Content-Type", /json/)
       .expect({ name: "John", age: "25" });
+  });
+
+  it("Not modified response with Etag should return 304", async () => {
+    await request(server)
+      .get("/query?name=John&age=25")
+      .set("Content-Type", "application/json")
+      .expect(200)
+      .expect("Content-Type", /json/)
+      .expect({ name: "John", age: "25" });
+
+    await request(server)
+      .get("/query?name=John&age=25")
+      .set("Content-Type", "application/json")
+      .set("if-none-match", `W/"OLcYrp4Qxdu+YFfyhT96NbtEx28="`)
+      .expect(304)
+      .expect({});
   });
 });

@@ -10,9 +10,10 @@
 - Body parsing (json for now)
 - Path variable + Query params
 - HTTP compression
+- ETags for HTTP responses
 
 ### In progress
-- ETags for HTTP responses
+- Fix HTTP compression bug
 
 ### TODO
 - Caching
