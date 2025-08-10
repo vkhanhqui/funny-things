@@ -19,7 +19,7 @@ export function jsonParser() {
 
     req.on("end", () => {
       try {
-        req.body = Buffer.concat(chunks).toString();
+        req.body = JSON.parse(Buffer.concat(chunks).toString());
         next();
       } catch (err) {
         next(HttpError.BadRequest("Invalid JSON"));
