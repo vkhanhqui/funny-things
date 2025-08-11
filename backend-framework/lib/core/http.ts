@@ -21,7 +21,7 @@ export class Req extends IncomingMessage {
 
 export class Res extends ServerResponse {
   send(code: number, body: any, replyWith304 = true) {
-    var chunk = body;
+    let chunk = body;
     switch (typeof chunk) {
       case "string":
         if (!this.getContentType()) {
@@ -80,7 +80,7 @@ export class Res extends ServerResponse {
       this.setHeader("etag", etag);
     }
 
-    var ifNoneMatch = this.req.headers["if-none-match"];
+    const ifNoneMatch = this.req.headers["if-none-match"];
     if (
       ifNoneMatch === etag ||
       ifNoneMatch === `W/"${etag}"` ||
