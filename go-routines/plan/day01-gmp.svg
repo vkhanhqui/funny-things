@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 660" font-family="'JetBrains Mono', 'Fira Code', monospace">
+
+  <!-- Background -->
+  <rect width="960" height="660" fill="#0f1117"/>
+
+  <!-- Title -->
+  <text x="480" y="36" text-anchor="middle" fill="#e2e8f0" font-size="18" font-weight="bold">Go Runtime: GMP Scheduler Model</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--  SECTION LABELS                        -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- OS Threads band -->
+  <rect x="16" y="54" width="928" height="110" rx="8" fill="#1a1d27" stroke="#334155" stroke-width="1"/>
+  <text x="28" y="72" fill="#64748b" font-size="11">OS THREADS (M)</text>
+
+  <!-- P / LRQ band -->
+  <rect x="16" y="178" width="928" height="220" rx="8" fill="#1a1d27" stroke="#334155" stroke-width="1"/>
+  <text x="28" y="196" fill="#64748b" font-size="11">PROCESSORS (P)  +  LOCAL RUN QUEUES (LRQ)</text>
+
+  <!-- Global Run Queue band -->
+  <rect x="16" y="412" width="928" height="110" rx="8" fill="#1a1d27" stroke="#334155" stroke-width="1"/>
+  <text x="28" y="430" fill="#64748b" font-size="11">GLOBAL RUN QUEUE (GRQ)</text>
+
+  <!-- Notes band -->
+  <rect x="16" y="536" width="928" height="112" rx="8" fill="#1a1d27" stroke="#334155" stroke-width="1"/>
+  <text x="28" y="554" fill="#64748b" font-size="11">KEY NOTES</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--  OS THREADS (M0, M1, M2)               -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- M0 -->
+  <rect x="50" y="82" width="200" height="64" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="150" y="103" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="bold">M0  (OS Thread)</text>
+  <text x="150" y="121" text-anchor="middle" fill="#94a3b8" font-size="10">holds P  →  runs Go code</text>
+  <text x="150" y="137" text-anchor="middle" fill="#94a3b8" font-size="10">syscall: M released from P</text>
+
+  <!-- M1 -->
+  <rect x="380" y="82" width="200" height="64" rx="6" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="480" y="103" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="bold">M1  (OS Thread)</text>
+  <text x="480" y="121" text-anchor="middle" fill="#94a3b8" font-size="10">holds P  →  runs Go code</text>
+  <text x="480" y="137" text-anchor="middle" fill="#94a3b8" font-size="10">syscall: M released from P</text>
+
+  <!-- M2 (idle / no P) -->
+  <rect x="710" y="82" width="200" height="64" rx="6" fill="#1c2533" stroke="#475569" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="810" y="103" text-anchor="middle" fill="#64748b" font-size="13" font-weight="bold">M2  (OS Thread)</text>
+  <text x="810" y="121" text-anchor="middle" fill="#64748b" font-size="10">no P  —  idle / in syscall</text>
+  <text x="810" y="137" text-anchor="middle" fill="#64748b" font-size="10">cgo / GC helper</text>
+
+  <!-- M → P arrows -->
+  <line x1="150" y1="146" x2="150" y2="178" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+  <line x1="480" y1="146" x2="480" y2="178" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--  PROCESSORS + LRQs                     -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- P0 box -->
+  <rect x="40" y="208" width="260" height="172" rx="6" fill="#1a2e1a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="170" y="228" text-anchor="middle" fill="#4ade80" font-size="13" font-weight="bold">P0  (Processor)</text>
+  <text x="170" y="246" text-anchor="middle" fill="#86efac" font-size="10">GOMAXPROCS controls P count</text>
+
+  <!-- P0 currently running G -->
+  <rect x="56" y="256" width="80" height="36" rx="4" fill="#14532d" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="96" y="270" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="bold">G (running)</text>
+  <text x="96" y="284" text-anchor="middle" fill="#86efac" font-size="9">2KB stack</text>
+
+  <!-- P0 LRQ -->
+  <text x="160" y="270" fill="#64748b" font-size="10">LRQ (max 256):</text>
+  <rect x="155" y="278" width="32" height="28" rx="3" fill="#1e3a1e" stroke="#22c55e" stroke-width="1"/>
+  <text x="171" y="297" text-anchor="middle" fill="#4ade80" font-size="10">G</text>
+  <rect x="191" y="278" width="32" height="28" rx="3" fill="#1e3a1e" stroke="#22c55e" stroke-width="1"/>
+  <text x="207" y="297" text-anchor="middle" fill="#4ade80" font-size="10">G</text>
+  <rect x="227" y="278" width="32" height="28" rx="3" fill="#1e3a1e" stroke="#22c55e" stroke-width="1"/>
+  <text x="243" y="297" text-anchor="middle" fill="#4ade80" font-size="10">G</text>
+
+  <!-- Schedule loop in P0 -->
+  <rect x="56" y="318" width="224" height="48" rx="4" fill="#0f1f0f" stroke="#166534" stroke-width="1"/>
+  <text x="68" y="333" fill="#4ade80" font-size="9">findRunnable(): LRQ → GRQ → steal</text>
+  <text x="68" y="347" fill="#4ade80" font-size="9">execute(g):  run until block/syscall/</text>
+  <text x="68" y="361" fill="#4ade80" font-size="9">             preemption (SIGURG 1.14+)</text>
+
+  <!-- P1 box -->
+  <rect x="350" y="208" width="260" height="172" rx="6" fill="#1a2e1a" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="480" y="228" text-anchor="middle" fill="#4ade80" font-size="13" font-weight="bold">P1  (Processor)</text>
+  <text x="480" y="246" text-anchor="middle" fill="#86efac" font-size="10">GOMAXPROCS controls P count</text>
+
+  <!-- P1 currently running G -->
+  <rect x="366" y="256" width="80" height="36" rx="4" fill="#14532d" stroke="#4ade80" stroke-width="1.5"/>
+  <text x="406" y="270" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="bold">G (running)</text>
+  <text x="406" y="284" text-anchor="middle" fill="#86efac" font-size="9">2KB stack</text>
+
+  <!-- P1 LRQ — empty, to show stealing -->
+  <text x="460" y="270" fill="#64748b" font-size="10">LRQ (empty):</text>
+  <rect x="460" y="278" width="32" height="28" rx="3" fill="#0f1117" stroke="#475569" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="476" y="297" text-anchor="middle" fill="#475569" font-size="10">—</text>
+  <rect x="496" y="278" width="32" height="28" rx="3" fill="#0f1117" stroke="#475569" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="512" y="297" text-anchor="middle" fill="#475569" font-size="10">—</text>
+
+  <!-- Schedule loop in P1 -->
+  <rect x="366" y="318" width="224" height="48" rx="4" fill="#0f1f0f" stroke="#166534" stroke-width="1"/>
+  <text x="378" y="333" fill="#4ade80" font-size="9">findRunnable(): LRQ → GRQ → steal</text>
+  <text x="378" y="347" fill="#4ade80" font-size="9">execute(g):  run until block/syscall/</text>
+  <text x="378" y="361" fill="#4ade80" font-size="9">             preemption (SIGURG 1.14+)</text>
+
+  <!-- P2 box (idle) -->
+  <rect x="660" y="208" width="260" height="172" rx="6" fill="#1c2533" stroke="#475569" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="790" y="228" text-anchor="middle" fill="#64748b" font-size="13" font-weight="bold">P2  (idle / spinning)</text>
+  <text x="790" y="246" text-anchor="middle" fill="#64748b" font-size="10">looking for runnable G</text>
+
+  <!-- P2 LRQ -->
+  <text x="670" y="270" fill="#64748b" font-size="10">LRQ:</text>
+  <rect x="665" y="278" width="32" height="28" rx="3" fill="#0f1117" stroke="#475569" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="681" y="297" text-anchor="middle" fill="#475569" font-size="10">—</text>
+
+  <!-- Steal arrow: P1 steals from P0 -->
+  <path d="M 480 306 Q 480 340 310 306" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-yellow)"/>
+  <text x="390" y="350" text-anchor="middle" fill="#f59e0b" font-size="10">work steal (½ of LRQ)</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--  GLOBAL RUN QUEUE                      -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- GRQ cells -->
+  <text x="480" y="448" text-anchor="middle" fill="#c084fc" font-size="12" font-weight="bold">Global Run Queue</text>
+  <text x="480" y="464" text-anchor="middle" fill="#94a3b8" font-size="10">overflow from LRQ  |  newly spawned goroutines  |  periodically polled by P's</text>
+
+  <rect x="180" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="200" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="226" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="246" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="272" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="292" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="318" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="338" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="364" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="384" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="410" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="430" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="456" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="476" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <rect x="502" y="472" width="40" height="32" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="522" y="493" text-anchor="middle" fill="#c084fc" font-size="11">G</text>
+  <text x="558" y="493" fill="#94a3b8" font-size="14">···</text>
+
+  <!-- GRQ → P arrows (dashed upward) -->
+  <line x1="340" y1="472" x2="200" y2="380" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-purple)"/>
+  <line x1="450" y1="472" x2="480" y2="380" stroke="#a855f7" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-purple)"/>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--  KEY NOTES                             -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <!-- G lifecycle -->
+  <text x="40" y="572" fill="#e2e8f0" font-size="11" font-weight="bold">G lifecycle:</text>
+  <rect x="40" y="580" width="68" height="22" rx="3" fill="#14532d" stroke="#4ade80" stroke-width="1"/>
+  <text x="74" y="596" text-anchor="middle" fill="#4ade80" font-size="10">runnable</text>
+  <text x="116" y="594" fill="#64748b" font-size="12">→</text>
+  <rect x="126" y="580" width="58" height="22" rx="3" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+  <text x="155" y="596" text-anchor="middle" fill="#60a5fa" font-size="10">running</text>
+  <text x="192" y="594" fill="#64748b" font-size="12">→</text>
+  <rect x="202" y="580" width="58" height="22" rx="3" fill="#2e1065" stroke="#a855f7" stroke-width="1"/>
+  <text x="231" y="596" text-anchor="middle" fill="#c084fc" font-size="10">waiting</text>
+  <text x="268" y="594" fill="#64748b" font-size="12">→</text>
+  <rect x="278" y="580" width="44" height="22" rx="3" fill="#1c1c1c" stroke="#475569" stroke-width="1"/>
+  <text x="300" y="596" text-anchor="middle" fill="#64748b" font-size="10">dead</text>
+
+  <!-- Preemption note -->
+  <text x="400" y="572" fill="#e2e8f0" font-size="11" font-weight="bold">Preemption (Go 1.14+):</text>
+  <text x="400" y="590" fill="#94a3b8" font-size="10">SIGURG sent to M → safe-point preemption</text>
+  <text x="400" y="606" fill="#94a3b8" font-size="10">Before 1.14: only at function call sites</text>
+  <text x="400" y="622" fill="#94a3b8" font-size="10">After 1.14:  tight loops can be preempted</text>
+
+  <!-- Stack note -->
+  <text x="700" y="572" fill="#e2e8f0" font-size="11" font-weight="bold">Goroutine vs OS thread:</text>
+  <text x="700" y="590" fill="#94a3b8" font-size="10">G starts at 2–8 KB  (grows dynamically)</text>
+  <text x="700" y="606" fill="#94a3b8" font-size="10">OS thread: ~1–8 MB fixed stack</text>
+  <text x="700" y="622" fill="#94a3b8" font-size="10">go func(){}()  far cheaper than pthread_create</text>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!--  ARROW MARKER DEFS                     -->
+  <!-- ═══════════════════════════════════════ -->
+  <defs>
+    <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arr-yellow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#a855f7"/>
+    </marker>
+  </defs>
+
+</svg>
